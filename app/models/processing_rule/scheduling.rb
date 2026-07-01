@@ -13,7 +13,7 @@ module ProcessingRule
 
     extend Enumerize
 
-    belongs_to :processing_rule, class_name: 'ProcessingRule::Base'
+    belongs_to :processing_rule, class_name: 'ProcessingRule::Base', inverse_of: :schedulings
     belongs_to :scheduled_job, class_name: '::Delayed::Job', optional: true
 
     attribute :scheduled_time, TimeOfDay::Type::TimeWithoutZone.new
@@ -94,10 +94,9 @@ module ProcessingRule
       end
 
       def perform
-        scheduling.processing_rule.perform(
-          referential: scheduling.target_referential,
-          operation_workbench: scheduling.scheduling_workbench
-        )
+        scheduling.processing_rule.scheduled_executions(scheduling.target).each do |operation_workbench, referential|
+          scheduling.processing_rule.perform(referential: referential, operation_workbench: operation_workbench)
+        end
       end
 
       protected

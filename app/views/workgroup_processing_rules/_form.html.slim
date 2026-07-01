@@ -1,8 +1,10 @@
 - processable_type_default = @processing_rule.processable_type.presence || @processing_rule.class.processable_type.values.first
+- @processing_rule.schedulings.build if @processing_rule.schedulings.empty?
+- target_options = %w[none current].map { |v| [t("processing_rule/workgroups.form.target_options.#{v}"), v] }
 
 = simple_form_for [@workgroup, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
   .row
-    .col-lg-12 x-data="#{{ processable_type: processable_type_default, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids }.to_json}"
+    .col-lg-12 x-data="#{{ processable_type: processable_type_default, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids, target: @processing_rule.schedulings.first&.target || 'none' }.to_json}"
       h2.mb-lg= t('processing_rule/workgroups.form.sections.trigger_conditions')
 
       template[x-if="processable_type == 'Control::List'"]
@@ -13,18 +15,28 @@
         div
           = f.input :operation_step, include_blank: false, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(Flamingo::ValidationSetup.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
 
-      div x-show="excluded_workbenches.length == 0"
+      div x-show="excluded_workbenches.length == 0 && operation_step != 'scheduling'"
         = f.input :target_workbenches,
           as: :tom_select,
           collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
           input_html: { multiple: true, "x-bind:disabled" => "operation_step == 'after_merge'", "x-on:change" => "target_workbenches = $event.target.value" },
           selected: @processing_rule.target_workbench_ids
-      div x-show="target_workbenches.length == 0"
+      div x-show="target_workbenches.length == 0 && operation_step != 'scheduling'"
         = f.input :excluded_workbenches,
           as: :tom_select,
           collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
           input_html: { multiple: true, "x-on:change" => "excluded_workbenches = $event.target.value" },
           selected: @processing_rule.excluded_workbench_ids
+
+      template x-if="operation_step == 'scheduling'"
+        div x-init="$nextTick(() => document.dispatchEvent(new CustomEvent('flatpickr:refresh')))"
+          = f.simple_fields_for(:schedulings, defaults: { wrapper: :horizontal_form }) do |schedulings_form|
+            = schedulings_form.input :scheduled_time, as: :time_picker
+            = schedulings_form.input :scheduled_days, as: :day_type
+
+            .separator.section_separator
+            h2.mb-lg= t('processing_rule/workgroups.form.sections.target')
+            = schedulings_form.input :target, collection: target_options, include_blank: false, input_html: { 'x-model': 'target' }
 
       .separator.section_separator
 
@@ -39,17 +51,6 @@
       template[x-if="processable_type == 'Flamingo::ValidationSetup'"]
         div
           = f.input :processable_id, as: :select, collection: @processing_rule.candidate_flamingo_validation_setups, label: Flamingo::ValidationSetup.model_name.human
-
-
-      .separator.section_separator
-
-      h2.mb-lg= t('processing_rule/workgroups.form.sections.scheduling')
-
-      = f.simple_fields_for(:schedulings, defaults: { wrapper: :horizontal_form }) do |schedulings_form|
-        = render 'processing_rules/scheduling_fields', f: schedulings_form
-
-      .links.nested-linker
-        = link_to_add_association t('processing_rule/workgroups.form.add_scheduling'), f, :schedulings, class: 'btn btn-primary'
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'processing_rule_form'

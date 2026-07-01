@@ -4,6 +4,7 @@ en:
       title: Processing Rules
     show:
       title: "%{name}"
+      scheduling: Scheduling
     new:
       title: "Create a Processing Rule"
     edit:
@@ -12,8 +13,10 @@ en:
       sections:
         trigger_conditions: Trigger Conditions
         processing_selection: Processing Selection
-        scheduling: Scheduling
-      add_scheduling: Add a scheduling
+        target: Target
+      target_options:
+        none: Workbench
+        current: Latest Merged Dataset
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -28,6 +31,7 @@ en:
       title: Workgroup Processing Rules
     show:
       title: "%{name}"
+      scheduling: Scheduling
     new:
       title: "Create a Processing Rule"
     edit:
@@ -36,8 +40,10 @@ en:
       sections:
         trigger_conditions: Trigger Conditions
         processing_selection: Processing Selection
-        scheduling: Scheduling
-      add_scheduling: Add a scheduling
+        target: Target
+      target_options:
+        none: Workbench
+        current: Latest Aggregated Dataset
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -83,6 +89,7 @@ en:
         scheduled_time: Time
         scheduled_days: Days
         target: Target
+        next_schedule: Next run
     errors:
       models:
         processing_rule/workbench:
@@ -103,6 +110,7 @@ en:
         before_merge: Merge - Before
         after_merge: Merge - After
         after_aggregate: Aggregate - After
+        scheduling: Scheduling
     processing_rule/scheduling:
       target:
         none: No referential

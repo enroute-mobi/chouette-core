@@ -37,7 +37,7 @@ module Macro
 
       class_methods do
         def candidate_operation_steps
-          %w[after_import before_merge]
+          %w[after_import before_merge scheduling]
         end
       end
 

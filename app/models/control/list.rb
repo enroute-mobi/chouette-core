@@ -36,7 +36,7 @@ module Control
 
       class_methods do
         def candidate_operation_steps
-          %w[after_import before_merge after_merge after_aggregate]
+          %w[after_import before_merge after_merge after_aggregate scheduling]
         end
       end
 

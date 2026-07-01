@@ -27,7 +27,7 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
 
   it { is_expected.to enumerize(:processable_type).in('Macro::List', 'Control::List') }
 
-  it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge') }
+  it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge', 'scheduling') }
 
   it { is_expected.to_not allow_value('after_aggregate').for(:operation_step) }
 
@@ -204,7 +204,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
 
   it do
     is_expected.to(
-      enumerize(:operation_step).in('before_import', 'after_import', 'before_merge', 'after_merge', 'after_aggregate')
+      enumerize(:operation_step).in('before_import', 'after_import', 'before_merge', 'after_merge', 'after_aggregate', 'scheduling')
     )
   end
 

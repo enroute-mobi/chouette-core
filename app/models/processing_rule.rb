@@ -16,6 +16,7 @@ module ProcessingRule
     has_many :schedulings,
              class_name: 'ProcessingRule::Scheduling',
              foreign_key: 'processing_rule_id',
+             inverse_of: :processing_rule,
              dependent: :destroy
     accepts_nested_attributes_for :schedulings, allow_destroy: true, reject_if: :all_blank
 
@@ -39,6 +40,17 @@ module ProcessingRule
       operation_step == :after_import
     end
 
+    def scheduling?
+      operation_step == :scheduling
+    end
+
+    # Operation steps allowing several rules for the same processable_type, told
+    # apart by their processable_id: after_import (differ by tags/list) and
+    # scheduling (differ by list/schedule).
+    def unique_per_processable?
+      after_import? || scheduling?
+    end
+
     def control_list_id
       processable_id if use_control_list?
     end
@@ -59,6 +71,13 @@ module ProcessingRule
     # Workbench/Workgroup specific. Output current Referential used by scheduled runs (target: current).
     def output_current_referential
       raise NotImplementedError
+    end
+
+    # [operation_workbench, referential] pairs for a scheduled run with the given target.
+    # A single execution by default ; ProcessingRule::Workgroup fans out with target 'merged'.
+    def scheduled_executions(target)
+      referential = (output_current_referential if target == 'current')
+      [[scheduling_workbench, referential]]
     end
 
     def candidate_operation_steps
@@ -131,12 +150,14 @@ module ProcessingRule
     belongs_to :workbench # CHOUETTE-3247 required: true
 
     enumerize :processable_type, in: %w[Macro::List Control::List]
-    enumerize :operation_step, in: %w[after_import before_merge after_merge],
+    enumerize :operation_step, in: %w[after_import before_merge after_merge scheduling],
                                scope: :shallow,
                                i18n_scope: 'enumerize.processing_rule/base.operation_step'
 
-    validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }, unless: :after_import?
-    validates :operation_step, uniqueness: { scope: %i[processable_type processable_id workbench] }, if: :after_import?
+    validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }, unless: :unique_per_processable?
+    validates :operation_step,
+              uniqueness: { scope: %i[processable_type processable_id workbench] },
+              if: :unique_per_processable?
 
     def use_macro_list?
       processable_type == Macro::List.name
@@ -183,12 +204,14 @@ module ProcessingRule
     has_array_of :excluded_workbenches, class_name: 'Workbench'
 
     enumerize :processable_type, in: %w[Control::List Flamingo::ValidationSetup]
-    enumerize :operation_step, in: %w[before_import after_import before_merge after_merge after_aggregate],
+    enumerize :operation_step, in: %w[before_import after_import before_merge after_merge after_aggregate scheduling],
                                scope: :shallow,
                                i18n_scope: 'enumerize.processing_rule/base.operation_step'
 
-    validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }, unless: :after_import?
-    validates :operation_step, uniqueness: { scope: %i[processable_type processable_id workgroup] }, if: :after_import?
+    validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }, unless: :unique_per_processable?
+    validates :operation_step,
+              uniqueness: { scope: %i[processable_type processable_id workgroup] },
+              if: :unique_per_processable?
 
     validate :exclusive_workbenches
 

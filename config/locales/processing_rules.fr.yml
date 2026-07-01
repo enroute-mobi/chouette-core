@@ -4,6 +4,7 @@ fr:
       title: Règles de traitement
     show:
       title: "%{name}"
+      scheduling: Planification
     new:
       title: "Créer une Règle de traitement"
     edit:
@@ -12,8 +13,10 @@ fr:
       sections:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
-        scheduling: Planification
-      add_scheduling: Ajouter une planification
+        target: Cible
+      target_options:
+        none: Espace de travail
+        current: Offre courante finalisée
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -28,6 +31,7 @@ fr:
       title: Règles de traitement du Groupe de Travail
     show:
       title: "%{name}"
+      scheduling: Planification
     new:
       title: "Créer une Règle de traitement"
     edit:
@@ -36,8 +40,10 @@ fr:
       sections:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
-        scheduling: Planification
-      add_scheduling: Ajouter une planification
+        target: Cible
+      target_options:
+        none: Espace de travail
+        current: Offre courante agrégée
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -83,6 +89,7 @@ fr:
         scheduled_time: Heure
         scheduled_days: Jours
         target: Cible
+        next_schedule: Prochaine exécution
     errors:
       models:
         processing_rule/workbench:
@@ -103,6 +110,7 @@ fr:
         before_merge: Finalisation - Avant
         after_merge: Finalisation - Après
         after_aggregate: Agrégation - Après
+        scheduling: Planification
     processing_rule/scheduling:
       target:
         none: Aucun référentiel

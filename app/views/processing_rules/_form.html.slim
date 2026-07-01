@@ -1,8 +1,10 @@
 - candidate_tags = @processing_rule.candidate_tags.order(:name).map { |tag| { id: tag.id, text: tag.name } }
+- @processing_rule.schedulings.build if @processing_rule.schedulings.empty?
+- target_options = %w[none current].map { |v| [t("processing_rule/workbenches.form.target_options.#{v}"), v] }
 
 = simple_form_for [@workbench, @processing_rule], as: 'processing_rule', html: { class: 'tailwind-form', id: 'processing_rule_form' }, wrapper: :horizontal_form_tailwind  do |f|
   .row
-    .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', operation_step: '#{@processing_rule.operation_step || @processing_rule.class.operation_step.values.first}' }"
+    .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', operation_step: '#{@processing_rule.operation_step || @processing_rule.class.operation_step.values.first}', target: '#{@processing_rule.schedulings.first&.target || 'none'}' }"
       h2.my-16
         = t('processing_rule/workbenches.form.sections.trigger_conditions')
 
@@ -21,6 +23,17 @@
           input_html: { multiple: true },
           allow_blank: false
 
+      template x-if="operation_step == 'scheduling'"
+        div x-init="$nextTick(() => document.dispatchEvent(new CustomEvent('flatpickr:refresh')))"
+          = f.simple_fields_for(:schedulings, defaults: { wrapper: :horizontal_form_tailwind }) do |schedulings_form|
+            = schedulings_form.input :scheduled_time, as: :time_picker
+            = schedulings_form.input :scheduled_days, as: :day_type
+
+            .separator.section_separator
+            h2.my-16
+              = t('processing_rule/workbenches.form.sections.target')
+            = schedulings_form.input :target, collection: target_options, include_blank: false, input_html: { 'x-model': 'target', 'x-on:change': "if ($event.target.value == 'current') processable_type = 'Control::List'" }
+
       .separator.section_separator
 
       h2.my-16
@@ -33,22 +46,11 @@
               = f.radio_button :processable_type, "Control::List", { "x-model" => "processable_type" }
               = f.label :processable_type_controllist, Control::List.model_name.human, class: 'ml-4 mb-0'
             = f.input :control_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_control_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Control::List'" }
-          li.flex.justify-end.mb-10 x-show="operation_step != 'after_merge'"
+          li.flex.justify-end.mb-10 x-show="operation_step != 'after_merge' && !(operation_step == 'scheduling' && target == 'current')"
             .flex.items-center.justify-end.mr-4.w-2/6
               = f.radio_button :processable_type, "Macro::List", { "x-model" => "processable_type" }
               = f.label :processable_type_macrolist, Macro::List.model_name.human, class: 'ml-4 mb-0'
-            = f.input :macro_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Macro::List' || operation_step == 'after_merge'" }
-
-      .separator.section_separator
-
-      h2.my-16
-        = t('processing_rule/workbenches.form.sections.scheduling')
-
-      = f.simple_fields_for(:schedulings, defaults: { wrapper: :horizontal_form_tailwind }) do |schedulings_form|
-        = render 'processing_rules/scheduling_fields', f: schedulings_form
-
-      .links.nested-linker
-        = link_to_add_association t('processing_rule/workbenches.form.add_scheduling'), f, :schedulings, class: 'btn btn-primary'
+            = f.input :macro_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Macro::List' || operation_step == 'after_merge' || (operation_step == 'scheduling' && target == 'current')" }
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'processing_rule_form'

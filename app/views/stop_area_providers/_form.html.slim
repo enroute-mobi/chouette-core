@@ -7,8 +7,9 @@
   .separator.section_separator
 
   .row
-    .col-lg-12
+    .col-lg-12 x-data="{ disableStopAreaManualCreation: #{@stop_area_provider.disable_stop_area_manual_creation} }"
       h2.mb-lg= t("stop_area_providers.form.sections.permission_restrictions")
-      = f.input :allowed_stop_area_types, as: :autocomplete_select, collection: Chouette::AreaType.options(:all), label_method: :first, input_html: { multiple: true }
+      = f.input :disable_stop_area_manual_creation, as: :switchable_checkbox, input_html: { 'x-on:click': 'disableStopAreaManualCreation = !disableStopAreaManualCreation' }
+      = f.input :allowed_stop_area_types, as: :autocomplete_select, collection: Chouette::AreaType.options(:all), label_method: :first, input_html: { multiple: true, 'x-bind:disabled': 'r = disableStopAreaManualCreation; if (r) { $el.tomselect?.disable() } else { $el.tomselect?.enable() }; r' }
 
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'stop_area_provider_form'

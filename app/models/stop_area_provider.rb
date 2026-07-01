@@ -19,6 +19,7 @@ class StopAreaProvider < ActiveRecord::Base
   delegate :workgroup, to: :stop_area_referential
 
   validates :name, presence: true
+  validates :disable_stop_area_manual_creation, inclusion: { in: [true, false] }
   validate :allowed_stop_area_types_must_be_known
   validate :stop_areas_must_match_allowed_types, if: :allowed_stop_area_types_changed_on_update?, on: :update
 

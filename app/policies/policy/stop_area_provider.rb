@@ -9,13 +9,17 @@ module Policy
     protected
 
     def _create?(resource_class)
-      [
-        ::Chouette::StopArea,
-        ::Entrance,
-        ::StopAreaRoutingConstraint,
-        ::Chouette::ConnectionLink,
-        ::StopAreaGroup
-      ].include?(resource_class)
+      if resource_class == ::Chouette::StopArea
+        !resource.disable_stop_area_manual_creation
+      else
+        [
+          ::Chouette::StopArea,
+          ::Entrance,
+          ::StopAreaRoutingConstraint,
+          ::Chouette::ConnectionLink,
+          ::StopAreaGroup
+        ].include?(resource_class)
+      end
     end
 
     def _update?

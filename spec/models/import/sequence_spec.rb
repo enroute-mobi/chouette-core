@@ -3,6 +3,46 @@
 RSpec.describe Import::Sequence2::Merger do
   subject(:merger) { described_class.new }
 
+  describe '#add' do
+    subject { merger.add(sequence) }
+
+    let(:sequence) { %w[A B C] }
+
+    context 'when merger is empty' do
+      it 'adds sequence' do
+        expect { subject }.to change { merger.sequences.size }.by(1)
+      end
+    end
+
+    context 'when merger contains another sequence' do
+      before { merger << %w[A C D] }
+
+      it 'adds sequence' do
+        expect { subject }.to change { merger.sequences.size }.by(1)
+      end
+    end
+
+    context 'when new sequence is empty' do
+      let(:sequence) { %w[] }
+
+      it 'raises error' do
+        expect { subject }.to(
+          raise_error(ArgumentError, 'Import::Sequence2::Merger only accepts sequences of 2 elements or more (0)')
+        )
+      end
+    end
+
+    context 'when new sequence has 1 element' do
+      let(:sequence) { %w[A] }
+
+      it 'raises error' do
+        expect { subject }.to(
+          raise_error(ArgumentError, 'Import::Sequence2::Merger only accepts sequences of 2 elements or more (1)')
+        )
+      end
+    end
+  end
+
   describe '#merge' do
     subject { merger.merge }
 
@@ -15,39 +55,6 @@ RSpec.describe Import::Sequence2::Merger do
         merger << %w[A B C]
         merger << %w[A B C]
         merger << %w[A B]
-      end
-    end
-
-    context 'with an empty sequence' do
-      before do
-        merger << %w[A B]
-        merger << %w[]
-      end
-
-      it 'ignores empty sequence' do
-        is_expected.to eq(%w[A B])
-      end
-    end
-
-    context 'with a sequence of 1 element' do
-      before do
-        merger << %w[A B]
-        merger << %w[A]
-      end
-
-      it 'ignores sequence of 1 element' do
-        is_expected.to eq(%w[A B])
-      end
-    end
-
-    context 'with a sequence of 1 completely different element' do
-      before do
-        merger << %w[A B]
-        merger << %w[C]
-      end
-
-      it 'still ignores sequence of 1 element' do
-        is_expected.to eq(%w[A B])
       end
     end
 

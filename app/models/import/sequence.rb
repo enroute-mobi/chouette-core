@@ -110,6 +110,11 @@ module Import
       attr_reader :sequences, :counters
 
       def add(array_of_elements)
+        unless array_of_elements.many?
+          raise ArgumentError,
+                "#{self.class.name} only accepts sequences of 2 elements or more (#{array_of_elements.size})"
+        end
+
         @merge = nil
 
         sequences << Sequence2.new(array_of_elements).freeze

@@ -15,7 +15,9 @@ class Calendar < ApplicationModel
 
   scope :contains_date, ->(date) { where('(DATE(?) = any (dates) OR DATE(?) <@ any (date_ranges)) AND NOT DATE(?) = any (excluded_dates)', date, date, date) }
 
-  scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
+  scope :by_text, lambda { |text|
+    text.blank? ? all : where("lower(#{quoted_table_name}.name) LIKE :t", t: "%#{text.downcase}%")
+  }
 
   after_initialize :set_defaults
 

@@ -41,6 +41,14 @@ RSpec.describe Import::Sequence2::Merger do
         )
       end
     end
+
+    context 'when merger contains the exact same sequence' do
+      before { merger << %w[A B C] }
+
+      it 'does not add sequence' do
+        expect { subject }.not_to change { merger.sequences.size }
+      end
+    end
   end
 
   describe '#merge' do

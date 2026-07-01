@@ -104,7 +104,7 @@ module Import
     # Aggregates a list of sequences and builds a solution.
     class Merger
       def initialize
-        @sequences = []
+        @sequences = Set.new
         @counters = {} # the maximum number of times each element appear in a sequence
       end
       attr_reader :sequences, :counters
@@ -115,14 +115,14 @@ module Import
                 "#{self.class.name} only accepts sequences of 2 elements or more (#{array_of_elements.size})"
         end
 
-        @merge = nil
-
-        sequences << Sequence2.new(array_of_elements).freeze
+        return unless sequences.add?(Sequence2.new(array_of_elements).freeze)
 
         array_of_elements.tally.each do |element, count|
           current_count = @counters[element]
           @counters[element] = count if current_count.nil? || current_count < count
         end
+
+        @merge = nil
       end
       alias << add
 

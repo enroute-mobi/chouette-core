@@ -189,7 +189,7 @@ pipelines:
                 ATLASSIAN_API_TOKEN: $TRIGGER_API_TOKEN
                 REPOSITORY: $TRIGGER_REPOSITORY_1
                 CUSTOM_PIPELINE_NAME: "merge"
-            - pipe: atlassian/trigger-pipeline:5.0.1
+            - pipe: atlassian/trigger-pipeline:5.10.1
               variables:
                 ATLASSIAN_ACCOUNT_EMAIL: $TRIGGER_ACCOUNT
                 ATLASSIAN_API_TOKEN: $TRIGGER_API_TOKEN

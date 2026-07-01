@@ -239,6 +239,22 @@ module ProcessingRule
       workgroup.output.current
     end
 
+    # target 'merged': run the Control List on each targeted Workbench own merged output,
+    # producing one Run per Workbench (visible on both the Workbench and Workgroup runs pages).
+    def scheduled_executions(target)
+      return super unless target == 'merged'
+
+      scheduling_target_workbenches.map { |workbench| [workbench, workbench.output.current] }
+    end
+
+    # Workbenches a scheduled 'merged' run fans out to: targeted (or all) minus excluded.
+    def scheduling_target_workbenches
+      scope = workgroup.workbenches
+      scope = scope.where(id: target_workbench_ids) if target_workbench_ids.present?
+      scope = scope.where.not(id: excluded_workbench_ids) if excluded_workbench_ids.present?
+      scope
+    end
+
     def self.accept_workbench(workbench)
       where(
         'ARRAY_LENGTH(target_workbench_ids, 1) IS NULL OR target_workbench_ids && ARRAY[:workbench]::bigint[]',

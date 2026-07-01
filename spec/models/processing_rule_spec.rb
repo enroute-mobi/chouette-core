@@ -305,6 +305,52 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
     end
   end
 
+  describe '#scheduled_executions' do
+    let(:context) do
+      Chouette.create do
+        workgroup do
+          workbench :workbench do
+            control_list :control_list, shared: true
+          end
+          workbench :other_workbench
+          workgroup_processing_rule control_list: :control_list, operation_step: 'scheduling'
+        end
+      end
+    end
+    let(:workgroup) { context.workgroup }
+    let(:workbench) { context.workbench(:workbench) }
+    let(:other_workbench) { context.workbench(:other_workbench) }
+    let(:processing_rule) { context.workgroup_processing_rule }
+
+    subject { processing_rule.scheduled_executions('merged') }
+
+    context 'without target nor excluded workbenches' do
+      it 'fans out over each workbench own merged output' do
+        is_expected.to match_array(workgroup.workbenches.map { |wb| [wb, wb.output.current] })
+      end
+    end
+
+    context 'with target workbenches' do
+      before { processing_rule.update(target_workbench_ids: [workbench.id]) }
+
+      it { expect(subject.map(&:first)).to match_array([workbench]) }
+    end
+
+    context 'with excluded workbenches' do
+      before { processing_rule.update(excluded_workbench_ids: [workbench.id]) }
+
+      it { expect(subject.map(&:first)).to match_array([other_workbench]) }
+    end
+
+    context 'when target is current' do
+      it 'runs a single execution on the aggregated output' do
+        expect(processing_rule.scheduled_executions('current')).to eq(
+          [[processing_rule.scheduling_workbench, workgroup.output.current]]
+        )
+      end
+    end
+  end
+
   describe 'Operation step validation' do
     let(:workgroup) { context.workgroup }
     let(:processing_rule) { context.workgroup_processing_rule }

@@ -44,6 +44,7 @@ en:
       target_options:
         none: Workbench
         current: Latest Aggregated Dataset
+        merged: Latest Merged Dataset
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"

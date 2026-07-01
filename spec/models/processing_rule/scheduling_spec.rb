@@ -27,7 +27,7 @@ RSpec.describe ProcessingRule::Scheduling, type: :model do
   it { is_expected.to allow_value(Cuckoo::DaysOfWeek.new(monday: true, tuesday: true)).for(:scheduled_days) }
   it { is_expected.not_to allow_value(Cuckoo::DaysOfWeek.none).for(:scheduled_days) }
 
-  it { is_expected.to enumerize(:target).in('none', 'current').with_default('none') }
+  it { is_expected.to enumerize(:target).in('none', 'current', 'merged').with_default('none') }
 
   describe 'scheduled_days' do
     subject { scheduling.scheduled_days }

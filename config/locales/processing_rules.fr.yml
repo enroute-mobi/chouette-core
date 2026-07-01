@@ -44,6 +44,7 @@ fr:
       target_options:
         none: Espace de travail
         current: Offre courante agrégée
+        merged: Offre courante finalisée
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"

@@ -21,8 +21,11 @@ module ProcessingRule
 
     # Referential used to perform the Control/Macro:
     #   none    -> no Referential (e.g. controls/macros running on Stop Areas)
-    #   current -> the Workbench/Workgroup output current Referential
-    enumerize :target, in: %w[none current], default: :none
+    #   current -> the Workbench/Workgroup output current Referential (merged for a
+    #              Workbench, aggregated for a Workgroup)
+    #   merged  -> Workgroup only: fans out over the targeted Workbenches, running on
+    #              each Workbench own merged output current Referential
+    enumerize :target, in: %w[none current merged], default: :none
 
     validate :validate_presence_of_scheduled_days
 

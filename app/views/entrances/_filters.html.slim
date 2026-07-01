@@ -1,38 +1,16 @@
-= simple_form_for @search, url: request.path, method: "GET", html: { class: 'form form-filter' }  do |f|
-  = f.simple_fields_for :order, @search.order, defaults: { wrapper: false } do |form_order|
-    - form_order.object.attributes.keys.each do |attribute|
-      = form_order.input attribute, as: :hidden
-
-  .ffg-row
-    .input-group.search_bar
-      = f.input :text, label: false, class: 'form-control'
-      span.input-group-btn
-        button.btn.btn-default#search_btn type='submit'
-          span.fa.fa-search
-  .ffg-row
+= simple_search_for @search, workbench_stop_area_referential_entrances_path(@workbench) do |f|
+  = f.row
+    = f.text
+  = f.row
     = f.input :stop_area_id,
-      as: :ajax_select,
-      collection: @search.candidate_stop_areas,
-      label_method: :display_name,
-      input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json), class: "w-full" },
-      wrapper_html: { class: "w-168" }
-    = f.input :zip_code, label: Entrance.tmf(:zip_code)
-    = f.input :city, label: Entrance.tmf(:city_name)
-    = f.input :stop_area_provider, collection: @search.stop_area_provider_options, label: false, include_blank: Entrance.tmf(:stop_area_provider)
-  .ffg-row
-    = f.input :entrance_type, label: false, include_blank: Entrance.tmf(:entrance_type)
-
-    .form-group.togglable
-      = f.label Entrance.tmf(:entry_flag), required: false, class: 'control-label'
-      = f.input :entry_flag, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_blank: false, wrapper_html: { class: 'checkbox_list' }
-
-    .form-group.togglable
-      = f.label Entrance.tmf(:exit_flag), required: false, class: 'control-label'
-      = f.input :exit_flag, as: :check_boxes, label: false, label_method: lambda { |w| ("<span>#{w.first}</span>").html_safe }, include_blank: false, wrapper_html: { class: 'checkbox_list' }
-
-  .flex.flex-col.justify-center.items-center.actions.ml-auto.w-56
-    .flex.items-center.mb-2.ml-3
-      = render partial: 'shared/per_page', locals: {f:f}
-    .flex.items-center
-      = link_to t('actions.erase'), workbench_stop_area_referential_entrances_path(@workbench), class: 'btn btn-link'
-      = f.submit t('actions.filter'), class: 'btn btn-default'
+        as: :ajax_select,
+        collection: @search.candidate_stop_areas,
+        label_method: :display_name,
+        input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json) }
+    = f.input :zip_code, label: Entrance.human_attribute_name(:zip_code)
+    = f.input :city, label: Entrance.human_attribute_name(:city_name)
+    = f.input :stop_area_provider, as: :autocomplete_select, collection: @search.stop_area_provider_options, label: Entrance.human_attribute_name(:stop_area_provider)
+  = f.row
+    = f.input :entrance_type, as: :autocomplete_select, label: Entrance.human_attribute_name(:entrance_type)
+    = f.input :entry_flag, as: :autocomplete_select, label: Entrance.human_attribute_name(:entry_flag)
+    = f.input :exit_flag, as: :autocomplete_select, label: Entrance.human_attribute_name(:exit_flag)

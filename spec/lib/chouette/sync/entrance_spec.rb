@@ -16,38 +16,40 @@ RSpec.describe Chouette::Sync::Entrance do
 
     let(:xml) do
       <<~XML
-        <StopPlace dataSourceRef="FR1-ARRET_AUTO" version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="stop-place-1">
-          <Name>North Ave </Name>
-          <entrances>
-            <StopPlaceEntranceRef ref="entrance-1" version="any"/>
-          </entrances>
-        </StopPlace>
-        <StopPlaceEntrance id="entrance-1" version="any">
-          <Name>Centre ville</Name>
-          <Centroid version="any">
-            <Location>
-              <Longitude>2.292</Longitude>
-              <Latitude>48.858</Latitude>
-            </Location>
-          </Centroid>
-          <PostalAddress id="postal-address-1" version="any">
-            <HouseNumber>123</HouseNumber>
-            <AddressLine1>Address Line 1</AddressLine1>
-            <AddressLine2>Address Line 2</AddressLine2>
-            <Street>Route ST Félix</Street>
-            <Town>Nantes</Town>
-            <PostCode>44300</PostCode>
-            <PostCodeExtension>44300</PostCodeExtension>
-            <PostalRegion>44</PostalRegion>
-            <CountryName>France</CountryName>
-          </PostalAddress>
-          <IsEntry>false</IsEntry>
-          <IsExit>false</IsExit>
-          <IsExternal>true</IsExternal>
-          <Height>2</Height>
-          <Width>3</Width>
-          <EntranceType>opening</EntranceType>
-        </StopPlaceEntrance>
+        <root>
+          <StopPlace dataSourceRef="FR1-ARRET_AUTO" version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="stop-place-1">
+            <Name>North Ave </Name>
+            <entrances>
+              <StopPlaceEntranceRef ref="entrance-1" version="any"/>
+            </entrances>
+          </StopPlace>
+          <StopPlaceEntrance id="entrance-1" version="any">
+            <Name>Centre ville</Name>
+            <Centroid version="any">
+              <Location>
+                <Longitude>2.292</Longitude>
+                <Latitude>48.858</Latitude>
+              </Location>
+            </Centroid>
+            <PostalAddress id="postal-address-1" version="any">
+              <HouseNumber>123</HouseNumber>
+              <AddressLine1>Address Line 1</AddressLine1>
+              <AddressLine2>Address Line 2</AddressLine2>
+              <Street>Route ST Félix</Street>
+              <Town>Nantes</Town>
+              <PostCode>44300</PostCode>
+              <PostCodeExtension>44300</PostCodeExtension>
+              <PostalRegion>44</PostalRegion>
+              <CountryName>France</CountryName>
+            </PostalAddress>
+            <IsEntry>false</IsEntry>
+            <IsExit>false</IsExit>
+            <IsExternal>true</IsExternal>
+            <Height>2</Height>
+            <Width>3</Width>
+            <EntranceType>opening</EntranceType>
+          </StopPlaceEntrance>
+        </root>
       XML
     end
 

@@ -18,30 +18,32 @@ RSpec.describe Chouette::Sync::StopAreaGroup do
 
     let(:xml) do
       <<~XML
-        <StopPlace dataSourceRef="FR1-ARRET_AUTO" id="first">
-          <Name>First </Name>
-        </StopPlace>
-        <StopPlace dataSourceRef="FR1-ARRET_AUTO" id="second">
-          <Name>Second </Name>
-        </StopPlace>
-        <GroupOfStopPlaces id="sample" version="any">
-          <keyList>
-            <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
-              <Key>test</Key>
-              <Value>code-1</Value>
-            </KeyValue>
-            <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
-              <Key>test</Key>
-              <Value>code-2</Value>
-            </KeyValue>
-          </keyList>
-          <Name>Stop Area Group Sample</Name>
-          <ShortName>sample</ShortName>
-          <members>
-            <StopPlaceRef ref="first"/>
-            <StopPlaceRef ref="second"/>
-          </members>
-        </GroupOfStopPlaces>
+        <root>
+          <StopPlace dataSourceRef="FR1-ARRET_AUTO" id="first">
+            <Name>First </Name>
+          </StopPlace>
+          <StopPlace dataSourceRef="FR1-ARRET_AUTO" id="second">
+            <Name>Second </Name>
+          </StopPlace>
+          <GroupOfStopPlaces id="sample" version="any">
+            <keyList>
+              <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                <Key>test</Key>
+                <Value>code-1</Value>
+              </KeyValue>
+              <KeyValue typeOfKey="ALTERNATE_IDENTIFIER">
+                <Key>test</Key>
+                <Value>code-2</Value>
+              </KeyValue>
+            </keyList>
+            <Name>Stop Area Group Sample</Name>
+            <ShortName>sample</ShortName>
+            <members>
+              <StopPlaceRef ref="first"/>
+              <StopPlaceRef ref="second"/>
+            </members>
+          </GroupOfStopPlaces>
+        </root>
       XML
     end
 

@@ -124,16 +124,18 @@ RSpec.describe Import::NetexGeneric do
       context 'when data_source_ref is empty' do
         let(:xml) do
           %(
-            <stopPlaces>
-            <StopPlace version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="FR::multimodalStopPlace:424920:FR1">
-              <Name>Petits Ponts</Name>
-              <PostalAddress version="any" id="FR1:PostalAddress:424920:">
-                <Town>Pantin</Town>
-                <PostalRegion>93055</PostalRegion>
-              </PostalAddress>
-              <StopPlaceType>onstreetBus</StopPlaceType>
-            </StopPlace>
-          </stopPlaces>
+            <root>
+              <stopPlaces>
+                <StopPlace version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="FR::multimodalStopPlace:424920:FR1">
+                  <Name>Petits Ponts</Name>
+                  <PostalAddress version="any" id="FR1:PostalAddress:424920:">
+                    <Town>Pantin</Town>
+                    <PostalRegion>93055</PostalRegion>
+                  </PostalAddress>
+                  <StopPlaceType>onstreetBus</StopPlaceType>
+                </StopPlace>
+              </stopPlaces>
+            </root>
           )
         end
 
@@ -402,38 +404,40 @@ RSpec.describe Import::NetexGeneric do
     context 'When XML contains stop place entrances' do
       let(:xml) do
         %(
-          <StopPlace id="stop-place-1" version="any">
-            <Name>North Ave </Name>
-            <entrances>
-              <StopPlaceEntranceRef ref="entrance-1" version="any"/>
-            </entrances>
-          </StopPlace>
-          <StopPlaceEntrance id="entrance-1" version="any">
-            <Name>Centre ville</Name>
-            <Centroid version="any">
-              <Location>
-                <Longitude>2.292</Longitude>
-                <Latitude>48.858</Latitude>
-              </Location>
-            </Centroid>
-            <PostalAddress id="postal-address-1" version="any">
-              <HouseNumber>123</HouseNumber>
-              <AddressLine1>Address Line 1</AddressLine1>
-              <AddressLine2>Address Line 2</AddressLine2>
-              <Street>Route ST Félix</Street>
-              <Town>Nantes</Town>
-              <PostCode>44300</PostCode>
-              <PostCodeExtension>44300</PostCodeExtension>
-              <PostalRegion>44</PostalRegion>
-              <CountryName>France</CountryName>
-            </PostalAddress>
-            <IsEntry>false</IsEntry>
-            <IsExit>false</IsExit>
-            <IsExternal>true</IsExternal>
-            <Height>2</Height>
-            <Width>3</Width>
-            <EntranceType>opening</EntranceType>
-          </StopPlaceEntrance>
+          <root>
+            <StopPlace id="stop-place-1" version="any">
+              <Name>North Ave </Name>
+              <entrances>
+                <StopPlaceEntranceRef ref="entrance-1" version="any"/>
+              </entrances>
+            </StopPlace>
+            <StopPlaceEntrance id="entrance-1" version="any">
+              <Name>Centre ville</Name>
+              <Centroid version="any">
+                <Location>
+                  <Longitude>2.292</Longitude>
+                  <Latitude>48.858</Latitude>
+                </Location>
+              </Centroid>
+              <PostalAddress id="postal-address-1" version="any">
+                <HouseNumber>123</HouseNumber>
+                <AddressLine1>Address Line 1</AddressLine1>
+                <AddressLine2>Address Line 2</AddressLine2>
+                <Street>Route ST Félix</Street>
+                <Town>Nantes</Town>
+                <PostCode>44300</PostCode>
+                <PostCodeExtension>44300</PostCodeExtension>
+                <PostalRegion>44</PostalRegion>
+                <CountryName>France</CountryName>
+              </PostalAddress>
+              <IsEntry>false</IsEntry>
+              <IsExit>false</IsExit>
+              <IsExternal>true</IsExternal>
+              <Height>2</Height>
+              <Width>3</Width>
+              <EntranceType>opening</EntranceType>
+            </StopPlaceEntrance>
+          </root>
         )
       end
 

@@ -223,8 +223,8 @@ pipelines:
           artifacts:
             download: false
           script:
-            - pipe: atlassian/trigger-pipeline:5.0.1
+            - pipe: atlassian/trigger-pipeline:5.10.1
               variables:
-                BITBUCKET_USERNAME: $BITBUCKET_USERNAME
-                BITBUCKET_APP_PASSWORD: $BITBUCKET_APP_PASSWORD
+                ATLASSIAN_ACCOUNT_EMAIL: $TRIGGER_ACCOUNT
+                ATLASSIAN_API_TOKEN: $TRIGGER_API_TOKEN
                 REPOSITORY: $TRIGGER_REPOSITORY_3

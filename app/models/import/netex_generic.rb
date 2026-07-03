@@ -712,7 +712,8 @@ module Import
             journey_patterns: netex_journey_patterns,
             route_points: route_points,
             directions: directions,
-            destination_displays: destination_displays
+            destination_displays: destination_displays,
+            merger2: merger2?
           )
 
           valid = decorator.valid?
@@ -807,6 +808,10 @@ module Import
             next
           end
         end
+      end
+
+      def merger2?
+        import.workbench.organisation.has_feature?('import_netex_merger2')
       end
 
       delegate :route_points, :directions, :destination_displays, to: :netex_source
@@ -1088,7 +1093,7 @@ module Import
       class Decorator < ResourceDecorator
         include RouteDecoratorSupport
 
-        attr_accessor :journey_patterns, :route_points, :directions, :destination_displays
+        attr_accessor :journey_patterns, :route_points, :directions, :destination_displays, :merger2
 
         def validate
           super
@@ -1154,7 +1159,7 @@ module Import
         end
 
         def sequence_merger
-          @sequence_merger ||= Sequence::Merger.new.tap do |merger|
+          @sequence_merger ||= sequence_merger_class.new.tap do |merger|
             netex_journey_pattern_ordered_points.each do |_, jp_points|
               merger << jp_points.map { |jp_point| jp_point[:stop_area_id] }
             end
@@ -1164,6 +1169,10 @@ module Import
             end
             merger << route_stop_area_ids if route_stop_area_ids.any?
           end
+        end
+
+        def sequence_merger_class
+          merger2 ? Sequence2::Merger : Sequence::Merger
         end
 
         def stop_sequence

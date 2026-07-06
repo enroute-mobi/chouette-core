@@ -2,8 +2,8 @@
 
 # Scheduled ProcessingRule runs (ProcessingRule::Scheduling) invoke the associated Notification
 # Rules. Control/Macro runs are Operation subclasses, so the Operation::Notifier callback already
-# fires when they perform; we only expose a notification_type for scheduled runs (a Processing
-# without a parent Operation) so that operation-triggered runs stay silent.
+# fires when they perform; ControlMacro::Scheduled only exposes a notification_type for scheduled
+# runs (a Processing without a parent Operation) so that operation-triggered runs stay silent.
 RSpec.describe 'Scheduled run notifications', type: :model do
   describe Control::List::Run do
     subject(:run) { Control::List::Run.new }
@@ -14,7 +14,7 @@ RSpec.describe 'Scheduled run notifications', type: :model do
       end
 
       it { is_expected.to be_scheduled }
-      it { expect(run.notification_type).to eq('control') }
+      it { expect(run.notification_type).to eq('scheduled_processing') }
     end
 
     context 'when triggered by an operation' do
@@ -43,7 +43,7 @@ RSpec.describe 'Scheduled run notifications', type: :model do
       end
 
       it { is_expected.to be_scheduled }
-      it { expect(run.notification_type).to eq('macro') }
+      it { expect(run.notification_type).to eq('scheduled_processing') }
     end
 
     context 'when triggered by an operation' do
@@ -59,9 +59,9 @@ RSpec.describe 'Scheduled run notifications', type: :model do
     let(:context) { Chouette.create { workbench } }
     let(:workbench) { context.workbench }
 
-    let!(:control_rule) do
+    let!(:scheduled_processing_rule) do
       workbench.notification_rules.create!(
-        notification_type: 'control', target_type: 'workbench', priority: 10, operation_statuses: []
+        notification_type: 'scheduled_processing', target_type: 'workbench', priority: 10, operation_statuses: []
       )
     end
     let!(:import_rule) do
@@ -72,12 +72,12 @@ RSpec.describe 'Scheduled run notifications', type: :model do
 
     let(:operation) do
       Control::List::Run.new.tap do |run|
-        allow(run).to receive(:notification_type).and_return('control')
+        allow(run).to receive(:notification_type).and_return('scheduled_processing')
       end
     end
 
     it 'selects the rules matching the operation notification_type' do
-      expect(workbench.notification_rules.active.for_operation(operation)).to contain_exactly(control_rule)
+      expect(workbench.notification_rules.for_operation(operation)).to contain_exactly(scheduled_processing_rule)
     end
   end
 end

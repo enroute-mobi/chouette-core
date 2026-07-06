@@ -49,6 +49,8 @@ module Macro
     end
 
     class Run < Operation
+      include ::ControlMacro::Scheduled
+
       # The Workbench where macros are executed
       self.table_name = 'macro_list_runs'
 
@@ -77,17 +79,6 @@ module Macro
 
       validates :name, presence: true
       validates :original_macro_list_id, presence: true, if: :new_record?
-
-      # Notify associated Notification Rules only for scheduled runs (a Processing without a
-      # parent Operation, see ProcessingRule::Scheduling). Returns nil otherwise so that
-      # operation-triggered runs do not match any rule.
-      def notification_type
-        'macro' if scheduled?
-      end
-
-      def scheduled?
-        processing.present? && processing.operation_id.nil?
-      end
 
       scope :purgeable, -> { where("created_at < ?", 90.days.ago) }
 

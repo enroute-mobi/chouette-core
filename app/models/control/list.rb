@@ -48,6 +48,8 @@ module Control
     end
 
     class Run < Operation
+      include ::ControlMacro::Scheduled
+
       # The Workbench where controls are executed
       self.table_name = 'control_list_runs'
 
@@ -77,17 +79,6 @@ module Control
 
       validates :name, presence: true
       validates :original_control_list_id, presence: true, if: :new_record?
-
-      # Notify associated Notification Rules only for scheduled runs (a Processing without a
-      # parent Operation, see ProcessingRule::Scheduling). Returns nil otherwise so that
-      # operation-triggered runs do not match any rule.
-      def notification_type
-        'control' if scheduled?
-      end
-
-      def scheduled?
-        processing.present? && processing.operation_id.nil?
-      end
 
       scope :purgeable, -> { where("created_at < ?", 90.days.ago) }
 

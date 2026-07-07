@@ -58,8 +58,15 @@ module ReferentialsHelper
 
   def referential_status(referential, icon: true)
     content_tag(:span) do
-      concat content_tag(:span, icon_for_referential_state(referential.state)) if icon
-      concat content_tag(:span, I18n.t("referentials.states.#{referential.state}"))
+      concat(content_tag(:span, '', class: 'state') do
+        concat content_tag(:span, icon_for_referential_state(referential.state)) if icon
+        concat content_tag(:span, I18n.t("referentials.states.#{referential.state}"))
+      end)
+      if referential.contains_urgent_offer?
+        concat(content_tag(:span, '', class: 'contains_urgent_offer') do
+          concat render_icon('fa fa-flag', I18n.t('merges.show.table.state.urgent'), 'color: #da2f36')
+        end)
+      end
     end
   end
 

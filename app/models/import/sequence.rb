@@ -104,8 +104,9 @@ module Import
     # Aggregates a list of sequences and builds a solution.
     class Merger
       def initialize
-        @sequences = []
+        @sequences = Set.new
         @counters = {} # the maximum number of times each element appear in a sequence
+        @search_path = Set.new # already explored solutions
       end
       attr_reader :sequences, :counters
 
@@ -115,14 +116,14 @@ module Import
                 "#{self.class.name} only accepts sequences of 2 elements or more (#{array_of_elements.size})"
         end
 
-        @merge = nil
-
-        sequences << Sequence2.new(array_of_elements).freeze
+        return unless sequences.add?(Sequence2.new(array_of_elements).freeze)
 
         array_of_elements.tally.each do |element, count|
           current_count = @counters[element]
           @counters[element] = count if current_count.nil? || current_count < count
         end
+
+        @merge = nil
       end
       alias << add
 
@@ -138,7 +139,7 @@ module Import
       # that link cannot be taken, then the parent cannot build any new state and is removed from the stack. If the
       # stack is empty without finding a valid solution, then no solution can be built.
       def build_solution
-        stack = [State.new(sequences, @counters.dup.freeze)]
+        stack = [State.new(sequences.sort_by(&:size).reverse, @counters.dup.freeze)]
         solution = nil
 
         while stack.any?
@@ -148,8 +149,7 @@ module Import
             new_solution = state.solution.solution
             if solution
               # we have already found another solution, so the merge cannot respond with a single solution
-              # however, maybe this new solution is completely the same as the previous one
-              return nil unless solution == new_solution
+              return nil
             else
               # we store this unique solution for now
               solution = new_solution
@@ -158,7 +158,8 @@ module Import
 
           next_state = state.next
           if next_state
-            stack << next_state
+            # if we already explored this solution, no need to use this new state
+            stack << next_state if add_in_search_path?(next_state.solution.solution)
           else
             stack.pop
           end
@@ -184,6 +185,12 @@ module Import
             found
           end
         end
+      end
+
+      private
+
+      def add_in_search_path?(solution)
+        @search_path.add?(solution)
       end
 
       class State

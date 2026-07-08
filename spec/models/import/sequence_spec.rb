@@ -41,6 +41,14 @@ RSpec.describe Import::Sequence2::Merger do
         )
       end
     end
+
+    context 'when merger contains the exact same sequence' do
+      before { merger << %w[A B C] }
+
+      it 'does not add sequence' do
+        expect { subject }.not_to change { merger.sequences.size }
+      end
+    end
   end
 
   describe '#merge' do
@@ -188,9 +196,9 @@ RSpec.describe Import::Sequence2::Merger do
 
     context 'different first links' do
       before do
-        merger << %w[A C B D]
-        merger << %w[B C B D]
         merger << %w[A B B D]
+        merger << %w[B C B D]
+        merger << %w[A C B D]
       end
 
       it { is_expected.to eq(%w[A B C B D]) }
@@ -213,6 +221,32 @@ RSpec.describe Import::Sequence2::Merger do
 
       # both %w[A B A A] and %w[A A B A] are valid solutions
       it { is_expected.to be_nil }
+    end
+
+    context 'example where the same solution is built several times' do
+      before do
+        merger << %w[B C A D G A I J K J L J N O]
+        merger << %w[D I B N O]
+        merger << %w[A B A E F G H A I J K B J L J N O]
+        merger << %w[A C A D E F H A J K L M N O]
+        merger << %w[A D E F G A K B J L M O]
+        merger << %w[B A D E G H A J J L J M N O]
+        merger << %w[B C A E F G I K M]
+        merger << %w[A B C A D A I J K B J L J M N]
+        merger << %w[A D A M]
+        merger << %w[A B C A E G A I J K J L J N O]
+        merger << %w[A B C A D E F H A I J K B J L J M N O]
+        merger << %w[C A F A I J L J N]
+        merger << %w[A D J B J M]
+        merger << %w[B D E F G I J B J L J O]
+        merger << %w[A B F G H A J B J M N O]
+        merger << %w[B D H J M]
+        merger << %w[A B A D G H A J K B J J M N O]
+        merger << %w[B J]
+        merger << %w[A F G I J J L]
+      end
+
+      it { is_expected.to eq(%w[A B C A D E F G H A I J K B J L J M N O]) }
     end
   end
 

@@ -249,7 +249,7 @@ class Export::NetexGeneric < Export::Base
         part_classes.push(Entrances, StopAreas, FlexibleStopAreas)
       end
       unless setup.scope_setup.lines.is_a?(Export::Setup::Scope::Lines::None)
-        part_classes.push(Companies, Networks, LineNotices, BookingArrangements, Lines)
+        part_classes.push(Companies, Networks, LineGroups, LineNotices, BookingArrangements, Lines)
       end
 
       # Export StopPoints before Routes to detect local references
@@ -1265,8 +1265,22 @@ class Export::NetexGeneric < Export::Base
       def netex_attributes
         super.merge(
           name: name,
-          raw_xml: import_xml
+          raw_xml: import_xml,
+          members: members,
+          groups_of_lines: groups_of_lines
         )
+      end
+
+      def members
+        code_provider.lines.codes(line_ids).map do |line_code|
+          Netex::Reference.new(line_code, type: Netex::Line, local: true)
+        end
+      end
+
+      def groups_of_lines
+        code_provider.line_groups.codes(line_group_ids).map do |line_group_code|
+          Netex::Reference.new(line_group_code, type: Netex::GroupOfLines, local: true)
+        end
       end
 
       def netex_resource
@@ -1275,6 +1289,41 @@ class Export::NetexGeneric < Export::Base
 
     end
 
+  end
+
+  class LineGroups < Part
+
+    delegate :line_groups, to: :export_scope
+
+    def perform
+      line_groups.includes(:members).find_each do |line_group|
+        decorated_line_group = decorate(line_group)
+        target << decorated_line_group.netex_resource
+      end
+    end
+
+    class Decorator < ModelDecorator
+
+      def netex_attributes
+        super.merge(
+          name: name,
+          short_name: short_name,
+          description: description,
+          members: netex_members
+        )
+      end
+
+      def netex_members
+        code_provider.lines.codes(members.map(&:line_id)).map do |line_code|
+          Netex::Reference.new(line_code, type: Netex::Line, local: true)
+        end
+      end
+
+      def netex_resource
+        Netex::GroupOfLines.new netex_attributes
+      end
+
+    end
   end
 
   module StopPointDecorator

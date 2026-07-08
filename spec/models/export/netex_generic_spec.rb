@@ -639,6 +639,111 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
+  describe 'Networks export' do
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
+
+    let(:part) do
+      Export::NetexGeneric::Networks.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        network
+        line :first
+        line :second
+        line :third
+        line_group :sample, lines: %i[second third]
+        referential
+      end
+    end
+
+    let(:network) { context.network }
+    let(:line_group) { context.line_group(:sample) }
+
+    before do
+      context.line(:first).update network: network
+      line_group.update network: network
+    end
+
+    describe 'the NeTEx target' do
+      subject(:resource) do
+        part.perform
+        target.resources.first
+      end
+
+      it { is_expected.to be_a(Netex::Network) }
+
+      it 'creates a Network with groupsOfLines referencing its Line Groups' do
+        expect(resource.groups_of_lines).to contain_exactly(
+          Netex::Reference.new(line_group.uuid, type: Netex::GroupOfLines)
+        )
+      end
+    end
+  end
+
+  describe 'LineGroups export' do
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
+
+    let(:part) do
+      Export::NetexGeneric::LineGroups.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        line :first
+        line :second
+        line_group :sample, name: 'Group Of Lines Sample', lines: %i[first second]
+        referential
+      end
+    end
+
+    let(:line_group) { context.line_group(:sample) }
+
+    describe 'the NeTEx target' do
+      subject(:resource) do
+        part.perform
+        target.resources.first
+      end
+
+      it { is_expected.to be_a(Netex::GroupOfLines) }
+
+      it 'uses LineGroup uuid as id' do
+        expect(resource.id).to eq(line_group.uuid)
+      end
+
+      it 'uses LineGroup name' do
+        expect(resource.name).to eq('Group Of Lines Sample')
+      end
+
+      it 'creates a GroupOfLines with members referencing its Lines' do
+        expect(resource.members).to match_array(
+          [
+            Netex::Reference.new(context.line(:first).objectid, type: Netex::Line),
+            Netex::Reference.new(context.line(:second).objectid, type: Netex::Line)
+          ]
+        )
+      end
+    end
+  end
+
   describe 'Routes export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }

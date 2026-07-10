@@ -56,9 +56,52 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'StopArea Referential Part' do
-    subject { import.part(:stop_area_referential).import! }
+    context '#target' do
+      before do
+        workbench.stop_area_providers.first.update objectid: 'FR1-ARRET_AUTO'
+      end
+      let!(:stop_area_provider) { workbench.stop_area_providers.first }
+      let(:xml) do
+        %(
+          <stopPlaces>
+            <StopPlace dataSourceRef="FR1-ARRET_AUTO" version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="FR::multimodalStopPlace:424920:FR1">
+              <Name>Petits Ponts</Name>
+              <PostalAddress version="any" id="FR1:PostalAddress:424920:">
+                <Town>Pantin</Town>
+                <PostalRegion>93055</PostalRegion>
+              </PostalAddress>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+            </StopPlace>
+          </stopPlaces>
+        )
+      end
+
+      subject { import.part(:stop_area_referential).target }
+
+      context 'when update_workgroup_providers option is enabled' do
+        before do
+          import.update options: { 'update_workgroup_providers' => true }
+        end
+
+        it 'should return workbench' do
+          expect(subject).to eq(workbench)
+        end
+      end
+
+      context 'when update_workgroup_providers option is disabled' do
+        before do
+          import.update options: { 'update_workgroup_providers' => false }
+        end
+
+        it 'should return stop_area_provider' do
+          expect(subject).to eq(stop_area_provider)
+        end
+      end
+    end
 
     context 'when update_workgroup_providers option is enabled' do
+      subject { import.part(:stop_area_referential).import! }
+
       before do
         import.update options: { 'update_workgroup_providers' => true }
         workbench.stop_area_providers.create(objectid: 'FR1-ARRET_AUTO', name: 'stop_area_provider 1')
@@ -153,6 +196,7 @@ RSpec.describe Import::NetexGeneric do
 
     self::XML = '<StopPlace id="42"><Name>Tour Eiffel</Name></StopPlace>'
     context "when XML is #{self::XML}" do
+      subject { import.part(:stop_area_referential).import! }
       let(:xml) { self.class::XML }
       context "when no StopArea exists with the registration number '42'" do
         def stop_area
@@ -469,6 +513,62 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Line Referential part' do
+
+    context '#target' do
+      let(:code_space) { workgroup.code_spaces.default }
+      before do
+        workbench.line_providers.first.codes.create!(
+            value: 'line-provider',
+            code_space: code_space
+        )
+      end
+      let(:line_provider) { workbench.line_providers.first }
+      let(:xml) do
+        %(
+          <frames>
+          <ResourceFrame id="enRoute:ResourceFrame:1" version="any">
+            <organisations>
+              <Operator id="company-1" version="any">
+                <Name>Demo Transit Authority</Name>
+              </Operator>
+            </organisations>
+          </ResourceFrame>
+          <ServiceFrame id="enRoute:ServiceFrame:1" version="any">
+            <lines>
+              <Line dataSourceRef="line-provider" id="2003-line-1" version="any">
+                <Name>Airport - Bullfrog</Name>
+                <TransportMode>bus</TransportMode>
+                <OperatorRef ref="2003-company-1"/>
+              </Line>
+            </lines>
+          </ServiceFrame>
+          </frames>
+        )
+      end
+
+      subject { import.part(:line_referential).target }
+
+      context 'when update_workgroup_providers option is enabled' do
+        before do
+          import.update options: { 'update_workgroup_providers' => true }
+        end
+
+        it 'should return workbench' do
+          expect(subject).to eq(workbench)
+        end
+      end
+
+      context 'when update_workgroup_providers option is disabled' do
+        before do
+          import.update options: { 'update_workgroup_providers' => false }
+        end
+
+        it 'should return line_provider' do
+          expect(subject).to eq(line_provider)
+        end
+      end
+    end
+
     context 'when update_workgroup_providers option is enabled' do
       subject { import.part(:line_referential).import! }
 

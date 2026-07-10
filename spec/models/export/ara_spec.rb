@@ -846,6 +846,28 @@ RSpec.describe Export::Ara do
         it 'contains a Vehicle journey having a VehicleMode attribute' do
           expect(subject.first.raw_attributes).to eq({ 'VehicleMode': 'bus' })
         end
+
+        it 'contains a Vehicle journey having its Line id as line_id' do
+          expect(subject.first).to have_attributes(line_id: vehicle_journey.line.get_objectid.local_id)
+        end
+
+        it 'contains a Vehicle journey with its Stop Visit count as aimed_stop_visit_count' do
+          expect(subject.first).to have_attributes(
+            aimed_stop_visit_count: vehicle_journey.vehicle_journey_at_stops.count
+          )
+        end
+      end
+    end
+
+    context 'when a Vehicle Journey has no Stop Visit' do
+      let(:context) do
+        Chouette.create { vehicle_journey(:first, with_stops: false) }
+      end
+
+      describe 'the Ara File target' do
+        it 'is not exported' do
+          is_expected.to be_empty
+        end
       end
     end
 

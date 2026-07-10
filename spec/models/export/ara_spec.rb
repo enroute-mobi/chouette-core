@@ -983,6 +983,61 @@ RSpec.describe Export::Ara do
         end
       end
 
+      describe '#vehicle_journey_id' do
+        subject { decorator.vehicle_journey_id }
+
+        context 'without Vehicle Journey' do
+          it { is_expected.to be_nil }
+        end
+
+        context "when Vehicle Journey objectid is 'test:VehicleJourney:uuid:LOC'" do
+          before do
+            vehicle_journey_at_stop.vehicle_journey =
+              Chouette::VehicleJourney.new(objectid: 'test:VehicleJourney:uuid:LOC')
+          end
+          it { is_expected.to eq('uuid') }
+        end
+      end
+
+      describe '#stop_area_id' do
+        subject { decorator.stop_area_id }
+
+        context 'without Stop Point' do
+          it { is_expected.to be_nil }
+        end
+
+        context "when Stop Area objectid is 'test:StopArea:uuid:LOC'" do
+          before do
+            vehicle_journey_at_stop.stop_point =
+              Chouette::StopPoint.new(stop_area: Chouette::StopArea.new(objectid: 'test:StopArea:uuid:LOC'))
+          end
+          it { is_expected.to eq('uuid') }
+        end
+      end
+
+      describe '#passage_order' do
+        subject { decorator.passage_order }
+
+        context 'without Stop Point' do
+          it { is_expected.to eq('') }
+        end
+
+        context 'when Stop Point has no position' do
+          before { vehicle_journey_at_stop.stop_point = Chouette::StopPoint.new }
+          it { is_expected.to eq('') }
+        end
+
+        context 'when Stop Point position is 0' do
+          before { vehicle_journey_at_stop.stop_point = Chouette::StopPoint.new(position: 0) }
+          it { is_expected.to eq('1') }
+        end
+
+        context 'when Stop Point position is 4' do
+          before { vehicle_journey_at_stop.stop_point = Chouette::StopPoint.new(position: 4) }
+          it { is_expected.to eq('5') }
+        end
+      end
+
       describe '#company' do
         subject { decorator.company }
 

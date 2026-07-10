@@ -63,7 +63,7 @@ RSpec.describe Import::NetexGeneric do
         import.update options: { 'update_workgroup_providers' => true }
         workbench.stop_area_providers.create(objectid: 'FR1-ARRET_AUTO', name: 'stop_area_provider 1')
       end
-      let(:stop_area_provider) { workbench.stop_area_providers.find_by(objectid: 'FR1-ARRET_AUTO') }
+      let!(:stop_area_provider) { workbench.stop_area_providers.find_by(objectid: 'FR1-ARRET_AUTO') }
 
       let(:xml) do
         %(
@@ -90,15 +90,17 @@ RSpec.describe Import::NetexGeneric do
                                     })
       end
 
-      context 'when stop_area_provider has id = "FR1-ARRET_AUTO"' do
+      let(:stop_areas) { workbench.reload.stop_areas }
+
+      context 'when workbench has one stop area provider with id = "FR1-ARRET_AUTO"' do
         it 'should import stop area' do
           subject
 
-          expect(stop_area_provider.stop_areas).to include(expected_attributes)
+          expect(stop_areas).to include(expected_attributes)
         end
       end
 
-      context 'when stop_area_provider has no id = "FR1-ARRET_AUTO"' do
+      context 'when workbench has no stop area provider with id = "FR1-ARRET_AUTO"' do
         before { stop_area_provider.update objectid: 'test' }
 
         let(:expected_message) do
@@ -140,7 +142,6 @@ RSpec.describe Import::NetexGeneric do
         end
 
         let!(:stop_area_provider) { workbench.default_stop_area_provider }
-        let(:stop_areas) { stop_area_provider.reload.stop_areas }
 
         it 'should create a stop area with the default stop_area_provider' do
           subject

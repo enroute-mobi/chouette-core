@@ -572,11 +572,55 @@ RSpec.describe Export::Ara do
           before { allow(decorator).to receive(:stop_area_uuids).and_return(['uuid']) }
           it { is_expected.to include(stop_area_ids: ['uuid']) }
         end
+
+        context "when short_name is 'sample'" do
+          before { stop_area_group.short_name = 'sample' }
+          it { is_expected.to include(short_name: 'sample') }
+        end
       end
     end
   end
 
   describe 'Lines export' do
+    describe Export::Ara::Lines::Decorator do
+      subject(:decorator) { described_class.new(line) }
+
+      let(:context) do
+        Chouette.create do
+          line :line
+        end
+      end
+      let(:line) { context.line(:line) }
+
+      describe '#referent_uuid' do
+        subject { decorator.referent_uuid }
+
+        context "when Line referent isn't defined" do
+          it { is_expected.to be_nil }
+        end
+
+        context "when Line referent objectid is 'test:Line:uuid:LOC'" do
+          let(:context) do
+            Chouette.create do
+              line :referent, is_referent: true, objectid: 'test:Line:uuid:LOC'
+              line :line, referent: :referent
+            end
+          end
+
+          it { is_expected.to eq('uuid') }
+        end
+      end
+
+      describe '#ara_attributes' do
+        subject { decorator.ara_attributes }
+
+        context "when #referent_uuid is 'uuid'" do
+          before { allow(decorator).to receive(:referent_uuid).and_return('uuid') }
+          it { is_expected.to include(referent_id: 'uuid') }
+        end
+      end
+    end
+
     context 'when two Lines are exported' do
       let(:context) do
         Chouette.create do
@@ -729,6 +773,11 @@ RSpec.describe Export::Ara do
         context "when #line_uuids is ['uuid']" do
           before { allow(decorator).to receive(:line_uuids).and_return(['uuid']) }
           it { is_expected.to include(line_ids: ['uuid']) }
+        end
+
+        context "when short_name is 'sample'" do
+          before { line_group.short_name = 'sample' }
+          it { is_expected.to include(short_name: 'sample') }
         end
       end
     end

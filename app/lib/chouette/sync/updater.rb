@@ -112,9 +112,6 @@ module Chouette
           target.model_name.singular.end_with? '_provider'
         end
 
-        # def singular
-        #   @singular ||= default_provider.model_name.singular
-        # end
       end
 
       class Models

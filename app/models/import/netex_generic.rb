@@ -497,7 +497,7 @@ module Import
     # Synchronize models in the LineReferential (Line, Company, etc)
     # with associated NeTEx resources
     class LineReferential < SynchronizedPart
-      delegate :line_provider, :line_referential, to: :import
+      delegate :line_provider, :workbench, to: :import
 
       def synchronization
         @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|
@@ -513,7 +513,7 @@ module Import
 
       def target
         if import.update_workgroup_providers?
-          line_referential
+          workbench
         else
           line_provider
         end

@@ -479,26 +479,26 @@ RSpec.describe Import::NetexGeneric do
           short_name: 'line_provider_1',
           name: 'line provider 1',
           codes_attributes: [{
-            value: '2003-line-provider-existing',
+            value: 'line-provider',
             code_space: code_space
           }]
         )
       end
-      let(:line_provider) { workbench.line_providers.by_code(code_space, '2003-line-provider-existing').first }
+      let(:line_provider) { workbench.line_providers.by_code(code_space, 'line-provider').first }
 
       let(:xml) do
         %(
           <frames>
-          <ResourceFrame id="2003-enRoute:ResourceFrame:1" version="any">
+          <ResourceFrame id="enRoute:ResourceFrame:1" version="any">
             <organisations>
-              <Operator id="2003-company-1" version="any">
+              <Operator id="company-1" version="any">
                 <Name>Demo Transit Authority</Name>
               </Operator>
             </organisations>
           </ResourceFrame>
           <ServiceFrame id="enRoute:ServiceFrame:1" version="any">
             <lines>
-              <Line dataSourceRef="2003-line-provider-existing" id="2003-line-1" version="any">
+              <Line dataSourceRef="line-provider" id="2003-line-1" version="any">
                 <Name>Airport - Bullfrog</Name>
                 <TransportMode>bus</TransportMode>
                 <OperatorRef ref="2003-company-1"/>
@@ -515,7 +515,7 @@ RSpec.describe Import::NetexGeneric do
                                     })
       end
 
-      context 'when line_provider has id' do
+      context 'when workbench has a line_provider with id line-provider' do
         it 'should import line' do
           subject
 
@@ -523,7 +523,7 @@ RSpec.describe Import::NetexGeneric do
         end
       end
 
-      context 'when line_provider has no id' do
+      context 'when workbench has not a line_provider with id line-provider' do
         before { line_provider.codes.destroy_all }
 
         let(:expected_message) do
@@ -532,7 +532,7 @@ RSpec.describe Import::NetexGeneric do
             message_key: 'invalid_model_attribute',
             message_attributes: {
               'attribute_name' => 'provider',
-              'attribute_value' => '2003-line-provider-existing'
+              'attribute_value' => 'line-provider'
             }
           )
         end

@@ -1,0 +1,95 @@
+fr:
+  equipments:
+    search_no_results: "Aucun Équipement ne correspond à votre recherche"
+    actions:
+      show: "Afficher cet Équipement"
+      new: "Ajouter un Équipement"
+      edit: "Editer cet Équipement"
+      destroy: "Supprimer cet Équipement"
+      destroy_confirm: "Etes vous sûr de supprimer cet Équipement ?"
+    errors:
+    new:
+      title: "Créer un Équipement"
+    edit:
+      title: "Editer %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Équipements"
+    form:
+      sections:
+        identification: "Identification"
+        accessibility: "Accessibilité"
+        internal: "Interne"
+  enumerize:
+    equipment:
+      mobility_impaired_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      wheelchair_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      step_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      escalator_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      lift_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      audible_signals_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      visual_signs_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+  activerecord:
+    models:
+      equipment:
+        zero:  "Équipement"
+        one:   "Équipement"
+        other: "Équipements"
+        the:
+          one: "l'Équipement"
+          other: "les Équipements"
+        of:
+          one: "de l'Équipement"
+          other: "des Équipements"
+        to:
+          one: "à l'Équipement"
+          other: "aux Équipements"
+    attributes:
+      equipment:
+        name: "Nom"
+        stop_area: "Arrêt"
+        stop_area_provider: "Fournisseur d'arrêts"
+        public_code: "Code public"
+        fixed: "Fixe"
+        out_of_order: "Hors service"
+        mobility_impaired_accessibility: "Accès pour voyageur à mobilité réduite"
+        wheelchair_accessibility: "Accès en fauteuil roulant"
+        step_free_accessibility: "Accès sans marche"
+        escalator_free_accessibility: "Accès sans escalator"
+        lift_free_accessibility: "Accès sans ascenseur"
+        audible_signals_availability: "Signalétique auditive disponible"
+        visual_signs_availability: "Signalétique visuelle disponible"
+        description: "Description"
+        objectid: "ID"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        codes: "Codes"

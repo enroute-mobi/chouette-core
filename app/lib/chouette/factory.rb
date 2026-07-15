@@ -393,6 +393,13 @@ module Chouette
                 end
               end
 
+              model :equipment do
+                attribute(:name) { |n| "Equipment #{n}" }
+                after do
+                  new_instance.stop_area_provider = parent.stop_area_provider
+                end
+              end
+
               model :stop_area_zone do
                 attribute(:zone) { build_model(:fare_zone) }
               end

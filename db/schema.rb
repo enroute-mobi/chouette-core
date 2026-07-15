@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2026_07_01_093345) do
+ActiveRecord::Schema[7.2].define(version: 2026_07_15_000000) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "btree_gin"
   enable_extension "hstore"
@@ -555,6 +555,31 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_01_093345) do
     t.index ["stop_area_id"], name: "index_entrances_on_stop_area_id"
     t.index ["stop_area_provider_id"], name: "index_entrances_on_stop_area_provider_id"
     t.index ["stop_area_referential_id"], name: "index_entrances_on_stop_area_referential_id"
+  end
+
+  create_table "equipments", force: :cascade do |t|
+    t.string "objectid", null: false
+    t.string "name"
+    t.string "public_code"
+    t.bigint "stop_area_id"
+    t.bigint "stop_area_provider_id"
+    t.bigint "stop_area_referential_id"
+    t.boolean "fixed", default: false
+    t.boolean "out_of_order", default: false
+    t.string "mobility_impaired_accessibility"
+    t.string "wheelchair_accessibility"
+    t.string "step_free_accessibility"
+    t.string "escalator_free_accessibility"
+    t.string "lift_free_accessibility"
+    t.string "audible_signals_availability"
+    t.string "visual_signs_availability"
+    t.text "description"
+    t.datetime "created_at", precision: nil, null: false
+    t.datetime "updated_at", precision: nil, null: false
+    t.index ["objectid"], name: "index_equipments_on_objectid", unique: true
+    t.index ["stop_area_id"], name: "index_equipments_on_stop_area_id"
+    t.index ["stop_area_provider_id"], name: "index_equipments_on_stop_area_provider_id"
+    t.index ["stop_area_referential_id"], name: "index_equipments_on_stop_area_referential_id"
   end
 
   create_table "export_messages", force: :cascade do |t|

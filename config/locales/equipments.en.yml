@@ -1,0 +1,95 @@
+en:
+  equipments:
+    search_no_results: "No Equipments match your search"
+    actions:
+      show: "Show this Equipment"
+      new: "Add an Equipment"
+      edit: "Edit this Equipment"
+      destroy: "Delete this Equipment"
+      destroy_confirm: "Are you sure to delete this Equipment"
+    errors:
+    new:
+      title: "Create an Equipment"
+    edit:
+      title: "Edit %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Equipments"
+    form:
+      sections:
+        identification: "Identification"
+        accessibility: "Accessibility"
+        internal: "Internal"
+  enumerize:
+    equipment:
+      mobility_impaired_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      wheelchair_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      step_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      escalator_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      lift_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      audible_signals_availability:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      visual_signs_availability:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+  activerecord:
+    models:
+      equipment:
+        zero:  "Equipments"
+        one:   "Equipment"
+        other: "Equipments"
+        the:
+          one: "the Equipment"
+          other: "the Equipments"
+        of:
+          one: "of Equipment"
+          other: "of Equipments"
+        to:
+          one: "to Equipment"
+          other: "to Equipments"
+    attributes:
+      equipment:
+        name: "Name"
+        stop_area: "Stop Area"
+        stop_area_provider: "Stop Area Provider"
+        public_code: "Public Code"
+        fixed: "Fixed"
+        out_of_order: "Out of Order"
+        mobility_impaired_accessibility: "Access for mobility impaired users"
+        wheelchair_accessibility: "Wheelchair Access"
+        step_free_accessibility: "Step Free Access"
+        escalator_free_accessibility: "Escalator Free Access"
+        lift_free_accessibility: "Lift Free Access"
+        audible_signals_availability: "Audible Signals Available"
+        visual_signs_availability: "Visual Signs Available"
+        description: "Description"
+        objectid: "ID"
+        created_at: "Created at"
+        updated_at: "Updated at"
+        codes: "Codes"

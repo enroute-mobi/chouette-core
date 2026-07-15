@@ -170,6 +170,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
       resources :stop_area_routing_constraints
       resources :entrances
+      resources :equipments
       resources :stop_area_groups
 
       resources :stop_area_providers

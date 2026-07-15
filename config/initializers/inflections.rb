@@ -11,6 +11,11 @@ ActiveSupport::Inflector.inflections(:fr) do |inflect|
   inflect.plural 'Zone de contrainte', 'Zones de contrainte'
 end
 
+ActiveSupport::Inflector.inflections(:en) do |inflect|
+  # "equipment" is uncountable by default
+  inflect.irregular 'equipment', 'equipments'
+end
+
 # These inflection rules are supported but not enabled by default:
 # ActiveSupport::Inflector.inflections(:en) do |inflect|
 #   inflect.acronym "RESTful"

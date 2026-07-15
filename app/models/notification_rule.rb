@@ -22,10 +22,12 @@ class NotificationRule < ApplicationModel
 
   class << self
     def for_operation(operation)
+      # Operations which never send notifications have no notification_type
+      # (see Operation#notification_type and ControlMacro::Scheduled)
+      notification_type = operation.try(:notification_type)
+      return none unless notification_type
+
       operation_status = operation.try(:user_status) || operation.status
-      # Operations may expose a specific notification_type (see ControlMacro::Scheduled);
-      # otherwise fall back to the operation model name (import, merge, aggregate, ...).
-      notification_type = operation.try(:notification_type) || operation.class.model_name.singular
       operation_scope = for_statuses([operation_status]).where(notification_type: notification_type)
 
       if (line_ids = operation.try(:line_ids)).present?

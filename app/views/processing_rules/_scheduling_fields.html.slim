@@ -1,0 +1,15 @@
+/ Scheduling fields shared by the Workbench and Workgroup Processing Rule forms.
+/ The fields only enter the DOM when the scheduling trigger is selected (x-if template):
+/ flatpickr must then be initialized on the revealed inputs (see date_picker.js).
+- target_options = @processing_rule.candidate_scheduling_targets.map { |v| [t("#{translation_scope}.form.target_options.#{v}"), v] }
+
+template x-if="operation_step == 'scheduling'"
+  div x-init="$nextTick(() => document.dispatchEvent(new CustomEvent('flatpickr:refresh')))"
+    = f.simple_fields_for(:schedulings, defaults: { wrapper: wrapper }) do |schedulings_form|
+      = schedulings_form.input :scheduled_time, as: :time_picker
+      = schedulings_form.input :scheduled_days, as: :day_type
+
+      .separator.section_separator
+      h2 class=heading_class
+        = t("#{translation_scope}.form.sections.target")
+      = schedulings_form.input :target, collection: target_options, include_blank: false, input_html: target_input_html

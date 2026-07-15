@@ -6,6 +6,30 @@ RSpec.describe Macro::List::Run do
     it { is_expected.to eq('public.macro_list_runs') }
   end
 
+  # A run is scheduled when its Processing has no parent Operation (it has been created by a
+  # ProcessingRule::Scheduling). Only these runs expose a notification_type, so that
+  # operation-triggered runs don't match any Notification Rule (see NotificationRule.for_operation).
+  describe '#notification_type' do
+    subject(:run) { described_class.new }
+
+    context 'when part of a scheduled processing (no parent operation)' do
+      before do
+        allow(run).to receive(:processing).and_return(double('processing', present?: true, operation_id: nil))
+      end
+
+      it { is_expected.to be_scheduled }
+      it { expect(run.notification_type).to eq('scheduled_processing') }
+    end
+
+    context 'when triggered by an operation' do
+      before do
+        allow(run).to receive(:processing).and_return(double('processing', present?: true, operation_id: 42))
+      end
+
+      it { expect(run.notification_type).to be_nil }
+    end
+  end
+
   describe '#perform' do
     subject { context.macro_list_run.perform }
 

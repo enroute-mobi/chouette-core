@@ -112,10 +112,6 @@ en:
         after_merge: Merge - After
         after_aggregate: Aggregate - After
         scheduling: Scheduling
-    processing_rule/scheduling:
-      target:
-        none: No referential
-        current: Output current
 
   simple_form:
     hints:

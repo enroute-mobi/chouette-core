@@ -112,10 +112,6 @@ fr:
         after_merge: Finalisation - Après
         after_aggregate: Agrégation - Après
         scheduling: Planification
-    processing_rule/scheduling:
-      target:
-        none: Aucun référentiel
-        current: Offre courante
 
   simple_form:
     hints:

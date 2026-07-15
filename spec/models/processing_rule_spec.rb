@@ -305,7 +305,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
     end
   end
 
-  describe '#scheduled_executions' do
+  describe '#scheduled_perform_args' do
     let(:context) do
       Chouette.create do
         workgroup do
@@ -322,7 +322,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
     let(:other_workbench) { context.workbench(:other_workbench) }
     let(:processing_rule) { context.workgroup_processing_rule }
 
-    subject { processing_rule.scheduled_executions('merged') }
+    subject { processing_rule.scheduled_perform_args('merged') }
 
     context 'without target nor excluded workbenches' do
       it 'fans out over each workbench own merged output' do
@@ -344,7 +344,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
 
     context 'when target is current' do
       it 'runs a single execution on the aggregated output' do
-        expect(processing_rule.scheduled_executions('current')).to eq(
+        expect(processing_rule.scheduled_perform_args('current')).to eq(
           [[processing_rule.scheduling_workbench, workgroup.output.current]]
         )
       end

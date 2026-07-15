@@ -20,11 +20,4 @@
           = d.attribute :created_at, as: :datetime
           = d.attribute :updated_at, as: :datetime
 
-      - if @processing_rule.scheduling?
-        .col-lg-6.col-md-6.col-sm-12.col-xs-12
-          = simple_block_for @processing_rule, title: t('processing_rule/workbenches.show.scheduling') do |d|
-            - @processing_rule.schedulings.each do |scheduling|
-              = d.attribute :scheduled_time, as: :time_of_day, object: scheduling, label: ProcessingRule::Scheduling.human_attribute_name(:scheduled_time)
-              = d.attribute :scheduled_days, object: scheduling, label: ProcessingRule::Scheduling.human_attribute_name(:scheduled_days), value: %w(monday tuesday wednesday thursday friday saturday sunday).collect{ |day| content_tag(:span, t("calendars.days.#{day}"), class: "label label-default #{scheduling.scheduled_days.send(day + '?') ? '' : 'disabled'}") }.join.html_safe
-              = d.attribute :target, object: scheduling, label: ProcessingRule::Scheduling.human_attribute_name(:target), value: t("processing_rule/workbenches.form.target_options.#{scheduling.target}")
-              = d.attribute :next_schedule, as: :datetime, object: scheduling, label: ProcessingRule::Scheduling.human_attribute_name(:next_schedule)
+      = render 'processing_rules/schedulings', translation_scope: 'processing_rule/workbenches'

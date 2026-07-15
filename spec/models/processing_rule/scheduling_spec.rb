@@ -29,6 +29,51 @@ RSpec.describe ProcessingRule::Scheduling, type: :model do
 
   it { is_expected.to enumerize(:target).in('none', 'current', 'merged').with_default('none') }
 
+  describe '#target' do
+    subject(:scheduling) do
+      processing_rule.schedulings.build(scheduled_days: scheduled_days, target: target)
+    end
+
+    context "with a Workbench Processing Rule ('merged' is Workgroup specific)" do
+      %w[none current].each do |candidate_target|
+        context "when target is #{candidate_target}" do
+          let(:target) { candidate_target }
+
+          it { is_expected.to be_valid }
+        end
+      end
+
+      context "when target is 'merged'" do
+        let(:target) { 'merged' }
+
+        it 'is invalid' do
+          expect(scheduling).not_to be_valid
+          expect(scheduling.errors).to be_added(:target, :inclusion)
+        end
+      end
+    end
+
+    context 'with a Workgroup Processing Rule' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench do
+              control_list shared: true
+            end
+            workgroup_processing_rule operation_step: 'scheduling'
+          end
+        end
+      end
+      let(:processing_rule) { context.workgroup_processing_rule }
+
+      context "when target is 'merged'" do
+        let(:target) { 'merged' }
+
+        it { is_expected.to be_valid }
+      end
+    end
+  end
+
   describe 'scheduled_days' do
     subject { scheduling.scheduled_days }
 
@@ -121,27 +166,6 @@ RSpec.describe ProcessingRule::Scheduling, type: :model do
     end
   end
 
-  describe '#target_referential' do
-    subject { scheduling.target_referential }
-
-    context 'when target is none' do
-      let(:target) { 'none' }
-
-      it { is_expected.to be_nil }
-    end
-
-    context 'when target is current' do
-      let(:target) { 'current' }
-      let(:referential) { double('referential') }
-
-      before { allow(scheduling.processing_rule).to receive(:output_current_referential).and_return(referential) }
-
-      it 'returns the processing rule output current referential' do
-        is_expected.to eq(referential)
-      end
-    end
-  end
-
   describe ProcessingRule::Scheduling::ScheduledJob do
     subject(:job) { described_class.new(scheduling) }
 
@@ -154,12 +178,31 @@ RSpec.describe ProcessingRule::Scheduling, type: :model do
     describe '#perform' do
       subject { job.perform }
 
-      it 'performs the processing rule with the selected target and workbench' do
-        expect(scheduling.processing_rule).to receive(:perform).with(
-          referential: scheduling.target_referential,
-          operation_workbench: workbench
-        )
-        subject
+      context 'when target is none' do
+        it 'performs the processing rule without referential' do
+          expect(scheduling.processing_rule).to receive(:perform).with(
+            referential: nil,
+            operation_workbench: workbench
+          )
+          subject
+        end
+      end
+
+      context 'when target is current' do
+        let(:target) { 'current' }
+        let(:referential) { double('referential') }
+
+        before do
+          allow(scheduling.processing_rule).to receive(:output_current_referential).and_return(referential)
+        end
+
+        it 'performs the processing rule on the output current referential' do
+          expect(scheduling.processing_rule).to receive(:perform).with(
+            referential: referential,
+            operation_workbench: workbench
+          )
+          subject
+        end
       end
     end
   end

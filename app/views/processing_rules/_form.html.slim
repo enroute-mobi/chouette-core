@@ -1,10 +1,9 @@
 - candidate_tags = @processing_rule.candidate_tags.order(:name).map { |tag| { id: tag.id, text: tag.name } }
 - @processing_rule.schedulings.build if @processing_rule.schedulings.empty?
-- target_options = %w[none current].map { |v| [t("processing_rule/workbenches.form.target_options.#{v}"), v] }
 
 = simple_form_for [@workbench, @processing_rule], as: 'processing_rule', html: { class: 'tailwind-form', id: 'processing_rule_form' }, wrapper: :horizontal_form_tailwind  do |f|
   .row
-    .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', operation_step: '#{@processing_rule.operation_step || @processing_rule.class.operation_step.values.first}', target: '#{@processing_rule.schedulings.first&.target || 'none'}' }"
+    .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', operation_step: '#{@processing_rule.operation_step || @processing_rule.class.operation_step.values.first}', target: '#{@processing_rule.schedulings.first.target}' }"
       h2.my-16
         = t('processing_rule/workbenches.form.sections.trigger_conditions')
 
@@ -23,16 +22,12 @@
           input_html: { multiple: true },
           allow_blank: false
 
-      template x-if="operation_step == 'scheduling'"
-        div x-init="$nextTick(() => document.dispatchEvent(new CustomEvent('flatpickr:refresh')))"
-          = f.simple_fields_for(:schedulings, defaults: { wrapper: :horizontal_form_tailwind }) do |schedulings_form|
-            = schedulings_form.input :scheduled_time, as: :time_picker
-            = schedulings_form.input :scheduled_days, as: :day_type
-
-            .separator.section_separator
-            h2.my-16
-              = t('processing_rule/workbenches.form.sections.target')
-            = schedulings_form.input :target, collection: target_options, include_blank: false, input_html: { 'x-model': 'target', 'x-on:change': "if ($event.target.value == 'current') processable_type = 'Control::List'" }
+      = render 'processing_rules/scheduling_fields', \
+        f: f, \
+        wrapper: :horizontal_form_tailwind, \
+        translation_scope: 'processing_rule/workbenches', \
+        heading_class: 'my-16', \
+        target_input_html: { 'x-model': 'target', 'x-on:change': "if ($event.target.value == 'current') processable_type = 'Control::List'" }
 
       .separator.section_separator
 

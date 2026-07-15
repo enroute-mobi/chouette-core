@@ -1,4 +1,4 @@
 h2.mail-title
-  == 'mailers.hello'.t
+  = t('mailers.hello')
 p== t('mailers.control_list_run_mailer.finished.body', name: @control_list_run.name, status: I18n.t("mailers.statuses.#{@status}"))
 p= mailer_button(t('mailers.control_list_run_mailer.button'), workbench_control_list_run_url(@control_list_run.workbench, @control_list_run))

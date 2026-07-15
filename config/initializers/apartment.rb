@@ -23,12 +23,12 @@ Apartment.configure do |config|
     'ActiveStorage::Blob',
     'TimeZone',
     'Widget',
-    'Aggregate',
-    'Aggregate::Resource',
-    'AggregateScheduling',
     # Listed before ProcessingRule::Base and delayed_jobs so the referential schema drops the
     # child table (with its foreign keys) before the tables it references (see Referential::Schema).
     'ProcessingRule::Scheduling',
+    'Aggregate',
+    'Aggregate::Resource',
+    'AggregateScheduling',
     'AccessibilityAssessment',
     'ApiKey',
     'Authentication::Base',

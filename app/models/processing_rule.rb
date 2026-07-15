@@ -12,7 +12,9 @@ module ProcessingRule
     belongs_to :processable, polymorphic: true, optional: true
     has_many :processings, foreign_key: 'processing_rule_id'
 
-    # Periodic execution of this rule, see ProcessingRule::Scheduling
+    # Periodic executions of this rule, see ProcessingRule::Scheduling. As for
+    # Workgroup#aggregate_schedulings, a rule may hold several schedulings (the form
+    # manages a single one for now).
     has_many :schedulings,
              class_name: 'ProcessingRule::Scheduling',
              foreign_key: 'processing_rule_id',
@@ -44,9 +46,11 @@ module ProcessingRule
       operation_step == :scheduling
     end
 
-    # Operation steps allowing several rules for the same processable_type, told
-    # apart by their processable_id: after_import (differ by tags/list) and
-    # scheduling (differ by list/schedule).
+    # Operation steps allowing several rules for the same processable_type, told apart by their
+    # processable_id: after_import (differ by tags/list) and scheduling (differ by list). The same
+    # processable may then be used by both an after_import and a scheduling rule (the uniqueness
+    # applies to rules sharing the same operation_step), and a scheduling rule can hold several
+    # schedulings.
     def unique_per_processable?
       after_import? || scheduling?
     end
@@ -73,11 +77,17 @@ module ProcessingRule
       raise NotImplementedError
     end
 
-    # [operation_workbench, referential] pairs for a scheduled run with the given target.
-    # A single execution by default ; ProcessingRule::Workgroup fans out with target 'merged'.
-    def scheduled_executions(target)
+    # [operation_workbench, referential] arguments for each #perform invoked by a scheduled run
+    # with the given target (see ProcessingRule::Scheduling::ScheduledJob#perform).
+    # A single invocation by default ; ProcessingRule::Workgroup fans out with target 'merged'.
+    def scheduled_perform_args(target)
       referential = (output_current_referential if target == 'current')
       [[scheduling_workbench, referential]]
+    end
+
+    # Scheduling targets available for this rule ('merged' is Workgroup specific)
+    def candidate_scheduling_targets
+      %w[none current]
     end
 
     def candidate_operation_steps
@@ -241,14 +251,20 @@ module ProcessingRule
 
     # target 'merged': run the Control List on each targeted Workbench own merged output,
     # producing one Run per Workbench (visible on both the Workbench and Workgroup runs pages).
-    def scheduled_executions(target)
-      return super unless target == 'merged'
+    def scheduled_perform_args(target)
+      if target == 'merged'
+        scheduled_merged_operation_workbenches.map { |workbench| [workbench, workbench.output.current] }
+      else
+        super
+      end
+    end
 
-      scheduling_target_workbenches.map { |workbench| [workbench, workbench.output.current] }
+    def candidate_scheduling_targets
+      super + %w[merged]
     end
 
     # Workbenches a scheduled 'merged' run fans out to: targeted (or all) minus excluded.
-    def scheduling_target_workbenches
+    def scheduled_merged_operation_workbenches
       scope = workgroup.workbenches
       scope = scope.where(id: target_workbench_ids) if target_workbench_ids.present?
       scope = scope.where.not(id: excluded_workbench_ids) if excluded_workbench_ids.present?

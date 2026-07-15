@@ -7,6 +7,11 @@ const locales = {
 	en: english
 }
 
+const dateConfig = {
+	dateFormat: "d/m/Y",
+	wrap: true
+}
+
 const timeConfig = {
 	enableTime: true,
 	noCalendar: true,
@@ -20,7 +25,7 @@ const timeConfig = {
 function initDatePickers() {
   document.querySelectorAll(".date_picker_block").forEach((el) => {
     if (!el._flatpickr) {
-      flatpickr(el, { locale: locales[I18n.locale], dateFormat: "d/m/Y", wrap: true })
+      flatpickr(el, { locale: locales[I18n.locale], ...dateConfig })
     }
   })
 

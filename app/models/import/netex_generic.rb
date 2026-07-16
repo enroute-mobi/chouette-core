@@ -89,7 +89,7 @@ module Import
             message_attributes: error.message_attributes
           )
         end
-        return 
+        return
       end
 
       return unless referential_metadata
@@ -154,7 +154,7 @@ module Import
 
       def valid?
         return @valid unless @valid.nil?
-        
+
         errors.clear
         validate
         @valid = errors.empty?
@@ -469,7 +469,7 @@ module Import
     # Synchronize models in the StopAreaReferential (StopArea, Entrances, etc)
     # with associated NeTEx resources
     class StopAreaReferential < SynchronizedPart
-      delegate :stop_area_provider, :stop_area_referential, to: :import
+      delegate :stop_area_provider, :workbench, to: :import
 
       def synchronization
         Chouette::Sync::Referential.new(target).tap do |sync|
@@ -483,7 +483,7 @@ module Import
 
       def target
         if import.update_workgroup_providers?
-          stop_area_referential
+          workbench
         else
           stop_area_provider
         end
@@ -497,7 +497,7 @@ module Import
     # Synchronize models in the LineReferential (Line, Company, etc)
     # with associated NeTEx resources
     class LineReferential < SynchronizedPart
-      delegate :line_provider, :line_referential, to: :import
+      delegate :line_provider, :workbench, to: :import
 
       def synchronization
         @synchronization ||= Chouette::Sync::Referential.new(target).tap do |sync|
@@ -513,7 +513,7 @@ module Import
 
       def target
         if import.update_workgroup_providers?
-          line_referential
+          workbench
         else
           line_provider
         end

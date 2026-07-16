@@ -56,14 +56,57 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'StopArea Referential Part' do
-    subject { import.part(:stop_area_referential).import! }
+    context '#target' do
+      before do
+        workbench.stop_area_providers.first.update objectid: 'FR1-ARRET_AUTO'
+      end
+      let!(:stop_area_provider) { workbench.stop_area_providers.first }
+      let(:xml) do
+        %(
+          <stopPlaces>
+            <StopPlace dataSourceRef="FR1-ARRET_AUTO" version="811108" created="2016-10-23T22:00:00Z" changed="2019-04-02T09:43:08Z" id="FR::multimodalStopPlace:424920:FR1">
+              <Name>Petits Ponts</Name>
+              <PostalAddress version="any" id="FR1:PostalAddress:424920:">
+                <Town>Pantin</Town>
+                <PostalRegion>93055</PostalRegion>
+              </PostalAddress>
+              <StopPlaceType>onstreetBus</StopPlaceType>
+            </StopPlace>
+          </stopPlaces>
+        )
+      end
+
+      subject { import.part(:stop_area_referential).target }
+
+      context 'when update_workgroup_providers option is enabled' do
+        before do
+          import.update options: { 'update_workgroup_providers' => true }
+        end
+
+        it 'should return workbench' do
+          expect(subject).to eq(workbench)
+        end
+      end
+
+      context 'when update_workgroup_providers option is disabled' do
+        before do
+          import.update options: { 'update_workgroup_providers' => false }
+        end
+
+        it 'should return stop_area_provider' do
+          expect(subject).to eq(stop_area_provider)
+        end
+      end
+    end
 
     context 'when update_workgroup_providers option is enabled' do
+      subject { import.part(:stop_area_referential).import! }
+
       before do
         import.update options: { 'update_workgroup_providers' => true }
         workbench.stop_area_providers.create(objectid: 'FR1-ARRET_AUTO', name: 'stop_area_provider 1')
       end
-      let(:stop_area_provider) { workbench.stop_area_providers.find_by(objectid: 'FR1-ARRET_AUTO') }
+      let!(:stop_area_provider) { workbench.stop_area_providers.find_by(objectid: 'FR1-ARRET_AUTO') }
 
       let(:xml) do
         %(
@@ -90,15 +133,17 @@ RSpec.describe Import::NetexGeneric do
                                     })
       end
 
-      context 'when stop_area_provider has id = "FR1-ARRET_AUTO"' do
+      let(:stop_areas) { workbench.reload.stop_areas }
+
+      context 'when workbench has one stop area provider with id = "FR1-ARRET_AUTO"' do
         it 'should import stop area' do
           subject
 
-          expect(stop_area_provider.stop_areas).to include(expected_attributes)
+          expect(stop_areas).to include(expected_attributes)
         end
       end
 
-      context 'when stop_area_provider has no id = "FR1-ARRET_AUTO"' do
+      context 'when workbench has no stop area provider with id = "FR1-ARRET_AUTO"' do
         before { stop_area_provider.update objectid: 'test' }
 
         let(:expected_message) do
@@ -140,7 +185,6 @@ RSpec.describe Import::NetexGeneric do
         end
 
         let!(:stop_area_provider) { workbench.default_stop_area_provider }
-        let(:stop_areas) { stop_area_provider.reload.stop_areas }
 
         it 'should create a stop area with the default stop_area_provider' do
           subject
@@ -152,6 +196,7 @@ RSpec.describe Import::NetexGeneric do
 
     self::XML = '<StopPlace id="42"><Name>Tour Eiffel</Name></StopPlace>'
     context "when XML is #{self::XML}" do
+      subject { import.part(:stop_area_referential).import! }
       let(:xml) { self.class::XML }
       context "when no StopArea exists with the registration number '42'" do
         def stop_area
@@ -468,6 +513,62 @@ RSpec.describe Import::NetexGeneric do
   end
 
   describe 'Line Referential part' do
+
+    context '#target' do
+      let(:code_space) { workgroup.code_spaces.default }
+      before do
+        workbench.line_providers.first.codes.create!(
+            value: 'line-provider',
+            code_space: code_space
+        )
+      end
+      let(:line_provider) { workbench.line_providers.first }
+      let(:xml) do
+        %(
+          <frames>
+          <ResourceFrame id="enRoute:ResourceFrame:1" version="any">
+            <organisations>
+              <Operator id="company-1" version="any">
+                <Name>Demo Transit Authority</Name>
+              </Operator>
+            </organisations>
+          </ResourceFrame>
+          <ServiceFrame id="enRoute:ServiceFrame:1" version="any">
+            <lines>
+              <Line dataSourceRef="line-provider" id="2003-line-1" version="any">
+                <Name>Airport - Bullfrog</Name>
+                <TransportMode>bus</TransportMode>
+                <OperatorRef ref="2003-company-1"/>
+              </Line>
+            </lines>
+          </ServiceFrame>
+          </frames>
+        )
+      end
+
+      subject { import.part(:line_referential).target }
+
+      context 'when update_workgroup_providers option is enabled' do
+        before do
+          import.update options: { 'update_workgroup_providers' => true }
+        end
+
+        it 'should return workbench' do
+          expect(subject).to eq(workbench)
+        end
+      end
+
+      context 'when update_workgroup_providers option is disabled' do
+        before do
+          import.update options: { 'update_workgroup_providers' => false }
+        end
+
+        it 'should return line_provider' do
+          expect(subject).to eq(line_provider)
+        end
+      end
+    end
+
     context 'when update_workgroup_providers option is enabled' do
       subject { import.part(:line_referential).import! }
 
@@ -478,26 +579,26 @@ RSpec.describe Import::NetexGeneric do
           short_name: 'line_provider_1',
           name: 'line provider 1',
           codes_attributes: [{
-            value: '2003-line-provider-existing',
+            value: 'line-provider',
             code_space: code_space
           }]
         )
       end
-      let(:line_provider) { workbench.line_providers.by_code(code_space, '2003-line-provider-existing').first }
+      let(:line_provider) { workbench.line_providers.by_code(code_space, 'line-provider').first }
 
       let(:xml) do
         %(
           <frames>
-          <ResourceFrame id="2003-enRoute:ResourceFrame:1" version="any">
+          <ResourceFrame id="enRoute:ResourceFrame:1" version="any">
             <organisations>
-              <Operator id="2003-company-1" version="any">
+              <Operator id="company-1" version="any">
                 <Name>Demo Transit Authority</Name>
               </Operator>
             </organisations>
           </ResourceFrame>
           <ServiceFrame id="enRoute:ServiceFrame:1" version="any">
             <lines>
-              <Line dataSourceRef="2003-line-provider-existing" id="2003-line-1" version="any">
+              <Line dataSourceRef="line-provider" id="2003-line-1" version="any">
                 <Name>Airport - Bullfrog</Name>
                 <TransportMode>bus</TransportMode>
                 <OperatorRef ref="2003-company-1"/>
@@ -514,7 +615,7 @@ RSpec.describe Import::NetexGeneric do
                                     })
       end
 
-      context 'when line_provider has id' do
+      context 'when workbench has a line_provider with id line-provider' do
         it 'should import line' do
           subject
 
@@ -522,7 +623,7 @@ RSpec.describe Import::NetexGeneric do
         end
       end
 
-      context 'when line_provider has no id' do
+      context 'when workbench has not a line_provider with id line-provider' do
         before { line_provider.codes.destroy_all }
 
         let(:expected_message) do
@@ -531,7 +632,7 @@ RSpec.describe Import::NetexGeneric do
             message_key: 'invalid_model_attribute',
             message_attributes: {
               'attribute_name' => 'provider',
-              'attribute_value' => '2003-line-provider-existing'
+              'attribute_value' => 'line-provider'
             }
           )
         end

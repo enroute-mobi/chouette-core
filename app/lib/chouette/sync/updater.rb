@@ -105,16 +105,13 @@ module Chouette
         end
 
         def singular_provider
-          @singular_provider ||= singular.gsub('_referential', '_provider')
+          @singular_provider ||= default_provider.model_name.singular
         end
 
         def target_is_provider?
-          singular.end_with? '_provider'
+          target.model_name.singular.end_with? '_provider'
         end
 
-        def singular
-          @singular ||= target.model_name.singular
-        end
       end
 
       class Models

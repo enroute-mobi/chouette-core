@@ -13,7 +13,7 @@ class WorkbenchesController < Chouette::ResourceController
     @single_workbench = resource.workgroup.workbenches.one?
 
     @wbench_refs = ReferentialDecorator.decorate(
-      collection,
+      collection.includes(:metadatas),
       context: {
         current_workbench_id: params[:id],
         workbench: resource

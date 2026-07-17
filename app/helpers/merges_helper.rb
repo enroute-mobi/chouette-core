@@ -1,9 +1,19 @@
 module MergesHelper
   def merge_status(merge)
     content_tag :span, '' do
-      concat operation_status(merge.status)
-      concat render_current_icon if merge.is_current?
-      concat render_urgent_icon if merge.contains_urgent_offer?
+      concat(content_tag(:span, '', class: 'status') do
+        concat operation_status(merge.status)
+      end)
+      if merge.is_current?
+        concat(content_tag(:span, '', class: 'current') do
+          concat render_current_icon
+        end)
+      end
+      if merge.contains_urgent_offer?
+        concat(content_tag(:span, '', class: 'contains_urgent_offer') do
+          concat render_urgent_icon
+        end)
+      end
     end
   end
 

@@ -71,8 +71,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 6503e27730b71b7c1820072b5ab7f3d343a3914d
-  branch: DATA-157-add-groupoflines
+  revision: 93a7e72009107a576157869a30115db3d5545783
   specs:
     netex (0.1.2)
       activesupport

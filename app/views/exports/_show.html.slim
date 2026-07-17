@@ -23,7 +23,8 @@
       - if @export.type == "Export::Ara"
         = d.attribute :include_stop_visits, as: :boolean, object: @export.setup
 
-  = processing_helper(@export)
+  .col-lg-6.col-md-6.col-sm-12.col-xs-12
+    = operation_processing_helper(@export)
 
 .row
   .col-lg-12

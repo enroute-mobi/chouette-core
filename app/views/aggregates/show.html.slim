@@ -11,7 +11,8 @@
 					= d.attribute :contains_urgent_offer, value: boolean_icon(@aggregate.contains_urgent_offer?)
 					= d.attribute :vehicle_journeys_count, value: @aggregate.new.vehicle_journeys_count if @aggregate.new
 
-      = processing_helper(@aggregate)
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = operation_processing_helper(@aggregate)
 
     - if @aggregate_resources.any?
       .col-lg-12

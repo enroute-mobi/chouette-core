@@ -3,7 +3,8 @@
 .row
   .col-lg-6.col-md-6.col-sm-12.col-xs-12
     = render 'metadatas', import: @import
-  = processing_helper(@import)
+  .col-lg-6.col-md-6.col-sm-12.col-xs-12
+    = operation_processing_helper(@import)
 
 .col-lg-12
   .error_messages

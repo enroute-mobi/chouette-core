@@ -216,6 +216,10 @@ class Export::Base < ApplicationModel
   end
   alias human_type human_name
 
+  def duration
+    ended_at - started_at if ended_at && started_at
+  end
+
   def successful!
     update_columns status: :successful, ended_at: Time.now
   end

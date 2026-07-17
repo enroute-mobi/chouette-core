@@ -16,7 +16,7 @@
             [ \
               TableBuilderHelper::Column.new( \
                 key: :status, \
-                attribute: Proc.new { |n| operation_user_status(n) }, \
+                attribute: Proc.new { |n| operation_user_status(n.user_status) }, \
               ), \
               TableBuilderHelper::Column.new( \
                 key: :publication_setup, \

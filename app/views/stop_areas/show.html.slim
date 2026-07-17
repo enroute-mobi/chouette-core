@@ -8,7 +8,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @stop_area, title: t("stop_areas.form.sections.identification") do |d|
-          = d.attribute :objectid, as: :objectid
+          = d.attribute :objectid, value: @stop_area.get_objectid&.short_id
           = d.attribute :name
           - @stop_area.localized_names.keep_if { |key, value| value.present? }.each do |k, v|
             = d.attribute :name, value: v, label: label_for_country(k, Chouette::StopArea.tmf('name'))
@@ -43,7 +43,7 @@
 
         - if @stop_area.flexible_area_members.any?
           = simple_block_for @stop_area, title: t("stop_areas.form.sections.flexible_area") do |d|
-            = d.attribute :flexible_area_members, as: :associations, value: @stop_area.flexible_area_members.sort_by(&:name), link: ->(member) { workbench_stop_area_referential_stop_areas_path(@workbench, member) }
+            = d.attribute :flexible_area_members, as: :associations, value: @stop_area.flexible_area_members.sort_by(&:name), link: ->(member) { workbench_stop_area_referential_stop_area_path(@workbench, member) }
 
         = simple_block_for @stop_area, title: Chouette::StopArea.tmf('referent') do |d|
           - if @stop_area.is_referent

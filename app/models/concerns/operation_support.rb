@@ -44,6 +44,10 @@ module OperationSupport
     end
   end
 
+  def duration
+    ended_at - started_at if ended_at && started_at
+  end
+
   def manual_operation?
     !automatic_operation?
   end

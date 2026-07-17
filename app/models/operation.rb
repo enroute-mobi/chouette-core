@@ -84,6 +84,10 @@ class Operation < ApplicationModel
 
   validates :creator, presence: true
 
+  def duration
+    ended_at - started_at if ended_at && started_at
+  end
+
   def user=(user)
     @user = user
     self.creator = user.name

@@ -8,7 +8,7 @@
 				= simple_block_for @contract, title: t('contracts.form.sections.identification') do |d|
 					= d.attribute :name
 					= d.attribute :company, as: :association, link: ->(company) { workbench_line_referential_company_path(@workbench, company) }
-					= d.attribute :lines, as: :associations, value: @contract.lines.sort_by(&:name), link: ->(child) { workbench_line_referential_lines_path(@workbench, child) }
+					= d.attribute :lines, as: :associations, value: @contract.lines.sort_by(&:name), link: ->(child) { workbench_line_referential_line_path(@workbench, child) }
 			.row
 				= simple_block_for @contract, title: Chouette::StopArea.tmf(:codes) do |d|
 				  - if @contract.codes.empty?

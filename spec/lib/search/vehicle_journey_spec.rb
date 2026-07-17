@@ -15,7 +15,7 @@ RSpec.describe Search::VehicleJourney do
     subject { search.query(scope) }
 
     let(:scope) { double }
-    let(:query) { Query::Mock.new(scope) }
+    let(:query) { Nest::Query::Mock.new(scope) }
 
     before do
       allow(Query::VehicleJourney).to receive(:new).and_return(query)

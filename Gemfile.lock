@@ -81,10 +81,14 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/secretary-ruby.git
-  revision: 06aaec21ec15be4723ba95e3544513cae8365b3c
+  revision: 8142db40aced5d7f5c84b09f59808b5c40be30aa
   specs:
     secretary (0.1.0)
       activesupport
+      faraday
+      faraday-multipart
+      faraday-retry
+      mimemagic
 
 GIT
   remote: https://github.com/metaware/carrierwave-google-storage.git
@@ -391,6 +395,8 @@ GEM
       multipart-post (~> 2)
     faraday-net_http (3.4.4)
       net-http (~> 0.5)
+    faraday-retry (2.4.0)
+      faraday (~> 2.0)
     ffi (1.17.4-arm64-darwin)
     ffi (1.17.4-x86_64-darwin)
     ffi (1.17.4-x86_64-linux-gnu)

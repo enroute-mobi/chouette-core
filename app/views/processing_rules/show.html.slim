@@ -11,7 +11,7 @@
           = d.attribute :operation_step, value: @processing_rule.operation_step.text
           = d.attribute :processable, \
             as: :association, \
-            label: @processing_rule.processable_type.text, \
+            label: @processing_rule.processable.class.model_name.human, \
             link: url_for([@workbench, @processing_rule.processable])
           = d.attribute :required_tags, \
             as: :tags
@@ -20,4 +20,4 @@
           = d.attribute :created_at, as: :datetime
           = d.attribute :updated_at, as: :datetime
 
-      = render 'processing_rules/schedulings', translation_scope: 'processing_rule/workbenches'
+      = render 'processing_rules/scheduling', translation_scope: 'processing_rule/workbenches'

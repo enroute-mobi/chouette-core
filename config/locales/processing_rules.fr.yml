@@ -13,7 +13,7 @@ fr:
       sections:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
-        target: Cible
+        scheduling_target: Cible
       target_options:
         none: Espace de travail
         current: Offre courante finalisée
@@ -24,7 +24,6 @@ fr:
       edit: "Editer cette Règle de traitement"
       destroy: "Supprimer cette Règle de traitement"
       destroy_confirm: "Etes vous sûr de supprimer cette Règle de traitement ?"
-    name: "%{operation_step} %{processable_type} %{processable_name}"
 
   processing_rule/workgroups:
     index:
@@ -40,7 +39,7 @@ fr:
       sections:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
-        target: Cible
+        scheduling_target: Cible
       target_options:
         none: Espace de travail
         current: Offre courante agrégée
@@ -66,15 +65,15 @@ fr:
         zero: Règle de traitement
         one: Règle de traitement
         other: Règles de traitement
-      processing_rule/scheduling:
-        zero: Planification
-        one: Planification
-        other: Planifications
     attributes:
       processing_rule/base:
         processable_type: Type de traitement
         processable_id: Traitement
         operation_step: Déclenché par
+        scheduling_time: Heure
+        scheduling_days: Jours
+        scheduling_target: Cible
+        next_schedule: Prochaine exécution
       processing_rule/workbench:
         required_tag_ids: Tags requis
         required_tags: Tags requis
@@ -86,11 +85,6 @@ fr:
         workgroup: Groupe de travail
         target_workbenches: Espace(s) de travail cible(s)
         excluded_workbenches: Espace(s) de travail exclu(s)
-      processing_rule/scheduling:
-        scheduled_time: Heure
-        scheduled_days: Jours
-        target: Cible
-        next_schedule: Prochaine exécution
     errors:
       models:
         processing_rule/workbench:

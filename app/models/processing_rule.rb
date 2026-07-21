@@ -7,26 +7,28 @@ module ProcessingRule
 
     extend Enumerize
     include TagsSupport
+    include SchedulingSupport
 
     # Macro::List or Control::List to be started
     belongs_to :processable, polymorphic: true, optional: true
     has_many :processings, foreign_key: 'processing_rule_id'
 
-    # Periodic executions of this rule, see ProcessingRule::Scheduling. As for
-    # Workgroup#aggregate_schedulings, a rule may hold several schedulings (the form
-    # manages a single one for now).
-    has_many :schedulings,
-             class_name: 'ProcessingRule::Scheduling',
-             foreign_key: 'processing_rule_id',
-             inverse_of: :processing_rule,
-             dependent: :destroy
-    accepts_nested_attributes_for :schedulings, allow_destroy: true, reject_if: :all_blank
-
     has_tags :required_tags
     has_tags :excluded_tags
 
+    schedule_by :scheduling_time, :scheduling_days
+
+    # Referential used to perform the Control/Macro:
+    #   none    -> no Referential (e.g. controls/macros running on Stop Areas)
+    #   current -> the Workbench/Workgroup output current Referential (merged for a
+    #              Workbench, aggregated for a Workgroup)
+    #   merged  -> Workgroup only: fans out over the targeted Workbenches, running on
+    #              each Workbench own merged output current Referential
+    enumerize :scheduling_target, in: %w[none current merged], default: :none
+
     validates :operation_step, :processable_type, :processable_id, presence: true
     validates :control_list_id, presence: true, if: :use_control_list?
+    validates :scheduling_target, inclusion: { in: ->(rule) { rule.candidate_scheduling_targets } }
     validates :processable, inclusion: { in: ->(rule) { rule.candidate_control_lists } }, if: :use_control_list?
     validates :operation_step, inclusion: { in: ->(rule) { rule.candidate_operation_steps } }
 
@@ -80,9 +82,10 @@ module ProcessingRule
     # [operation_workbench, referential] arguments for each #perform invoked by a scheduled run
     # with the given target (see ProcessingRule::Scheduling::ScheduledJob#perform).
     # A single invocation by default ; ProcessingRule::Workgroup fans out with target 'merged'.
-    def scheduled_perform_args(target)
-      referential = (output_current_referential if target == 'current')
-      [[scheduling_workbench, referential]]
+    def scheduled_perform_args
+      return [] if scheduling_target == 'current' && output_current_referential.nil?
+
+      [[scheduling_workbench, output_current_referential]]
     end
 
     # Scheduling targets available for this rule ('merged' is Workgroup specific)
@@ -151,6 +154,28 @@ module ProcessingRule
         return if send(association).blank? || (send(association) - candidate_tags).none?
 
         errors.add(association, :contain_invalid_tags)
+      end
+    end
+
+    class ScheduledJob < SchedulingSupport::ScheduledJob
+      def encode_with(coder)
+        coder['processing_rule_id'] = scheduling.id
+      end
+
+      def init_with(coder)
+        @scheduling = ::ProcessingRule::Base.find(coder['processing_rule_id'])
+      end
+
+      def perform
+        scheduling.scheduled_perform_args.each do |operation_workbench, referential|
+          scheduling.perform(operation_workbench: operation_workbench, referential: referential)
+        end
+      end
+
+      protected
+
+      def perform_error_capture_message
+        "Can't start #{processing_rule.class.name}##{processing_rule.id}::ScheduledJob"
       end
     end
   end
@@ -249,11 +274,15 @@ module ProcessingRule
       workgroup.output.current
     end
 
-    # target 'merged': run the Control List on each targeted Workbench own merged output,
+    # #scheduling_target 'merged': run the Control List on each targeted Workbench own merged output if it exists,
     # producing one Run per Workbench (visible on both the Workbench and Workgroup runs pages).
-    def scheduled_perform_args(target)
-      if target == 'merged'
-        scheduled_merged_operation_workbenches.map { |workbench| [workbench, workbench.output.current] }
+    def scheduled_perform_args
+      if scheduling_target == 'merged'
+        scheduled_merged_operation_workbenches.filter_map do |workbench|
+          next nil unless workbench.output.current
+
+          [workbench, workbench.output.current]
+        end
       else
         super
       end

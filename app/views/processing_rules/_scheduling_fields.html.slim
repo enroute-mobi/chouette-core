@@ -5,11 +5,10 @@
 
 template x-if="operation_step == 'scheduling'"
   div x-init="$nextTick(() => document.dispatchEvent(new CustomEvent('flatpickr:refresh')))"
-    = f.simple_fields_for(:schedulings, defaults: { wrapper: wrapper }) do |schedulings_form|
-      = schedulings_form.input :scheduled_time, as: :time_picker
-      = schedulings_form.input :scheduled_days, as: :day_type
+    = f.input :scheduling_time, as: :time_picker
+    = f.input :scheduling_days, as: :day_type
 
-      .separator.section_separator
-      h2 class=heading_class
-        = t("#{translation_scope}.form.sections.target")
-      = schedulings_form.input :target, collection: target_options, include_blank: false, input_html: target_input_html
+    .separator.section_separator
+    h2 class=heading_class
+      = t("#{translation_scope}.form.sections.scheduling_target")
+    = f.input :scheduling_target, collection: target_options, include_blank: false, input_html: target_input_html

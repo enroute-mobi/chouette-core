@@ -1,9 +1,8 @@
 - candidate_tags = @processing_rule.candidate_tags.order(:name).map { |tag| { id: tag.id, text: tag.name } }
-- @processing_rule.schedulings.build if @processing_rule.schedulings.empty?
 
 = simple_form_for [@workbench, @processing_rule], as: 'processing_rule', html: { class: 'tailwind-form', id: 'processing_rule_form' }, wrapper: :horizontal_form_tailwind  do |f|
   .row
-    .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', operation_step: '#{@processing_rule.operation_step || @processing_rule.class.operation_step.values.first}', target: '#{@processing_rule.schedulings.first.target}' }"
+    .col-lg-12 x-data="{ processable_type: '#{@processing_rule.processable_type}', operation_step: '#{@processing_rule.operation_step || @processing_rule.class.operation_step.values.first}', scheduling_target: '#{@processing_rule.scheduling_target}' }"
       h2.my-16
         = t('processing_rule/workbenches.form.sections.trigger_conditions')
 
@@ -24,10 +23,9 @@
 
       = render 'processing_rules/scheduling_fields', \
         f: f, \
-        wrapper: :horizontal_form_tailwind, \
         translation_scope: 'processing_rule/workbenches', \
         heading_class: 'my-16', \
-        target_input_html: { 'x-model': 'target', 'x-on:change': "if ($event.target.value == 'current') processable_type = 'Control::List'" }
+        target_input_html: { 'x-model': 'scheduling_target', 'x-on:change': "if ($event.scheduling_target.value == 'current') processable_type = 'Control::List'" }
 
       .separator.section_separator
 
@@ -41,11 +39,11 @@
               = f.radio_button :processable_type, "Control::List", { "x-model" => "processable_type" }
               = f.label :processable_type_controllist, Control::List.model_name.human, class: 'ml-4 mb-0'
             = f.input :control_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_control_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Control::List'" }
-          li.flex.justify-end.mb-10 x-show="operation_step != 'after_merge' && !(operation_step == 'scheduling' && target == 'current')"
+          li.flex.justify-end.mb-10 x-show="operation_step != 'after_merge' && !(operation_step == 'scheduling' && scheduling_target == 'current')"
             .flex.items-center.justify-end.mr-4.w-2/6
               = f.radio_button :processable_type, "Macro::List", { "x-model" => "processable_type" }
               = f.label :processable_type_macrolist, Macro::List.model_name.human, class: 'ml-4 mb-0'
-            = f.input :macro_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Macro::List' || operation_step == 'after_merge' || (operation_step == 'scheduling' && target == 'current')" }
+            = f.input :macro_list_id, as: :select, label: false, wrapper: false, collection: @processing_rule.candidate_macro_lists.order(:name), input_html: { "x-bind:disabled" => "processable_type != 'Macro::List' || operation_step == 'after_merge' || (operation_step == 'scheduling' && scheduling_target == 'current')" }
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'processing_rule_form'

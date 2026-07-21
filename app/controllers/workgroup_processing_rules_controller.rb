@@ -3,8 +3,14 @@
 # Manage ProcessingRule::Workgroup on /workgroups/:id/processing_rules
 class WorkgroupProcessingRulesController < Chouette::WorkgroupController
   defaults resource_class: ProcessingRule::Workgroup,
+           instance_name: 'processing_rule',
+           collection_name: 'processing_rules',
            route_instance_name: 'processing_rule_workgroup',
            route_collection_name: 'processing_rule_workgroups'
+
+  def collection_name
+    resources_configuration[:self][:collection_name]
+  end
 
   respond_to :html
 
@@ -15,10 +21,8 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
   protected
 
   def collection
-    @processing_rules ||= decorate(workgroup.processing_rules.paginate(page: params[:page], per_page: 30)) # rubocop:disable Naming/MemoizedInstanceVariableName(RuboCop)
+    @processing_rules ||= decorate(workgroup.processing_rules.includes(:processable).paginate(page: params[:page], per_page: 30)) # rubocop:disable Layout/LineLength,Naming/MemoizedInstanceVariableName(RuboCop)
   end
-  # Overrides ApplicationController#decorated_collection (which uses a dummy default naming)
-  alias decorated_collection collection
 
   def resource
     @processing_rule ||= decorate(workgroup.processing_rules.find(params[:id])) # rubocop:disable Naming/MemoizedInstanceVariableName(RuboCop)
@@ -40,14 +44,16 @@ class WorkgroupProcessingRulesController < Chouette::WorkgroupController
 
   private
 
-  def workgroup_processing_rule_params
+  def processing_rule_params
     params.require(:processing_rule).permit(
       :processable_type,
       :processable_id,
       :operation_step,
+      :scheduling_time,
+      :scheduling_days,
+      :scheduling_target,
       target_workbenches: [],
-      excluded_workbenches: [],
-      schedulings_attributes: %i[id scheduled_time scheduled_days target _destroy]
+      excluded_workbenches: []
     )
   end
 end

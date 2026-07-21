@@ -1,10 +1,9 @@
 - processable_type_default = @processing_rule.processable_type.presence || @processing_rule.class.processable_type.values.first
 - processable_type_options = @processing_rule.class.processable_type.values.map { |v| [v.constantize.model_name.human, v] }
-- @processing_rule.schedulings.build if @processing_rule.schedulings.empty?
 
 = simple_form_for [@workgroup, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
   .row
-    .col-lg-12 x-data="#{{ processable_type: processable_type_default, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids, target: @processing_rule.schedulings.first.target }.to_json}"
+    .col-lg-12 x-data="#{{ processable_type: processable_type_default, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids, scheduling_target: @processing_rule.scheduling_target }.to_json}"
       h2.mb-lg= t('processing_rule/workgroups.form.sections.trigger_conditions')
 
       template[x-if="processable_type == 'Control::List'"]
@@ -17,20 +16,19 @@
 
       = render 'processing_rules/scheduling_fields', \
         f: f, \
-        wrapper: :horizontal_form, \
         translation_scope: 'processing_rule/workgroups', \
         heading_class: 'mb-lg', \
-        target_input_html: { 'x-model': 'target' }
+        target_input_html: { 'x-model': 'scheduling_target' }
 
       / Target/Excluded Workbenches: always shown for event-based rules, and for scheduled
       / 'merged' rules (which fan out the Control List over each targeted Workbench).
-      div x-show="excluded_workbenches.length == 0 && (operation_step != 'scheduling' || target == 'merged')"
+      div x-show="excluded_workbenches.length == 0 && (operation_step != 'scheduling' || scheduling_target == 'merged')"
         = f.input :target_workbenches,
           as: :tom_select,
           collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
           input_html: { multiple: true, "x-bind:disabled" => "operation_step == 'after_merge'", "x-on:change" => "target_workbenches = $event.target.value" },
           selected: @processing_rule.target_workbench_ids
-      div x-show="target_workbenches.length == 0 && (operation_step != 'scheduling' || target == 'merged')"
+      div x-show="target_workbenches.length == 0 && (operation_step != 'scheduling' || scheduling_target == 'merged')"
         = f.input :excluded_workbenches,
           as: :tom_select,
           collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },

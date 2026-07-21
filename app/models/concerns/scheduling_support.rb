@@ -16,7 +16,18 @@
 module SchedulingSupport
   extend ActiveSupport::Concern
 
+  module Inherit
+    def inherited(base)
+      super
+
+      base.instance_variable_set(:@schedule_time_attribute, instance_variable_get(:@schedule_time_attribute))
+      base.instance_variable_set(:@schedule_days_attribute, instance_variable_get(:@schedule_days_attribute))
+    end
+  end
+
   included do
+    singleton_class.prepend Inherit
+
     belongs_to :scheduled_job, class_name: '::Delayed::Job', optional: true
 
     after_commit :reschedule, on: %i[create update], if: :reschedule_needed?

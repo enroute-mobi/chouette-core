@@ -1,11 +1,17 @@
 # frozen_string_literal: true
 
-RSpec.shared_examples 'ProcessingRule validations' do
+RSpec.shared_examples 'ProcessingRule common' do
   it { is_expected.to belong_to(:processable).required(false) }
 
   it { is_expected.to validate_presence_of(:processable_type) }
   it { is_expected.to validate_presence_of(:processable_id) }
   it { is_expected.to validate_presence_of(:operation_step) }
+
+  it { is_expected.to allow_value(Cuckoo::DaysOfWeek.all).for(:scheduling_days) }
+  it { is_expected.to allow_value(Cuckoo::DaysOfWeek.new(monday: true, tuesday: true)).for(:scheduling_days) }
+  it { is_expected.not_to allow_value(Cuckoo::DaysOfWeek.none).for(:scheduling_days) }
+
+  it { is_expected.to enumerize(:scheduling_target).in('none', 'current', 'merged').with_default('none') }
 end
 
 RSpec.describe ProcessingRule::Workbench, type: :model do
@@ -21,7 +27,7 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
   let(:control_list) { context.control_list }
   let(:macro_list) { context.macro_list }
 
-  include_examples 'ProcessingRule validations'
+  include_examples 'ProcessingRule common'
 
   it { is_expected.to belong_to(:workbench).required }
 
@@ -30,6 +36,11 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
   it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge', 'scheduling') }
 
   it { is_expected.to_not allow_value('after_aggregate').for(:operation_step) }
+
+  %w[none current].each do |candidate_target|
+    it { is_expected.to allow_value(candidate_target).for(:scheduling_target) }
+  end
+  it { is_expected.not_to allow_value('merged').for(:scheduling_target) }
 
   context 'using a Control List' do
     before { subject.processable = control_list }
@@ -99,6 +110,46 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
       end
 
       it { expect(subject).to be_valid }
+    end
+  end
+
+  describe '#scheduled_perform_args' do
+    subject { processing_rule.scheduled_perform_args }
+
+    let(:context) do
+      Chouette.create do
+        workbench do
+          control_list :control_list
+          workbench_processing_rule control_list: :control_list, operation_step: 'scheduling'
+          referential
+        end
+      end
+    end
+    let(:workbench) { context.workbench }
+    let(:processing_rule) { context.workbench_processing_rule }
+
+    before { processing_rule.scheduling_target = scheduling_target }
+
+    context 'when #scheduling_target is "none"' do
+      let(:scheduling_target) { 'none' }
+
+      it { is_expected.to eq([[workbench, nil]]) }
+    end
+
+    context 'when #scheduling_target is "current"' do
+      let(:scheduling_target) { 'current' }
+
+      context 'when workbench is not merged' do
+        it { is_expected.to eq([]) }
+      end
+
+      context 'when workbench is merged' do
+        let(:referential) { instance_double(Referential) }
+
+        before { allow(workbench).to receive(:output).and_return(double(current: referential)) }
+
+        it { is_expected.to eq([[workbench, referential]]) }
+      end
     end
   end
 
@@ -196,7 +247,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
   let(:control_list) { context.control_list }
   let(:flamingo_validation_setup) { context.flamingo_validation_setup }
 
-  include_examples 'ProcessingRule validations'
+  include_examples 'ProcessingRule common'
 
   it { is_expected.to belong_to(:workgroup).required }
 
@@ -206,6 +257,10 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
     is_expected.to(
       enumerize(:operation_step).in('before_import', 'after_import', 'before_merge', 'after_merge', 'after_aggregate', 'scheduling')
     )
+  end
+
+  %w[none current merged].each do |candidate_target|
+    it { is_expected.to allow_value(candidate_target).for(:scheduling_target) }
   end
 
   context 'using a Control List' do
@@ -306,47 +361,92 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
   end
 
   describe '#scheduled_perform_args' do
+    subject { processing_rule.scheduled_perform_args }
+
     let(:context) do
       Chouette.create do
-        workgroup do
-          workbench :workbench do
+        organisation :owner_organisation
+        organisation :other_organisation
+
+        workgroup owner: :owner_organisation do
+          workbench :owner_workbench, organisation: :owner_organisation do
             control_list :control_list, shared: true
           end
-          workbench :other_workbench
+          workbench :other_workbench1, organisation: :other_organisation do
+            referential :referential1
+          end
+          workbench :other_workbench2, organisation: :other_organisation do
+            referential :referential2
+          end
           workgroup_processing_rule control_list: :control_list, operation_step: 'scheduling'
         end
+      end.tap do |context|
+        context.referential(:referential1).update!(referential_suite: context.workbench(:other_workbench1).output)
+        context.workbench(:other_workbench1).output.update!(current: context.referential(:referential1))
+        context.referential(:referential2).update!(referential_suite: context.workbench(:other_workbench2).output)
+        context.workbench(:other_workbench2).output.update!(current: context.referential(:referential2))
       end
     end
     let(:workgroup) { context.workgroup }
-    let(:workbench) { context.workbench(:workbench) }
-    let(:other_workbench) { context.workbench(:other_workbench) }
+    let(:owner_workbench) { context.workbench(:owner_workbench) }
+    let(:other_workbench1) { context.workbench(:other_workbench1) }
+    let(:other_workbench2) { context.workbench(:other_workbench2) }
+    let(:referential1) { context.referential(:referential1) }
+    let(:referential2) { context.referential(:referential2) }
     let(:processing_rule) { context.workgroup_processing_rule }
 
-    subject { processing_rule.scheduled_perform_args('merged') }
+    before { processing_rule.scheduling_target = scheduling_target }
 
-    context 'without target nor excluded workbenches' do
-      it 'fans out over each workbench own merged output' do
-        is_expected.to match_array(workgroup.workbenches.map { |wb| [wb, wb.output.current] })
+    context 'when target is "none"' do
+      let(:scheduling_target) { 'none' }
+
+      it 'runs on owner workbench only' do
+        is_expected.to eq([[owner_workbench, nil]])
       end
     end
 
-    context 'with target workbenches' do
-      before { processing_rule.update(target_workbench_ids: [workbench.id]) }
+    context 'when target is "current"' do
+      let(:scheduling_target) { 'current' }
 
-      it { expect(subject.map(&:first)).to match_array([workbench]) }
+      context 'when workgroup is not aggregated' do
+        it { is_expected.to eq([]) }
+      end
+
+      context 'when workgroup is aggregated' do
+        let(:referential) { instance_double(Referential) }
+
+        before { allow(workgroup).to receive(:output).and_return(double(current: referential)) }
+
+        it { is_expected.to eq([[owner_workbench, referential]]) }
+      end
     end
 
-    context 'with excluded workbenches' do
-      before { processing_rule.update(excluded_workbench_ids: [workbench.id]) }
+    context 'when target is "merged"' do
+      let(:scheduling_target) { 'merged' }
 
-      it { expect(subject.map(&:first)).to match_array([other_workbench]) }
-    end
-
-    context 'when target is current' do
-      it 'runs a single execution on the aggregated output' do
-        expect(processing_rule.scheduled_perform_args('current')).to eq(
-          [[processing_rule.scheduling_workbench, workgroup.output.current]]
+      it 'returns all merged workbenches with their respective outputs' do
+        is_expected.to match_array(
+          [
+            [other_workbench1, referential1],
+            [other_workbench2, referential2]
+          ]
         )
+      end
+
+      context 'with target workbenches' do
+        before { processing_rule.update(target_workbench_ids: [other_workbench1.id]) }
+
+        it 'returns only target workbenches' do
+          is_expected.to match_array([[other_workbench1, referential1]])
+        end
+      end
+
+      context 'with excluded workbenches' do
+        before { processing_rule.update(excluded_workbench_ids: [other_workbench1.id]) }
+
+        it 'returns everything except excluded_workbenches' do
+          is_expected.to match_array([[other_workbench2, referential2]])
+        end
       end
     end
   end
@@ -433,6 +533,44 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
 
         it { is_expected.to be_invalid }
       end
+    end
+  end
+end
+
+RSpec.describe ProcessingRule::Base::ScheduledJob do
+  subject(:job) { described_class.new(processing_rule) }
+
+  let(:workbench) { Chouette.create { workbench }.workbench }
+  let(:scheduling_target) { 'none' }
+  let(:processing_rule) { instance_double(ProcessingRule::Base, scheduling_target: scheduling_target) }
+
+  let(:workbench1) { instance_double(Workbench) }
+  let(:workbench2) { instance_double(Workbench) }
+  let(:referential1) { instance_double(Referential) }
+  let(:referential2) { instance_double(Referential) }
+
+  before do
+    allow(processing_rule).to receive(:scheduled_perform_args).and_return(
+      [
+        [workbench1, referential1],
+        [workbench2, referential2]
+      ]
+    )
+  end
+
+  describe '#perform' do
+    subject { job.perform }
+
+    it 'performs the processing rule on each #scheduled_perform_args' do
+      expect(processing_rule).to receive(:perform).with(
+        operation_workbench: workbench1,
+        referential: referential1
+      )
+      expect(processing_rule).to receive(:perform).with(
+        operation_workbench: workbench2,
+        referential: referential2
+      )
+      subject
     end
   end
 end

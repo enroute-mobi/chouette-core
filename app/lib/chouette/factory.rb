@@ -6,6 +6,52 @@ module Chouette
   class Factory # rubocop:disable Metrics/ClassLength
     extend Definition
 
+    def self.define_model_control(base) # rubocop:disable Metrics/MethodLength
+      base.instance_exec do
+        model :control do
+          attribute(:name) { |n| "Dummy #{n}" }
+          attribute :type, 'Control::Dummy'
+
+          # Control::Dummy
+          transient :target_model, 'StopArea'
+          transient :expected_result, 'warning'
+
+          after do
+            new_instance.target_model = transient(:target_model) if new_instance.respond_to?(:target_model=)
+            case new_instance
+            when Control::Dummy
+              new_instance.expected_result = transient(:expected_result)
+            end
+          end
+        end
+      end
+    end
+
+    def self.define_model_macro(base) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
+      base.instance_exec do
+        model :macro do
+          attribute(:name) { |n| "Dummy #{n}" }
+          attribute :type, 'Macro::Dummy'
+
+          # Macro::Dummy
+          transient :target_model, 'StopArea'
+          transient :expected_result, 'info'
+          # Macro::CreateCode
+          transient :target_code_space_id
+
+          after do
+            new_instance.target_model = transient(:target_model) if new_instance.respond_to?(:target_model=)
+            case new_instance
+            when Macro::Dummy
+              new_instance.expected_result = transient(:expected_result)
+            when Macro::CreateCode
+              new_instance.target_code_space_id = transient(:target_code_space_id, resolve_instances: true).id
+            end
+          end
+        end
+      end
+    end
+
     define do
       model :organisation do
         attribute(:name) { |n| "Organisation #{n}" }
@@ -160,11 +206,7 @@ module Chouette
           model :control_list do
             attribute(:name) { |n| "Control List #{n}" }
 
-            model :control do
-              attribute(:name) { |n| "Dummy #{n}" }
-              attribute :type, 'Control::Dummy'
-              attribute :target_model, 'StopArea'
-            end
+            Chouette::Factory.define_model_control(self)
 
             model :control_context do
               attribute(:name) { |n| "Context #{n}" }
@@ -177,11 +219,7 @@ module Chouette
                 end
               end
 
-              model :control do
-                attribute(:name) { |n| "Dummy #{n}" }
-                attribute :type, 'Control::Dummy'
-                attribute :target_model, 'StopArea'
-              end
+              Chouette::Factory.define_model_control(self)
             end
           end
 
@@ -193,22 +231,12 @@ module Chouette
           model :macro_list do
             attribute(:name) { |n| "Macro List #{n}" }
 
-            model :macro do
-              attribute(:name) { |n| "Dummy #{n}" }
-              attribute :type, 'Macro::Dummy'
-              attribute :target_model, 'StopArea'
-              attribute :expected_result, 'info'
-            end
+            Chouette::Factory.define_model_macro(self)
 
             model :macro_context do
               attribute(:name) { |n| "Context #{n}" }
 
-              model :macro do
-                attribute(:name) { |n| "Dummy #{n}" }
-                attribute :type, 'Macro::Dummy'
-                attribute :target_model, 'StopArea'
-                attribute :expected_result, 'info'
-              end
+              Chouette::Factory.define_model_macro(self)
             end
           end
 

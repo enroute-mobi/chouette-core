@@ -153,6 +153,164 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
     end
   end
 
+  describe '#perform' do
+    subject { processing_rule.perform(operation: operation, referential: referential, operation_workbench: workbench) }
+
+    let(:workgroup) { context.workgroup }
+    let(:workbench) { context.workbench }
+    let(:referential) { context.referential }
+    let(:operation) do
+      Import::Gtfs.create!(
+        workbench: workbench,
+        local_file: file_fixture('google-sample-feed.zip').open,
+        creator: 'test',
+        name: 'test'
+      )
+    end
+
+    context 'with macro list' do
+      let(:context) do
+        Chouette.create do
+          code_space :code_space
+
+          workbench do
+            macro_list :macro_list do
+              macro :macro_create_code,
+                    type: 'Macro::CreateCode',
+                    name: 'Create Code',
+                    target_model: 'Route',
+                    source_attribute: 'name',
+                    target_code_space_id: :code_space
+            end
+
+            referential
+
+            workbench_processing_rule operation_step: 'after_import', macro_list: :macro_list
+          end
+        end
+      end
+      let(:macro_list) { context.macro_list(:macro_list) }
+      let(:macro_create_code) { context.macro(:macro_create_code) }
+      let(:processing_rule) { context.workbench_processing_rule }
+
+      it 'creates a processing with the correct attributes' do
+        subject
+        expect(processing_rule.processings.last).to(
+          have_attributes(
+            step: 'after',
+            workgroup_id: be_nil,
+            workbench_id: workbench.id,
+            processed_type: 'Macro::List::Run',
+            processed_id: be_present,
+            operation_type: 'Import::Base',
+            operation_id: operation.id
+          )
+        )
+      end
+
+      it 'associates the processing to a macro list run with the correct attributes' do
+        subject
+        expect(processing_rule.processings.last.processed).to be_a(Macro::List::Run)
+        expect(operation.processings.last.processed).to have_attributes(original_macro_list_id: macro_list.id)
+      end
+
+      it 'executes the macro list run' do
+        subject
+        expect(processing_rule.processings.last.processed.user_status).to eq('successful')
+      end
+    end
+
+    context 'with control list' do
+      let(:context) do
+        Chouette.create do
+          workbench do
+            control_list :control_list do
+              control
+            end
+
+            referential
+
+            workbench_processing_rule operation_step: 'after_import', control_list: :control_list
+          end
+        end
+      end
+      let(:control_list) { context.control_list(:control_list) }
+      let(:processing_rule) { context.workbench_processing_rule }
+
+      it 'creates a processing with the correct attributes' do
+        subject
+        expect(processing_rule.processings.last).to(
+          have_attributes(
+            step: 'after',
+            workgroup_id: be_nil,
+            workbench_id: workbench.id,
+            processed_type: 'Control::List::Run',
+            processed_id: be_present,
+            operation_type: 'Import::Base',
+            operation_id: operation.id
+          )
+        )
+      end
+
+      it 'associates the processing to a control list run with the correct attributes' do
+        subject
+        expect(processing_rule.processings.last.processed).to be_a(Control::List::Run)
+        expect(processing_rule.processings.last.processed).to have_attributes(original_control_list_id: control_list.id)
+      end
+
+      it 'executes the control list run' do
+        subject
+        expect(processing_rule.processings.last.processed.user_status).to eq('successful')
+      end
+
+      context 'without operation (scheduling)' do
+        let(:operation) { nil }
+
+        it 'creates a processing with the correct attributes' do
+          subject
+          expect(processing_rule.processings.last).to(
+            have_attributes(
+              step: 'after',
+              workgroup_id: be_nil,
+              workbench_id: workbench.id,
+              processed_type: 'Control::List::Run',
+              processed_id: be_present,
+              operation_type: nil,
+              operation_id: nil
+            )
+          )
+        end
+
+        it 'associates the processing to a control list run with the correct attributes' do
+          subject
+          expect(processing_rule.processings.last.processed).to be_a(Control::List::Run)
+          expect(processing_rule.processings.last.processed).to have_attributes(original_control_list_id: control_list.id)
+        end
+
+        it 'executes the control list run' do
+          subject
+          expect(processing_rule.processings.last.processed.user_status).to eq('successful')
+        end
+
+        context 'with notification rule' do
+          before do
+            workbench.notification_rules.create!(
+              notification_type: 'scheduled_processing',
+              target_type: 'external_email',
+              external_email: 'user@does-not-exist.ex',
+              operation_statuses: %w[successful]
+            )
+          end
+
+          it 'sends notification' do
+            expect(ControlListRunMailer).to receive(:finished).and_return(double(deliver_later: nil))
+            subject
+          end
+        end
+      end
+    end
+  end
+
   describe 'Operation step validation' do
     [Macro::List, Control::List].each do |processable_class|
       describe processable_class do
@@ -446,6 +604,114 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
 
         it 'returns everything except excluded_workbenches' do
           is_expected.to match_array([[other_workbench2, referential2]])
+        end
+      end
+    end
+  end
+
+  describe '#perform' do
+    subject { processing_rule.perform(operation: operation, referential: referential, operation_workbench: workbench) }
+
+    let(:workgroup) { context.workgroup }
+    let(:workbench) { context.workbench }
+    let(:referential) { context.referential }
+    let(:operation) do
+      Import::Gtfs.create!(
+        workbench: workbench,
+        local_file: file_fixture('google-sample-feed.zip').open,
+        creator: 'test',
+        name: 'test'
+      )
+    end
+
+    context 'with control list' do
+      let(:context) do
+        Chouette.create do
+          workgroup do
+            workbench do
+              control_list :control_list, shared: true do
+                control
+              end
+
+              referential
+            end
+          end
+
+          workgroup_processing_rule operation_step: 'after_import', control_list: :control_list
+        end
+      end
+      let(:control_list) { context.control_list(:control_list) }
+      let(:processing_rule) { context.workgroup_processing_rule }
+
+      it 'creates a processing with the correct attributes' do
+        subject
+        expect(processing_rule.processings.last).to(
+          have_attributes(
+            step: 'after',
+            workgroup_id: workgroup.id,
+            workbench_id: workbench.id,
+            processed_type: 'Control::List::Run',
+            processed_id: be_present,
+            operation_type: 'Import::Base',
+            operation_id: operation.id
+          )
+        )
+      end
+
+      it 'associates the processing to a control list run with the correct attributes' do
+        subject
+        expect(processing_rule.processings.last.processed).to be_a(Control::List::Run)
+        expect(processing_rule.processings.last.processed).to have_attributes(original_control_list_id: control_list.id)
+      end
+
+      it 'executes the control list run' do
+        subject
+        expect(processing_rule.processings.last.processed.user_status).to eq('successful')
+      end
+
+      context 'without operation (scheduling)' do
+        let(:operation) { nil }
+
+        it 'creates a processing with the correct attributes' do
+          subject
+          expect(processing_rule.processings.last).to(
+            have_attributes(
+              step: 'after',
+              workgroup_id: workgroup.id,
+              workbench_id: workbench.id,
+              processed_type: 'Control::List::Run',
+              processed_id: be_present,
+              operation_type: nil,
+              operation_id: nil
+            )
+          )
+        end
+
+        it 'associates the processing to a control list run with the correct attributes' do
+          subject
+          expect(processing_rule.processings.last.processed).to be_a(Control::List::Run)
+          expect(processing_rule.processings.last.processed).to have_attributes(original_control_list_id: control_list.id)
+        end
+
+        it 'executes the control list run' do
+          subject
+          expect(processing_rule.processings.last.processed.user_status).to eq('successful')
+        end
+
+        context 'with notification rule' do
+          before do
+            workbench.notification_rules.create!(
+              notification_type: 'scheduled_processing',
+              target_type: 'external_email',
+              external_email: 'user@does-not-exist.ex',
+              operation_statuses: %w[successful]
+            )
+          end
+
+          it 'sends notification' do
+            expect(ControlListRunMailer).to receive(:finished).and_return(double(deliver_later: nil))
+            subject
+          end
         end
       end
     end

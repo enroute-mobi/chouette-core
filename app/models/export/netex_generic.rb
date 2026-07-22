@@ -1254,7 +1254,7 @@ class Export::NetexGeneric < Export::Base
     delegate :networks, to: :export_scope
 
     def perform
-      networks.find_each do |network|
+      networks.includes(:codes).find_each do |network|
         decorated_network = decorate(network)
         target << decorated_network.netex_resource
       end

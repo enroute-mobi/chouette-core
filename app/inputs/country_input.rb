@@ -1,4 +1,4 @@
-class ChouetteCountryInput < SimpleForm::Inputs::CollectionSelectInput
+class CountryInput < SimpleForm::Inputs::CollectionSelectInput
   delegate :content_tag, :concat, :javascript_additional_packs, to: :template
 
   def input(wrapper_options)

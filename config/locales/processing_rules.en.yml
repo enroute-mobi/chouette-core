@@ -14,9 +14,6 @@ en:
         trigger_conditions: Trigger Conditions
         processing_selection: Processing Selection
         scheduling_target: Target
-      target_options:
-        none: Workbench
-        current: Latest Merged Dataset
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -40,10 +37,6 @@ en:
         trigger_conditions: Trigger Conditions
         processing_selection: Processing Selection
         scheduling_target: Target
-      target_options:
-        none: Workbench
-        current: Latest Aggregated Dataset
-        merged: Latest Merged Dataset
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -106,6 +99,15 @@ en:
         after_merge: Merge - After
         after_aggregate: Aggregate - After
         scheduling: Scheduling
+    processing_rule/workbench:
+      scheduled_target:
+        none: Workbench
+        current: Latest Merged Dataset
+    processing_rule/workgroup:
+      scheduled_target:
+        none: Workbench
+        current: Latest Aggregated Dataset
+        merged: Latest Merged Datasets
 
   simple_form:
     hints:

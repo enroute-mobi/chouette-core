@@ -14,9 +14,6 @@ fr:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
         scheduling_target: Cible
-      target_options:
-        none: Espace de travail
-        current: Offre courante finalisée
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -40,10 +37,6 @@ fr:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
         scheduling_target: Cible
-      target_options:
-        none: Espace de travail
-        current: Offre courante agrégée
-        merged: Offre courante finalisée
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -106,6 +99,15 @@ fr:
         after_merge: Finalisation - Après
         after_aggregate: Agrégation - Après
         scheduling: Planification
+    processing_rule/workbench:
+      scheduling_target:
+        none: Espace de travail
+        current: Offre courante finalisée
+    processing_rule/workgroup:
+      scheduling_target:
+        none: Espace de travail
+        current: Offre courante agrégée
+        merged: Offres courantes finalisées
 
   simple_form:
     hints:

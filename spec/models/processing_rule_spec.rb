@@ -10,8 +10,6 @@ RSpec.shared_examples 'ProcessingRule common' do
   it { is_expected.to allow_value(Cuckoo::DaysOfWeek.all).for(:scheduling_days) }
   it { is_expected.to allow_value(Cuckoo::DaysOfWeek.new(monday: true, tuesday: true)).for(:scheduling_days) }
   it { is_expected.not_to allow_value(Cuckoo::DaysOfWeek.none).for(:scheduling_days) }
-
-  it { is_expected.to enumerize(:scheduling_target).in('none', 'current', 'merged').with_default('none') }
 end
 
 RSpec.describe ProcessingRule::Workbench, type: :model do
@@ -35,12 +33,9 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
 
   it { is_expected.to enumerize(:operation_step).in('after_import', 'before_merge', 'after_merge', 'scheduling') }
 
-  it { is_expected.to_not allow_value('after_aggregate').for(:operation_step) }
+  it { is_expected.to enumerize(:scheduling_target).in('none', 'current').with_default('none') }
 
-  %w[none current].each do |candidate_target|
-    it { is_expected.to allow_value(candidate_target).for(:scheduling_target) }
-  end
-  it { is_expected.not_to allow_value('merged').for(:scheduling_target) }
+  it { is_expected.to_not allow_value('after_aggregate').for(:operation_step) }
 
   context 'using a Control List' do
     before { subject.processable = control_list }
@@ -417,9 +412,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
     )
   end
 
-  %w[none current merged].each do |candidate_target|
-    it { is_expected.to allow_value(candidate_target).for(:scheduling_target) }
-  end
+  it { is_expected.to enumerize(:scheduling_target).in('none', 'current', 'merged').with_default('none') }
 
   context 'using a Control List' do
     before { subject.processable = control_list }

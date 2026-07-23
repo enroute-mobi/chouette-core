@@ -1,15 +1,14 @@
 # frozen_string_literal: true
 
-class CreateEquipments < ActiveRecord::Migration[5.2]
+class CreateEquipements < ActiveRecord::Migration[5.2]
   def change
     on_public_schema_only do
-      create_table 'equipments' do |t|
-        t.string 'objectid', null: false
+      create_table 'equipements' do |t|
         t.string 'name'
         t.string 'public_code'
         t.references 'stop_area'
-        t.references 'stop_area_provider'
-        t.references 'stop_area_referential'
+        t.references 'shape_provider'
+        t.references 'shape_referential'
         t.boolean 'fixed', default: false
         t.boolean 'out_of_order', default: false
         t.string 'mobility_impaired_accessibility'
@@ -20,7 +19,6 @@ class CreateEquipments < ActiveRecord::Migration[5.2]
         t.string 'audible_signals_availability'
         t.string 'visual_signs_availability'
         t.text 'description'
-        t.index ['objectid'], unique: true
         t.timestamps
       end
     end

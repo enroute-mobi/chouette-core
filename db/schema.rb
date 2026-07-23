@@ -557,13 +557,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_000000) do
     t.index ["stop_area_referential_id"], name: "index_entrances_on_stop_area_referential_id"
   end
 
-  create_table "equipments", force: :cascade do |t|
-    t.string "objectid", null: false
+  create_table "equipements", force: :cascade do |t|
     t.string "name"
     t.string "public_code"
     t.bigint "stop_area_id"
-    t.bigint "stop_area_provider_id"
-    t.bigint "stop_area_referential_id"
+    t.bigint "shape_provider_id"
+    t.bigint "shape_referential_id"
     t.boolean "fixed", default: false
     t.boolean "out_of_order", default: false
     t.string "mobility_impaired_accessibility"
@@ -576,10 +575,9 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_15_000000) do
     t.text "description"
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
-    t.index ["objectid"], name: "index_equipments_on_objectid", unique: true
-    t.index ["stop_area_id"], name: "index_equipments_on_stop_area_id"
-    t.index ["stop_area_provider_id"], name: "index_equipments_on_stop_area_provider_id"
-    t.index ["stop_area_referential_id"], name: "index_equipments_on_stop_area_referential_id"
+    t.index ["shape_provider_id"], name: "index_equipements_on_shape_provider_id"
+    t.index ["shape_referential_id"], name: "index_equipements_on_shape_referential_id"
+    t.index ["stop_area_id"], name: "index_equipements_on_stop_area_id"
   end
 
   create_table "export_messages", force: :cascade do |t|

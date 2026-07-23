@@ -1,27 +1,27 @@
 # frozen_string_literal: true
 
 module Search
-  class Equipment < Base
+  class Equipement < Base
     # All search attributes
     attribute :text
     attribute :stop_area_id
-    attribute :stop_area_provider
+    attribute :shape_provider_id
     attribute :fixed, type: Boolean
     attribute :out_of_order, type: Boolean
 
     attr_accessor :workbench
 
     def searched_class
-      ::Equipment
+      ::Equipement
     end
 
     def query(scope)
-      Query::Equipment.new(scope)
-                      .text(text)
-                      .stop_area_id(stop_area_id)
-                      .stop_area_provider_id(stop_area_provider)
-                      .fixed(fixed)
-                      .out_of_order(out_of_order)
+      Query::Equipement.new(scope)
+                       .text(text)
+                       .stop_area_id(stop_area_id)
+                       .shape_provider_id(shape_provider_id)
+                       .fixed(fixed)
+                       .out_of_order(out_of_order)
     end
 
     def candidate_stop_areas
@@ -29,8 +29,8 @@ module Search
       stop_area_id.present? ? scope.where(id: stop_area_id) : scope.none
     end
 
-    def stop_area_provider_options
-      workbench.stop_area_referential.stop_area_providers.pluck(:name, :id)
+    def shape_provider_options
+      workbench.shape_referential.shape_providers.pluck(:short_name, :id)
     end
 
     class Order < ::Search::Order

@@ -29,7 +29,7 @@ module Chouette
     has_many :specific_vehicle_journey_at_stops, :class_name => 'Chouette::VehicleJourneyAtStop', :foreign_key => "stop_area_id"
     has_many :specific_vehicle_journeys, through: :specific_vehicle_journey_at_stops, class_name: 'Chouette::VehicleJourney', source: :vehicle_journey
     has_many :entrances, dependent: :delete_all
-    has_many :equipments, dependent: :delete_all
+    has_many :equipements, dependent: :delete_all
     has_many :macro_messages, as: :source, class_name: "::Macro::Message", foreign_key: :source_id
 
     has_many :stop_area_zones, class_name: 'Fare::StopAreaZone', inverse_of: :stop_area, dependent: :delete_all

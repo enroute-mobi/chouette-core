@@ -11,7 +11,8 @@ module Policy
         ::PointOfInterest::Category,
         ::PointOfInterest::Base,
         ::ServiceFacilitySet,
-        ::AccessibilityAssessment
+        ::AccessibilityAssessment,
+        ::Equipement
       ].include?(resource_class)
     end
   end

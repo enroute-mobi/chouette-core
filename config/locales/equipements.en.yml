@@ -1,28 +1,28 @@
 en:
-  equipments:
-    search_no_results: "No Equipments match your search"
+  equipements:
+    search_no_results: "No Station Equipment match your search"
     actions:
-      show: "Show this Equipment"
-      new: "Add an Equipment"
-      edit: "Edit this Equipment"
-      destroy: "Delete this Equipment"
-      destroy_confirm: "Are you sure to delete this Equipment"
+      show: "Show this Station Equipment"
+      new: "Add a Station Equipment"
+      edit: "Edit this Station Equipment"
+      destroy: "Delete this Station Equipment"
+      destroy_confirm: "Are you sure to delete this Station Equipment"
     errors:
     new:
-      title: "Create an Equipment"
+      title: "Create a Station Equipment"
     edit:
       title: "Edit %{name}"
     show:
       title: "%{name}"
     index:
-      title: "Equipments"
+      title: "Station Equipment"
     form:
       sections:
         identification: "Identification"
         accessibility: "Accessibility"
         internal: "Internal"
   enumerize:
-    equipment:
+    equipement:
       mobility_impaired_accessibility:
         unknown: Unknown
         'yes': 'Yes'
@@ -60,24 +60,24 @@ en:
         partial: Partial
   activerecord:
     models:
-      equipment:
-        zero:  "Equipments"
-        one:   "Equipment"
-        other: "Equipments"
+      equipement:
+        zero:  "Station Equipment"
+        one:   "Station Equipment"
+        other: "Station Equipment"
         the:
-          one: "the Equipment"
-          other: "the Equipments"
+          one: "the Station Equipment"
+          other: "the Station Equipment"
         of:
-          one: "of Equipment"
-          other: "of Equipments"
+          one: "of Station Equipment"
+          other: "of Station Equipment"
         to:
-          one: "to Equipment"
-          other: "to Equipments"
+          one: "to Station Equipment"
+          other: "to Station Equipment"
     attributes:
-      equipment:
+      equipement:
         name: "Name"
         stop_area: "Stop Area"
-        stop_area_provider: "Stop Area Provider"
+        shape_provider: "Topological Provider"
         public_code: "Public Code"
         fixed: "Fixed"
         out_of_order: "Out of Order"
@@ -89,7 +89,6 @@ en:
         audible_signals_availability: "Audible Signals Available"
         visual_signs_availability: "Visual Signs Available"
         description: "Description"
-        objectid: "ID"
         created_at: "Created at"
         updated_at: "Updated at"
         codes: "Codes"

@@ -1,16 +1,20 @@
 # frozen_string_literal: true
 
-describe Equipment, type: :model do
+describe Equipement, type: :model do
   let(:context) do
     Chouette.create do
-      equipment
+      stop_area :stop_area
+      shape_provider do
+        equipement :equipement, stop_area: :stop_area
+      end
     end
   end
 
-  subject(:equipment) { context.equipment }
+  subject(:equipement) { context.equipement(:equipement) }
 
   it { should validate_presence_of(:name) }
   it { should belong_to(:stop_area).required }
+  it { should belong_to(:shape_provider).required }
 
   %i[
     mobility_impaired_accessibility
@@ -25,6 +29,6 @@ describe Equipment, type: :model do
   end
 
   it 'is valid' do
-    expect(equipment).to be_valid
+    expect(equipement).to be_valid
   end
 end

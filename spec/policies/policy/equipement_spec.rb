@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-RSpec.describe Policy::Equipment, type: :policy do
+RSpec.describe Policy::Equipement, type: :policy do
   let(:policy_context_class) { Policy::Context::Workbench }
 
   describe '#update?' do
     subject { policy.update? }
 
-    it { applies_strategy(Policy::Strategy::StopAreaProvider) }
+    it { applies_strategy(Policy::Strategy::ShapeProvider) }
     it { applies_strategy(Policy::Strategy::Permission, :update) }
 
     it { is_expected.to be_truthy }
@@ -15,7 +15,7 @@ RSpec.describe Policy::Equipment, type: :policy do
   describe '#destroy?' do
     subject { policy.destroy? }
 
-    it { applies_strategy(Policy::Strategy::StopAreaProvider) }
+    it { applies_strategy(Policy::Strategy::ShapeProvider) }
     it { applies_strategy(Policy::Strategy::Permission, :destroy) }
 
     it { is_expected.to be_truthy }

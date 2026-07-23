@@ -1,8 +1,7 @@
 # frozen_string_literal: true
 
-class Equipment < ApplicationModel
-  include StopAreaReferentialSupport
-  include ObjectidSupport
+class Equipement < ApplicationModel
+  include ShapeReferentialSupport
   include CodeSupport
   extend Enumerize
 

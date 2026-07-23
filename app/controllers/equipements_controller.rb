@@ -1,16 +1,16 @@
 # frozen_string_literal: true
 
-class EquipmentsController < Chouette::StopAreaReferentialController
-  defaults resource_class: Equipment
+class EquipementsController < Chouette::TopologicReferentialController
+  defaults resource_class: Equipement
 
-  before_action :equipment_params, only: %i[create update]
+  before_action :equipement_params, only: %i[create update]
 
   respond_to :html
 
   def index
     index! do |format|
       format.html do
-        @equipments = EquipmentDecorator.decorate(
+        @equipements = EquipementDecorator.decorate(
           collection,
           context: {
             workbench: workbench
@@ -22,20 +22,20 @@ class EquipmentsController < Chouette::StopAreaReferentialController
 
   def show
     show! do
-      @equipment = @equipment.decorate context: { workbench: workbench }
+      @equipement = @equipement.decorate context: { workbench: workbench }
     end
   end
 
   protected
 
-  alias equipment resource
+  alias equipement resource
 
   def scope
-    stop_area_referential.equipments
+    @scope ||= workbench.shape_referential.equipements
   end
 
   def search
-    @search ||= Search::Equipment.from_params(params, workbench: workbench)
+    @search ||= Search::Equipement.from_params(params, workbench: workbench)
   end
 
   def collection
@@ -44,12 +44,11 @@ class EquipmentsController < Chouette::StopAreaReferentialController
 
   private
 
-  def equipment_params
-    @equipment_params ||= params.require(:equipment).permit(
-      :objectid,
+  def equipement_params
+    @equipement_params ||= params.require(:equipement).permit(
       :name,
       :stop_area_id,
-      :stop_area_provider_id,
+      :shape_provider_id,
       :public_code,
       :fixed,
       :out_of_order,

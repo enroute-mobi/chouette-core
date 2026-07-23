@@ -1,28 +1,28 @@
 fr:
-  equipments:
-    search_no_results: "Aucun Équipement ne correspond à votre recherche"
+  equipements:
+    search_no_results: "Aucun Équipement en station ne correspond à votre recherche"
     actions:
-      show: "Afficher cet Équipement"
-      new: "Ajouter un Équipement"
-      edit: "Editer cet Équipement"
-      destroy: "Supprimer cet Équipement"
-      destroy_confirm: "Etes vous sûr de supprimer cet Équipement ?"
+      show: "Afficher cet Équipement en station"
+      new: "Ajouter un Équipement en station"
+      edit: "Editer cet Équipement en station"
+      destroy: "Supprimer cet Équipement en station"
+      destroy_confirm: "Etes vous sûr de supprimer cet Équipement en station ?"
     errors:
     new:
-      title: "Créer un Équipement"
+      title: "Créer un Équipement en station"
     edit:
       title: "Editer %{name}"
     show:
       title: "%{name}"
     index:
-      title: "Équipements"
+      title: "Équipements en station"
     form:
       sections:
         identification: "Identification"
         accessibility: "Accessibilité"
         internal: "Interne"
   enumerize:
-    equipment:
+    equipement:
       mobility_impaired_accessibility:
         unknown: Inconnu
         'yes': Oui
@@ -60,24 +60,24 @@ fr:
         partial: Partiel
   activerecord:
     models:
-      equipment:
-        zero:  "Équipement"
-        one:   "Équipement"
-        other: "Équipements"
+      equipement:
+        zero:  "Équipement en station"
+        one:   "Équipement en station"
+        other: "Équipements en station"
         the:
-          one: "l'Équipement"
-          other: "les Équipements"
+          one: "l'Équipement en station"
+          other: "les Équipements en station"
         of:
-          one: "de l'Équipement"
-          other: "des Équipements"
+          one: "de l'Équipement en station"
+          other: "des Équipements en station"
         to:
-          one: "à l'Équipement"
-          other: "aux Équipements"
+          one: "à l'Équipement en station"
+          other: "aux Équipements en station"
     attributes:
-      equipment:
+      equipement:
         name: "Nom"
         stop_area: "Arrêt"
-        stop_area_provider: "Fournisseur d'arrêts"
+        shape_provider: "Fournisseur Topologique"
         public_code: "Code public"
         fixed: "Fixe"
         out_of_order: "Hors service"
@@ -89,7 +89,6 @@ fr:
         audible_signals_availability: "Signalétique auditive disponible"
         visual_signs_availability: "Signalétique visuelle disponible"
         description: "Description"
-        objectid: "ID"
         created_at: "Créé le"
         updated_at: "Edité le"
         codes: "Codes"

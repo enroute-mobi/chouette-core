@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 module Policy
-  class Equipment < Base
-    authorize_by Strategy::StopAreaProvider
+  class Equipement < Base
+    authorize_by Strategy::ShapeProvider
     authorize_by Strategy::Permission
 
     protected

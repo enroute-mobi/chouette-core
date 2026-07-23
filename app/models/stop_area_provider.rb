@@ -12,7 +12,6 @@ class StopAreaProvider < ActiveRecord::Base
   has_many :connection_links, class_name: "Chouette::ConnectionLink"
   has_many :stop_area_routing_constraints
   has_many :entrances
-  has_many :equipments
   has_many :stop_area_groups, inverse_of: :stop_area_provider
 
   scope :by_text, ->(text) { text.blank? ? all : where('lower(stop_area_providers.name) LIKE :t or lower(stop_area_providers.objectid) LIKE :t', t: "%#{text.downcase}%") }
@@ -37,7 +36,7 @@ class StopAreaProvider < ActiveRecord::Base
   end
 
   def used?
-    [ stop_areas, connection_links, stop_area_routing_constraints, entrances, equipments ].any?(&:exists?)
+    [ stop_areas, connection_links, stop_area_routing_constraints, entrances ].any?(&:exists?)
   end
 
   private

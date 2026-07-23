@@ -21,13 +21,21 @@
           input_html: { multiple: true },
           allow_blank: false
 
-      = render 'processing_rules/scheduling_fields', \
-        f: f, \
-        translation_scope: 'processing_rule/workbenches', \
-        heading_class: 'my-16', \
-        target_input_html: { 'x-model': 'scheduling_target', 'x-on:change': "if ($event.scheduling_target.value == 'current') processable_type = 'Control::List'" }
+      template x-if="operation_step == 'scheduling'"
+        div x-init="$nextTick(() => document.dispatchEvent(new CustomEvent('flatpickr:refresh')))"
+          = f.input :scheduling_time, as: :time_picker
+          = f.input :scheduling_days, as: :day_type
 
       .separator.section_separator
+
+      template x-if="operation_step == 'scheduling'"
+        div
+          h2.my-16
+            = t('processing_rule/workbenches.form.sections.target')
+
+          = f.input :scheduling_target, as: :select, include_blank: false, input_html: { 'x-model': 'scheduling_target', 'x-on:change': "if ($event.scheduling_target.value == 'current') processable_type = 'Control::List'" }
+
+          .separator.section_separator
 
       h2.my-16
         = t('processing_rule/workbenches.form.sections.processing_selection')

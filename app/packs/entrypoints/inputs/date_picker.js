@@ -3,21 +3,21 @@ import { French } from "flatpickr/dist/l10n/fr.js"
 import { english } from "flatpickr/dist/l10n/default.js"
 
 const locales = {
-	fr: French,
-	en: english
+  fr: French,
+  en: english
 }
 
 const dateConfig = {
-	dateFormat: "d/m/Y",
-	wrap: true
+  dateFormat: "d/m/Y",
+  wrap: true
 }
 
 const timeConfig = {
-	enableTime: true,
-	noCalendar: true,
-	dateFormat: "H:i",
-	time_24hr: true,
-	wrap: true
+  enableTime: true,
+  noCalendar: true,
+  dateFormat: "H:i",
+  time_24hr: true,
+  wrap: true
 }
 
 // Idempotent init: only attaches flatpickr to blocks not initialized yet, so it

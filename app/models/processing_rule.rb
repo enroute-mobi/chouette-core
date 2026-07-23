@@ -207,6 +207,12 @@ module ProcessingRule
       workbench&.control_lists_shared_with_workgroup || Control::List.none
     end
 
+    def candidate_operation_steps
+      candidates = super
+      candidates.delete('scheduling') if processable_type == 'Macro::List' && scheduling_target == 'current'
+      candidates
+    end
+
     def candidate_tags
       return Tag.none unless workbench
 

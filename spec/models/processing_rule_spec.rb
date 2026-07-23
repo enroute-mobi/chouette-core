@@ -13,17 +13,7 @@ RSpec.shared_examples 'ProcessingRule common' do
 end
 
 RSpec.describe ProcessingRule::Workbench, type: :model do
-  let(:context) do
-    Chouette.create do
-      workbench do
-        control_list
-        macro_list
-      end
-    end
-  end
-  let(:workbench) { context.workbench }
-  let(:control_list) { context.control_list }
-  let(:macro_list) { context.macro_list }
+  let(:workbench) { context.workbench(:workbench) }
 
   include_examples 'ProcessingRule common'
 
@@ -38,49 +28,148 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
   it { is_expected.to_not allow_value('after_aggregate').for(:operation_step) }
 
   context 'using a Control List' do
+    let(:control_list) { Chouette.create { control_list }.control_list }
+
     before { subject.processable = control_list }
 
     it { is_expected.to validate_presence_of(:control_list_id) }
 
-    it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge after_merge]) }
+    %w[after_import before_merge after_merge].each do |operation_step|
+      it { is_expected.to allow_value(operation_step).for(:operation_step) }
+    end
+
+    context 'when #scheduling_target is "none"' do
+      before { subject.scheduling_target = 'none' }
+
+      it { is_expected.to allow_value('scheduling').for(:operation_step) }
+    end
+
+    context 'when #scheduling_target is "current"' do
+      before { subject.scheduling_target = 'none' }
+
+      it { is_expected.to allow_value('scheduling').for(:operation_step) }
+    end
   end
 
   context 'using a Macro List' do
+    let(:macro_list) { Chouette.create { macro_list }.macro_list }
+
     before { subject.processable = macro_list }
 
     it { is_expected.to validate_presence_of(:macro_list_id) }
 
-    it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge]) }
+    %w[after_import before_merge].each do |operation_step|
+      it { is_expected.to allow_value(operation_step).for(:operation_step) }
+    end
+
+    %w[after_merge].each do |operation_step|
+      it { is_expected.not_to allow_value(operation_step).for(:operation_step) }
+    end
+
+    context 'when #scheduling_target is "none"' do
+      before { subject.scheduling_target = 'none' }
+
+      it { is_expected.to allow_value('scheduling').for(:operation_step) }
+    end
+
+    context 'when #scheduling_target is "current"' do
+      before { subject.scheduling_target = 'current' }
+
+      it { is_expected.not_to allow_value('scheduling').for(:operation_step) }
+    end
   end
 
-  context 'when another ProcessingRule exists' do
-    let(:context) { Chouette.create { workbench_processing_rule } }
-    let(:processing_rule) { context.workbench_processing_rule }
+  describe 'Operation step uniqueness validation' do
+    let(:context) do
+      operation_step = self.operation_step
 
-    describe 'a new ProcessingRule in the same Workbench with the same operation step and processable type' do
-      subject do
-        workbench.processing_rules.build(
-          operation_step: processing_rule.operation_step,
-          processable: processing_rule.processable
-        )
+      Chouette.create do
+        workbench :workbench do
+          control_list :first_control_list
+          control_list :second_control_list
+
+          workbench_processing_rule control_list: :first_control_list, operation_step: operation_step
+        end
+      end
+    end
+    let(:first_control_list) { context.control_list(:first_control_list) }
+    let(:second_control_list) { context.control_list(:second_control_list) }
+
+    %w[after_import scheduling].each do |operation_step|
+      context 'when operation_step is after_import' do
+        let(:operation_step) { operation_step }
+
+        context 'when a processing rule is created with a processable that is used in another processing rule with the same operation step' do
+          subject do
+            workbench.processing_rules.build(
+              operation_step: operation_step,
+              processable: first_control_list
+            )
+          end
+
+          it { is_expected.to be_invalid }
+        end
+
+        context 'when a processing rule is created with a new processable' do
+          subject do
+            workbench.processing_rules.build(
+              operation_step: operation_step,
+              processable: second_control_list
+            )
+          end
+
+          it { is_expected.to be_valid }
+        end
+      end
+    end
+
+    context 'when operation_step is not after_import' do
+      let(:operation_step) { 'before_merge' }
+
+      context 'when a processing rule is created with a processable that is used in another processing rule with the same operation step' do
+        subject do
+          workbench.processing_rules.build(
+            operation_step: operation_step,
+            processable: first_control_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
       end
 
-      it { expect(subject).to_not be_valid }
+      context 'when a processing rule is created with a new processable' do
+        subject do
+          workbench.processing_rules.build(
+            operation_step: operation_step,
+            processable: second_control_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
     end
   end
 
   describe '#no_tag_overlap' do
-    let(:tag_1) { Tag.create!(name: 'Tag 1', workbench: workbench) }
-    let(:tag_2) { Tag.create!(name: 'Tag 2', workbench: workbench) }
-    let(:tag_3) { Tag.create!(name: 'Tag 3', workbench: workbench) }
+    let(:context) do
+      Chouette.create do
+        workbench :workbench do
+          macro_list
+
+          tag :tag1
+          tag :tag2
+          tag :tag3
+        end
+      end
+    end
 
     context 'when required and excluded tags overlap' do
       subject do
         workbench.processing_rules.build(
           operation_step: 'after_import',
-          processable: macro_list,
-          required_tag_ids: [tag_1.id, tag_2.id],
-          excluded_tag_ids: [tag_1.id]
+          processable: context.macro_list,
+          required_tag_ids: [context.tag(:tag1).id, context.tag(:tag2).id],
+          excluded_tag_ids: [context.tag(:tag1).id]
         )
       end
 
@@ -98,9 +187,9 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
       subject do
         workbench.processing_rules.build(
           operation_step: 'after_import',
-          processable: macro_list,
-          required_tag_ids: [tag_1.id, tag_2.id],
-          excluded_tag_ids: [tag_3.id]
+          processable: context.macro_list,
+          required_tag_ids: [context.tag(:tag1).id, context.tag(:tag2).id],
+          excluded_tag_ids: [context.tag(:tag3).id]
         )
       end
 
@@ -113,14 +202,13 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
 
     let(:context) do
       Chouette.create do
-        workbench do
+        workbench :workbench do
           control_list :control_list
           workbench_processing_rule control_list: :control_list, operation_step: 'scheduling'
           referential
         end
       end
     end
-    let(:workbench) { context.workbench }
     let(:processing_rule) { context.workbench_processing_rule }
 
     before { processing_rule.scheduling_target = scheduling_target }
@@ -152,7 +240,6 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
     subject { processing_rule.perform(operation: operation, referential: referential, operation_workbench: workbench) }
 
     let(:workgroup) { context.workgroup }
-    let(:workbench) { context.workbench }
     let(:referential) { context.referential }
     let(:operation) do
       Import::Gtfs.create!(
@@ -168,7 +255,7 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
         Chouette.create do
           code_space :code_space
 
-          workbench do
+          workbench :workbench do
             macro_list :macro_list do
               macro :macro_create_code,
                     type: 'Macro::CreateCode',
@@ -218,7 +305,7 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
     context 'with control list' do
       let(:context) do
         Chouette.create do
-          workbench do
+          workbench :workbench do
             control_list :control_list do
               control
             end
@@ -305,100 +392,10 @@ RSpec.describe ProcessingRule::Workbench, type: :model do
       end
     end
   end
-
-  describe 'Operation step validation' do
-    [Macro::List, Control::List].each do |processable_class|
-      describe processable_class do
-        let(:context) { Chouette.create { workbench } }
-        let(:workbench) { context.workbench }
-        let(:first) { described_class.create!(name: 'First', workbench: workbench) }
-        let(:second) { described_class.create!(name: 'Second', workbench: workbench) }
-
-        context 'when operation_step is after_import' do
-          before do
-            workbench.processing_rules.create!(
-              operation_step: operation_step,
-              processable: first
-            )
-          end
-
-          let(:operation_step) { 'after_import' }
-
-          context 'when a processing rule is created with a processable that is used in another after_import processing rule' do
-            subject do
-              workbench.processing_rules.build(
-                operation_step: operation_step,
-                processable: first
-              )
-            end
-
-            it { is_expected.to be_invalid }
-          end
-
-          context 'when a processing rule is created with a new processable' do
-            subject do
-              workbench.processing_rules.build(
-                operation_step: operation_step,
-                processable: second
-              )
-            end
-
-            it { is_expected.to be_valid }
-          end
-        end
-
-        context 'when operation_step is not after_import' do
-          let(:operation_step) { 'before_merge' }
-
-          before do
-            workbench.processing_rules.create!(
-              operation_step: operation_step,
-              processable: first
-            )
-          end
-
-          context 'when a processing rule is created with a processable that is used in another processing rule' do
-            subject do
-              workbench.processing_rules.build(
-                operation_step: operation_step,
-                processable: first
-              )
-            end
-
-            it { is_expected.to be_invalid }
-          end
-
-          context 'when a processing rule is created with a new processable' do
-            subject do
-              workbench.processing_rules.build(
-                operation_step: operation_step,
-                processable: second
-              )
-            end
-
-            it { is_expected.to be_invalid }
-          end
-        end
-      end
-    end
-  end
 end
 
 RSpec.describe ProcessingRule::Workgroup, type: :model do
-  let(:context) do
-    Chouette.create do
-      workgroup do
-        flamingo_validation_setup
-
-        workbench :workbench do
-          control_list shared: true
-        end
-      end
-    end
-  end
   let(:workbench) { context.workbench(:workbench) }
-  let(:control_list) { context.control_list }
-  let(:flamingo_validation_setup) { context.flamingo_validation_setup }
 
   include_examples 'ProcessingRule common'
 
@@ -415,34 +412,134 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
   it { is_expected.to enumerize(:scheduling_target).in('none', 'current', 'merged').with_default('none') }
 
   context 'using a Control List' do
+    let(:control_list) { Chouette.create { control_list shared: true }.control_list }
+
     before { subject.processable = control_list }
 
     it { is_expected.to validate_presence_of(:control_list_id) }
 
-    it do
-      is_expected.to(
-        validate_inclusion_of(:operation_step).in_array(%w[after_import before_merge after_merge after_aggregate])
-      )
+    %w[after_import before_merge after_merge after_aggregate].each do |operation_step|
+      it { is_expected.to allow_value(operation_step).for(:operation_step) }
+    end
+
+    %w[before_import].each do |operation_step|
+      it { is_expected.not_to allow_value(operation_step).for(:operation_step) }
+    end
+
+    context 'when #scheduling_target is "none"' do
+      before { subject.scheduling_target = 'none' }
+
+      it { is_expected.to allow_value('scheduling').for(:operation_step) }
+    end
+
+    context 'when #scheduling_target is "current"' do
+      before { subject.scheduling_target = 'current' }
+
+      it { is_expected.to allow_value('scheduling').for(:operation_step) }
     end
   end
 
   context 'using a flamingo validation setup' do
+    let(:flamingo_validation_setup) { Chouette.create { flamingo_validation_setup }.flamingo_validation_setup }
+
     before { subject.processable = flamingo_validation_setup }
 
-    it { is_expected.to validate_inclusion_of(:operation_step).in_array(%w[before_import]) }
+    %w[before_import].each do |operation_step|
+      it { is_expected.to allow_value(operation_step).for(:operation_step) }
+    end
+
+    %w[after_import before_merge after_merge after_aggregate].each do |operation_step|
+      it { is_expected.not_to allow_value(operation_step).for(:operation_step) }
+    end
+
+    context 'when #scheduling_target is "none"' do
+      before { subject.scheduling_target = 'none' }
+
+      it { is_expected.not_to allow_value('scheduling').for(:operation_step) }
+    end
+
+    context 'when #scheduling_target is "current"' do
+      before { subject.scheduling_target = 'current' }
+
+      it { is_expected.not_to allow_value('scheduling').for(:operation_step) }
+    end
   end
 
-  context 'when target_workbench_ids and excluded_workbench_ids are both present' do
-    subject { context.workgroup_processing_rule }
-
+  describe 'Operation step uniqueness validation' do
     let(:context) do
-      Chouette.create do
-        workbench
+      operation_step = self.operation_step
 
-        workgroup_processing_rule
+      Chouette.create do
+        workgroup do
+          workbench :workbench do
+            control_list :first_control_list, shared: true
+            control_list :second_control_list, shared: true
+          end
+
+          workgroup_processing_rule control_list: :first_control_list, operation_step: operation_step
+        end
+      end
+    end
+    let(:workgroup) { context.workgroup }
+    let(:first_control_list) { context.control_list(:first_control_list) }
+    let(:second_control_list) { context.control_list(:second_control_list) }
+
+    %w[after_import scheduling].each do |operation_step|
+      context 'when operation_step is after_import' do
+        let(:operation_step) { operation_step }
+
+        context 'when a processing rule is created with a processable that is used in another processing rule with the same operation step' do
+          subject do
+            workgroup.processing_rules.build(
+              operation_step: operation_step,
+              processable: first_control_list
+            )
+          end
+
+          it { is_expected.to be_invalid }
+        end
+
+        context 'when a processing rule is created with a new processable' do
+          subject do
+            workgroup.processing_rules.build(
+              operation_step: operation_step,
+              processable: second_control_list
+            )
+          end
+
+          it { is_expected.to be_valid }
+        end
       end
     end
 
+    context 'when operation_step is not after_import' do
+      let(:operation_step) { 'before_merge' }
+
+      context 'when a processing rule is created with a processable that is used in another processing rule with the same operation step' do
+        subject do
+          workgroup.processing_rules.build(
+            operation_step: operation_step,
+            processable: first_control_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
+
+      context 'when a processing rule is created with a new processable' do
+        subject do
+          workgroup.processing_rules.build(
+            operation_step: operation_step,
+            processable: second_control_list
+          )
+        end
+
+        it { is_expected.to be_invalid }
+      end
+    end
+  end
+
+  context 'when target_workbench_ids and excluded_workbench_ids are both present' do
     before do
       subject.target_workbench_ids = [1]
       subject.excluded_workbench_ids = [1]
@@ -465,8 +562,8 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
         end
       end
     end
-    let(:workgroup_processing_rule) { context.workgroup_processing_rule }
     let(:other_workbench) { context.workbench(:other_workbench) }
+    let(:workgroup_processing_rule) { context.workgroup_processing_rule }
 
     before do
       workgroup_processing_rule.update(
@@ -606,7 +703,6 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
     subject { processing_rule.perform(operation: operation, referential: referential, operation_workbench: workbench) }
 
     let(:workgroup) { context.workgroup }
-    let(:workbench) { context.workbench }
     let(:referential) { context.referential }
     let(:operation) do
       Import::Gtfs.create!(
@@ -621,7 +717,7 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
       let(:context) do
         Chouette.create do
           workgroup do
-            workbench do
+            workbench :workbench do
               control_list :control_list, shared: true do
                 control
               end
@@ -706,91 +802,6 @@ RSpec.describe ProcessingRule::Workgroup, type: :model do
             subject
           end
         end
-      end
-    end
-  end
-
-  describe 'Operation step validation' do
-    let(:workgroup) { context.workgroup }
-    let(:processing_rule) { context.workgroup_processing_rule }
-    let(:second_control_list) { context.control_list(:second_control_list) }
-    let(:first_control_list) { context.control_list(:first_control_list) }
-
-    context 'when operation_step is after_import' do
-      let(:context) do
-        Chouette.create do
-          workgroup do
-            workbench :workbench do
-              control_list :first_control_list, shared: true
-              control_list :second_control_list, shared: true
-            end
-
-            workgroup_processing_rule control_list: :first_control_list, operation_step: 'after_import'
-          end
-        end
-      end
-
-      let(:operation_step) { 'after_import' }
-
-      context 'when a processing rule is created with a processable that is used in another after_import processing rule' do
-        subject do
-          workgroup.processing_rules.build(
-            operation_step: operation_step,
-            processable: first_control_list
-          )
-        end
-
-        it { is_expected.to be_invalid }
-      end
-
-      context 'when a processing rule is created with a new processable' do
-        subject do
-          workgroup.processing_rules.build(
-            operation_step: operation_step,
-            processable: second_control_list
-          )
-        end
-
-        it { is_expected.to be_valid }
-      end
-    end
-
-    context 'when operation_step is not after_import' do
-      let(:context) do
-        Chouette.create do
-          workgroup do
-            workbench :workbench do
-              control_list :first_control_list, shared: true
-              control_list :second_control_list, shared: true
-            end
-
-            workgroup_processing_rule control_list: :first_control_list, operation_step: 'before_merge'
-          end
-        end
-      end
-
-      let(:operation_step) { 'before_merge' }
-
-      context 'when a processing rule is created with a processable that is used in another processing rule' do
-        subject do
-          workgroup.processing_rules.build(
-            operation_step: operation_step,
-            processable: first_control_list
-          )
-        end
-
-        it { is_expected.to be_invalid }
-      end
-
-      context 'when a processing rule is created with a new processable' do
-        subject do
-          workgroup.processing_rules.build(
-            operation_step: operation_step,
-            processable: second_control_list
-          )
-        end
-
-        it { is_expected.to be_invalid }
       end
     end
   end

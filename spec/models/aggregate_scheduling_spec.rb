@@ -48,7 +48,7 @@ RSpec.describe AggregateScheduling, type: :model do
 
     it 'does not serialize the whole aggregate scheduing' do
       expect(scheduled_job.handler).not_to include("aggregate_scheduling: !ruby/object:AggregateScheduling\n")
-      expect(scheduled_job.payload_object.aggregate_scheduling).to eq(aggregate_scheduling)
+      expect(scheduled_job.payload_object.scheduling).to eq(aggregate_scheduling)
     end
   end
 

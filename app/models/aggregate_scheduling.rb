@@ -10,10 +10,8 @@ class AggregateScheduling < ApplicationModel
   validates :force_daily_publishing, inclusion: [true, false]
 
   class ScheduledJob < SchedulingSupport::ScheduledJob
-    alias aggregate_scheduling scheduling
-
     def encode_with(coder)
-      coder['aggregate_scheduling_id'] = aggregate_scheduling.id
+      coder['aggregate_scheduling_id'] = scheduling.id
     end
 
     def init_with(coder)
@@ -21,15 +19,15 @@ class AggregateScheduling < ApplicationModel
     end
 
     def perform
-      aggregate_scheduling.workgroup.aggregate!(
-        daily_publications: aggregate_scheduling.force_daily_publishing
+      scheduling.workgroup.aggregate!(
+        daily_publications: scheduling.force_daily_publishing
       )
     end
 
     protected
 
     def perform_error_capture_message
-      "Can't start AggregateScheduling##{aggregate_scheduling.id}::ScheduledJob"
+      "Can't start AggregateScheduling##{scheduling.id}::ScheduledJob"
     end
   end
 end

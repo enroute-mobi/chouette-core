@@ -63,14 +63,32 @@ module SchedulingSupport
   end
 
   def reschedule
-    job = self.class::ScheduledJob.new(self)
+    if scheduling_enabled?
+      job = self.class::ScheduledJob.new(self)
 
-    if scheduled_job
-      scheduled_job.update(cron: job.cron)
+      if scheduled_job
+        scheduled_job.update(cron: job.cron)
+      else
+        delayed_job = Delayed::Job.enqueue(job, cron: job.cron)
+        update_column(:scheduled_job_id, delayed_job.id) # rubocop:disable Rails/SkipsModelValidations
+      end
     else
-      delayed_job = Delayed::Job.enqueue(job, cron: job.cron)
-      update_column(:scheduled_job_id, delayed_job.id) # rubocop:disable Rails/SkipsModelValidations
+      scheduled_job = self.scheduled_job
+      update_column(:scheduled_job_id, nil) # rubocop:disable Rails/SkipsModelValidations
+      scheduled_job&.destroy
     end
+  end
+
+  protected
+
+  # Returns true if scheduling is enabled for this model.
+  def scheduling_enabled?
+    true
+  end
+
+  # Returns true if the previous save of this model changed the value of #scheduling_enabled?
+  def saved_change_to_scheduling_enabled?
+    saved_change_to_id?
   end
 
   private
@@ -82,9 +100,11 @@ module SchedulingSupport
   end
 
   def reschedule_needed?
-    saved_change_to_id? ||
-      saved_change_to_attribute?(self.class.schedule_time_attribute) ||
-      saved_change_to_attribute?(self.class.schedule_days_attribute)
+    saved_change_to_scheduling_enabled? ||
+      (scheduling_enabled? && (
+        saved_change_to_attribute?(self.class.schedule_time_attribute) ||
+        saved_change_to_attribute?(self.class.schedule_days_attribute)
+      ))
   end
 
   def destroy_scheduled_job

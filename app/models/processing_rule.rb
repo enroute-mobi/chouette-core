@@ -126,6 +126,15 @@ module ProcessingRule
       end
     end
 
+    protected
+
+    alias scheduling_enabled? scheduling?
+
+    def saved_change_to_scheduling_enabled?
+      saved_change_to_operation_step? &&
+        (operation_step_before_last_save == 'scheduling' || operation_step == 'scheduling')
+    end
+
     private
 
     def no_tag_overlap

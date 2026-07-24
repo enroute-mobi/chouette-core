@@ -11,8 +11,7 @@
           = d.attribute :name
           = d.attribute :short_name
           = d.attribute :workbench, as: :association
-          - stop_areas_count = @stop_area_provider.stop_areas.size
-          = d.attribute :stop_areas, label: Chouette::StopArea.model_name.human_plural, value: "#{stop_areas_count} #{Chouette::StopArea.model_name.human(count: stop_areas_count)}"
+          = d.attribute :stop_areas, label: Chouette::StopArea.model_name.human_plural, as: :count
 
         = simple_block_for @stop_area_provider, title: t('stop_area_providers.form.sections.permission_restrictions') do |d|
           = d.attribute :disable_stop_area_manual_creation, as: :boolean

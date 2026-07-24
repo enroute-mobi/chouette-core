@@ -283,6 +283,50 @@ RSpec.describe Export::Scope do
       end
     end
 
+    describe '#fare_zones' do
+      subject { scope.fare_zones }
+
+      before { allow(scope).to receive(:routes).and_return([context.route(:route)]) }
+
+      let(:fare_zone) { context.fare_zone(:fare_zone) }
+
+      context 'when a Fare Zone is associated to a scoped Stop Area' do
+        let(:context) do
+          Chouette.create do
+            stop_area :exported_stop_area1
+            stop_area :exported_stop_area2
+            stop_area :not_exported_stop_area
+
+            fare_zone :fare_zone, stop_areas: %i[exported_stop_area1 not_exported_stop_area]
+
+            route :route, stop_areas: %i[exported_stop_area1 exported_stop_area2]
+          end
+        end
+
+        it 'includes this Fare Zone' do
+          is_expected.to include(fare_zone)
+        end
+      end
+
+      context 'when a Fare Zone is not associated to a scoped Stop Area' do
+        let(:context) do
+          Chouette.create do
+            stop_area :exported_stop_area1
+            stop_area :exported_stop_area2
+            stop_area :not_exported_stop_area
+
+            fare_zone :fare_zone, stop_areas: %i[not_exported_stop_area]
+
+            route :route, stop_areas: %i[exported_stop_area1 exported_stop_area2]
+          end
+        end
+
+        it 'includes this Fare Product' do
+          is_expected.to be_empty
+        end
+      end
+    end
+
     describe '#fare_products' do
       subject { scope.fare_products }
 

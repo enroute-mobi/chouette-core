@@ -19,6 +19,7 @@ module Control
         LineGroup
         LineNotice
         Company
+        BookingArrangement
         StopArea
         StopAreaGroup
         Entrance
@@ -117,6 +118,7 @@ module Control
             line_group: 'line',
             line_notice: 'line',
             company: 'line',
+            booking_arrangement: 'line',
             stop_area: 'stop_area',
             stop_area_group: 'stop_area',
             entrance: 'stop_area',

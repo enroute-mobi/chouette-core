@@ -15,7 +15,7 @@ describe 'stop_areas/edit.html.slim', type: :view do
     allow(view).to receive(:has_feature?)
     allow(view).to receive(:resource){ stop_area }
     allow(view).to receive(:resource_class){ stop_area.class }
-    allow(view).to receive(:candidate_stop_area_providers) { [] }
+    allow(view).to receive(:candidate_stop_area_providers) { StopAreaProvider.none }
   end
 
   describe "form" do

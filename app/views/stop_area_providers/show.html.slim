@@ -6,12 +6,13 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("metadatas"),
-          {  \
-            t('id_reflex') => @stop_area_provider.get_objectid.short_id,
-            StopAreaProvider.tmf('name') => @stop_area_provider.name,
-            StopAreaProvider.tmf('short_name') => @stop_area_provider.short_name,
-            StopAreaProvider.tmf('workbench') => @stop_area_provider.workbench.name,
-            StopAreaProvider.tmf('allowed_stop_area_types') => @stop_area_provider.allowed_stop_area_types.map { |area_type| Chouette::AreaType.find(area_type).label }.join(', ').presence || t('all.masculine'),
-            Chouette::StopArea.model_name.human_plural => "#{@stop_area_provider.stop_areas.count} #{Chouette::StopArea.t}" \
-          }
+        = simple_block_for @stop_area_provider, title: t('metadatas') do |d|
+          = d.attribute :short_id, label: t('id_reflex'), value: @stop_area_provider.get_objectid.short_id
+          = d.attribute :name
+          = d.attribute :short_name
+          = d.attribute :workbench, as: :association
+          = d.attribute :stop_areas, label: Chouette::StopArea.model_name.human_plural, as: :count
+
+        = simple_block_for @stop_area_provider, title: t('stop_area_providers.form.sections.permission_restrictions') do |d|
+          = d.attribute :disable_stop_area_manual_creation, as: :boolean
+          = d.attribute :allowed_stop_area_types, value: @stop_area_provider.allowed_stop_area_types.map { |area_type| Chouette::AreaType.find(area_type).label }.join(', ').presence || t('all.masculine')

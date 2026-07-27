@@ -66,6 +66,7 @@ class StopAreaProvidersController < Chouette::StopAreaReferentialController
     fields = [
       :name,
       :short_name,
+      :disable_stop_area_manual_creation,
       {
         allowed_stop_area_types: [],
         stop_area_ids: []

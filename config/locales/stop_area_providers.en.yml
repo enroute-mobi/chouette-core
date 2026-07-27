@@ -29,6 +29,7 @@ en:
         allowed_stop_area_types: Allowed Stop Area types
         stop_area_ids: Stop Areas
         workbench: Workbench
+        disable_stop_area_manual_creation: "Forbid Stop Area manual creation"
     errors:
       models:
         stop_area_provider:

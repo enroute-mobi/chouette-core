@@ -8,6 +8,7 @@ class ShapeReferential < ApplicationModel
   has_many :point_of_interest_categories, class_name: 'PointOfInterest::Category', dependent: :destroy
   has_many :service_facility_sets, class_name: 'ServiceFacilitySet', dependent: :destroy
   has_many :accessibility_assessments, class_name: 'AccessibilityAssessment', dependent: :destroy
+  has_many :equipements, class_name: 'Equipement', dependent: :destroy
 
   def name
     self.class.ts

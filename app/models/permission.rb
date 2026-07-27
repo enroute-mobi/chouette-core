@@ -34,6 +34,7 @@ class Permission
         imports
         journey_patterns
         entrances
+        equipements
         merges
         macro_lists
         macro_list_runs

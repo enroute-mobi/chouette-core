@@ -1,0 +1,39 @@
+= simple_form_for [@workbench, :shape_referential, @equipement], html: {class: 'form-horizontal', id: 'equipement_form'}, wrapper: :horizontal_form do |f|
+  .row
+    .col-lg-12
+      h2.mb-lg= t("equipements.form.sections.identification")
+      = f.input :name
+      = f.association :stop_area, as: :ajax_select, collection: [f.object.stop_area].compact, label_method: :display_name, include_blank: true, input_html: { 'data-url': stop_areas_workbench_autocomplete_index_path(@workbench, format: :json), class: 'w-full' }
+      = f.input :public_code
+      = f.input :fixed, as: :switchable_checkbox
+      = f.input :out_of_order, as: :switchable_checkbox
+
+  .separator.section_separator
+
+  .row
+    .col-lg-12
+      h2.mb-lg= t("equipements.form.sections.accessibility")
+      = f.input :mobility_impaired_accessibility, as: :select, include_blank: false
+  .row
+    .col-md-6
+      = f.input :wheelchair_accessibility, as: :select, include_blank: false
+      = f.input :step_free_accessibility, as: :select, include_blank: false
+      = f.input :lift_free_accessibility, as: :select, include_blank: false
+    .col-md-6
+      = f.input :escalator_free_accessibility, as: :select, include_blank: false
+      = f.input :visual_signs_availability, as: :select, include_blank: false
+      = f.input :audible_signals_availability, as: :select, include_blank: false
+  .row
+    .col-lg-12
+      = f.input :description, as: :text
+
+  .separator.section_separator
+
+  .row
+    .col-lg-12
+      h2.mb-lg= t("equipements.form.sections.internal")
+      = f.association :shape_provider, collection: @workbench.shape_providers, include_blank: false, label_method: :short_name
+  = render 'codes/form', form: f
+
+  = cancel_button
+  = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'equipement_form'

@@ -230,6 +230,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       resources :accessibility_assessments do
         get :autocomplete, on: :collection
       end
+
+      resources :equipements
     end
 
     resources :dashboards do

@@ -1,0 +1,94 @@
+fr:
+  equipements:
+    search_no_results: "Aucun Équipement en station ne correspond à votre recherche"
+    actions:
+      show: "Afficher cet Équipement en station"
+      new: "Ajouter un Équipement en station"
+      edit: "Editer cet Équipement en station"
+      destroy: "Supprimer cet Équipement en station"
+      destroy_confirm: "Etes vous sûr de supprimer cet Équipement en station ?"
+    errors:
+    new:
+      title: "Créer un Équipement en station"
+    edit:
+      title: "Editer %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Équipements en station"
+    form:
+      sections:
+        identification: "Identification"
+        accessibility: "Accessibilité"
+        internal: "Interne"
+  enumerize:
+    equipement:
+      mobility_impaired_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      wheelchair_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      step_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      escalator_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      lift_free_accessibility:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      audible_signals_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+      visual_signs_availability:
+        unknown: Inconnu
+        'yes': Oui
+        'no': Non
+        partial: Partiel
+  activerecord:
+    models:
+      equipement:
+        zero:  "Équipement en station"
+        one:   "Équipement en station"
+        other: "Équipements en station"
+        the:
+          one: "l'Équipement en station"
+          other: "les Équipements en station"
+        of:
+          one: "de l'Équipement en station"
+          other: "des Équipements en station"
+        to:
+          one: "à l'Équipement en station"
+          other: "aux Équipements en station"
+    attributes:
+      equipement:
+        name: "Nom"
+        stop_area: "Arrêt"
+        shape_provider: "Fournisseur Topologique"
+        public_code: "Code public"
+        fixed: "Fixe"
+        out_of_order: "Hors service"
+        mobility_impaired_accessibility: "Accès pour voyageur à mobilité réduite"
+        wheelchair_accessibility: "Accès en fauteuil roulant"
+        step_free_accessibility: "Accès sans marche"
+        escalator_free_accessibility: "Accès sans escalator"
+        lift_free_accessibility: "Accès sans ascenseur"
+        audible_signals_availability: "Signalétique auditive disponible"
+        visual_signs_availability: "Signalétique visuelle disponible"
+        description: "Description"
+        created_at: "Créé le"
+        updated_at: "Edité le"
+        codes: "Codes"

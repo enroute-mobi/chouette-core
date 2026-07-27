@@ -9,6 +9,7 @@ class ShapeProvider < ApplicationModel
   has_many :point_of_interest_categories, class_name: 'PointOfInterest::Category'
   has_many :service_facility_sets, class_name: 'ServiceFacilitySet'
   has_many :accessibility_assessments, class_name: 'AccessibilityAssessment'
+  has_many :equipements, class_name: 'Equipement'
 
   validates :short_name, presence: true
 

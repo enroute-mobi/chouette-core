@@ -82,6 +82,7 @@ class Workbench < ApplicationModel
   has_many :stop_area_groups, through: :stop_area_providers
   has_many :connection_links, through: :stop_area_providers
   has_many :entrances, through: :stop_area_providers
+  has_many :equipements, through: :shape_providers
   has_many :stop_area_routing_constraints, through: :stop_area_providers
 
   has_many :shapes, through: :shape_providers

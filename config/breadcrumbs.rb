@@ -520,6 +520,16 @@ crumb :entrance do |workbench, entrance|
   parent :entrances, workbench
 end
 
+crumb :equipements do |workbench|
+  link I18n.t('equipements.index.title'), workbench_shape_referential_equipements_path(workbench)
+  parent :workbench, workbench
+end
+
+crumb :equipement do |workbench, equipement|
+  link breadcrumb_name(equipement), workbench_shape_referential_equipement_path(workbench, equipement)
+  parent :equipements, workbench
+end
+
 crumb :connection_links do |workbench|
   link I18n.t('connection_links.index.title'), workbench_stop_area_referential_connection_links_path(workbench)
   parent :stop_area_referential, workbench

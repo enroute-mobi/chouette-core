@@ -495,6 +495,17 @@ module Chouette
                 new_instance.shape_referential = parent.shape_referential
               end
             end
+
+            model :equipement do
+              attribute(:name) { |n| "Equipement #{n}" }
+
+              transient :stop_area
+
+              after do
+                new_instance.shape_referential = parent.shape_referential
+                new_instance.stop_area = transient(:stop_area, resolve_instances: true)
+              end
+            end
           end
 
           model :document_provider do

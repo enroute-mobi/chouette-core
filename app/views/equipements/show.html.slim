@@ -1,0 +1,30 @@
+- breadcrumb :equipement, @workbench, @equipement
+- page_header_content_for @equipement
+
+/ PageContent
+.page_content
+  .container-fluid
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @equipement, title: t('equipements.form.sections.identification') do |d|
+          = d.attribute :name
+          = d.attribute :stop_area, as: :association, link: workbench_stop_area_referential_stop_area_path(@workbench, @equipement.stop_area)
+          = d.attribute :public_code
+          = d.attribute :fixed, as: :boolean
+          = d.attribute :out_of_order, as: :boolean
+          = d.attribute :shape_provider, as: :association, label: Equipement.human_attribute_name(:shape_provider)
+
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = simple_block_for @equipement, title: t('equipements.form.sections.accessibility') do |d|
+          = d.attribute :mobility_impaired_accessibility, as: :enumerize
+          = d.attribute :wheelchair_accessibility, as: :enumerize
+          = d.attribute :step_free_accessibility, as: :enumerize
+          = d.attribute :escalator_free_accessibility, as: :enumerize
+          = d.attribute :lift_free_accessibility, as: :enumerize
+          = d.attribute :audible_signals_availability, as: :enumerize
+          = d.attribute :visual_signs_availability, as: :enumerize
+          = d.attribute :description
+
+    .row
+      .col-lg-6.col-md-6.col-sm-12.col-xs-12
+        = render 'codes/block', model: @equipement

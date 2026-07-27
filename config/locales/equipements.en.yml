@@ -1,0 +1,94 @@
+en:
+  equipements:
+    search_no_results: "No Station Equipment match your search"
+    actions:
+      show: "Show this Station Equipment"
+      new: "Add a Station Equipment"
+      edit: "Edit this Station Equipment"
+      destroy: "Delete this Station Equipment"
+      destroy_confirm: "Are you sure to delete this Station Equipment"
+    errors:
+    new:
+      title: "Create a Station Equipment"
+    edit:
+      title: "Edit %{name}"
+    show:
+      title: "%{name}"
+    index:
+      title: "Station Equipment"
+    form:
+      sections:
+        identification: "Identification"
+        accessibility: "Accessibility"
+        internal: "Internal"
+  enumerize:
+    equipement:
+      mobility_impaired_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      wheelchair_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      step_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      escalator_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      lift_free_accessibility:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      audible_signals_availability:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+      visual_signs_availability:
+        unknown: Unknown
+        'yes': 'Yes'
+        'no': 'No'
+        partial: Partial
+  activerecord:
+    models:
+      equipement:
+        zero:  "Station Equipment"
+        one:   "Station Equipment"
+        other: "Station Equipment"
+        the:
+          one: "the Station Equipment"
+          other: "the Station Equipment"
+        of:
+          one: "of Station Equipment"
+          other: "of Station Equipment"
+        to:
+          one: "to Station Equipment"
+          other: "to Station Equipment"
+    attributes:
+      equipement:
+        name: "Name"
+        stop_area: "Stop Area"
+        shape_provider: "Topological Provider"
+        public_code: "Public Code"
+        fixed: "Fixed"
+        out_of_order: "Out of Order"
+        mobility_impaired_accessibility: "Access for mobility impaired users"
+        wheelchair_accessibility: "Wheelchair Access"
+        step_free_accessibility: "Step Free Access"
+        escalator_free_accessibility: "Escalator Free Access"
+        lift_free_accessibility: "Lift Free Access"
+        audible_signals_availability: "Audible Signals Available"
+        visual_signs_availability: "Visual Signs Available"
+        description: "Description"
+        created_at: "Created at"
+        updated_at: "Updated at"
+        codes: "Codes"

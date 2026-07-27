@@ -1,0 +1,13 @@
+= simple_search_for @search, workbench_shape_referential_equipements_path(@workbench) do |f|
+  = f.row
+    = f.text
+  = f.row
+    = f.input :stop_area_id,
+        as: :ajax_select,
+        collection: @search.candidate_stop_areas,
+        label_method: :display_name,
+        input_html: { 'data-url': stop_areas_workgroup_autocomplete_index_path(@workbench.workgroup, format: :json) }
+    = f.input :shape_provider_id, as: :autocomplete_select, collection: @search.shape_provider_options, label: Equipement.human_attribute_name(:shape_provider)
+  = f.row
+    = f.input :fixed, as: :autocomplete_select, label: Equipement.human_attribute_name(:fixed)
+    = f.input :out_of_order, as: :autocomplete_select, label: Equipement.human_attribute_name(:out_of_order)

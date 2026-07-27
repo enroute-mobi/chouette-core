@@ -15,7 +15,6 @@ module Policy
         [
           ::Chouette::StopArea,
           ::Entrance,
-          ::Equipment,
           ::StopAreaRoutingConstraint,
           ::Chouette::ConnectionLink,
           ::StopAreaGroup

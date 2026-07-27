@@ -71,7 +71,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/netex.git
-  revision: 93a7e72009107a576157869a30115db3d5545783
+  revision: f73169ca139a6997ebe1ba225bb9e980f76d1e7b
   specs:
     netex (0.1.2)
       activesupport
@@ -259,7 +259,7 @@ GEM
       coffee-script-source
       execjs
     coffee-script-source (1.12.2)
-    concurrent-ruby (1.3.7)
+    concurrent-ruby (1.3.8)
     connection_pool (2.5.5)
     countries (5.7.2)
       unaccent (~> 0.3)

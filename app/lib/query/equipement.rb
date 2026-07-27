@@ -20,21 +20,14 @@ module Query
     end
 
     def fixed(value)
-      boolean_where(:fixed, value)
+      change_scope(if: !value.nil?) do |scope|
+        scope.where(fixed: value)
+      end
     end
 
     def out_of_order(value)
-      boolean_where(:out_of_order, value)
-    end
-
-    private
-
-    # Query::Base#where skips false values (`false.present?` is false), so a
-    # boolean filter set to "no" would be ignored. Apply the filter whenever a
-    # value is present, including false.
-    def boolean_where(column, value)
       change_scope(if: !value.nil?) do |scope|
-        scope.where(column => value)
+        scope.where(out_of_order: value)
       end
     end
   end

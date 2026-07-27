@@ -3,7 +3,7 @@
     .col-lg-12
       h2.mb-lg= t("equipements.form.sections.identification")
       = f.input :name
-      = f.association :stop_area, as: :select, collection: [f.object.stop_area_id], input_html: { data: { select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: {id: f.object.stop_area_id, text: f.object.stop_area.try(:formatted_selection_details)}}}
+      = f.association :stop_area, as: :ajax_select, collection: [f.object.stop_area].compact, label_method: :display_name, include_blank: true, input_html: { 'data-url': stop_areas_workbench_autocomplete_index_path(@workbench, format: :json), class: 'w-full' }
       = f.input :public_code
       = f.input :fixed, as: :switchable_checkbox
       = f.input :out_of_order, as: :switchable_checkbox
@@ -32,8 +32,7 @@
   .row
     .col-lg-12
       h2.mb-lg= t("equipements.form.sections.internal")
-      = f.association :shape_provider, as: :select, collection: @workbench.shape_providers, include_blank: false, label_method: :short_name, label: Equipement.human_attribute_name(:shape_provider)
-
+      = f.association :shape_provider, collection: @workbench.shape_providers, include_blank: false, label_method: :short_name
   = render 'codes/form', form: f
 
   = cancel_button

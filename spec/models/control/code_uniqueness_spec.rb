@@ -9,6 +9,7 @@ RSpec.describe Control::CodeUniqueness do
           LineGroup
           LineNotice
           Company
+          BookingArrangement
           StopArea
           StopAreaGroup
           Entrance

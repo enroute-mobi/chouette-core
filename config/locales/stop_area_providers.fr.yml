@@ -29,7 +29,7 @@ fr:
         allowed_stop_area_types: Types d'arrêts autorisés
         stop_area_ids: Arrêts
         workbench: Espace de travail
-        disable_stop_area_manual_creation: "Interdire la création manuelle d'arrêts"
+        disable_stop_area_manual_edit: "Interdire l'édition' manuelle d'arrêts"
     errors:
       models:
         stop_area_provider:

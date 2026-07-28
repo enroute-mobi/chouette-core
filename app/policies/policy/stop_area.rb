@@ -10,7 +10,7 @@ module Policy
     protected
 
     def _update?
-      true
+      !resource.stop_area_provider.disable_stop_area_manual_edit?
     end
 
     def _destroy?

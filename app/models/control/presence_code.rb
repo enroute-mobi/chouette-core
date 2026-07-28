@@ -13,6 +13,7 @@ module Control
           LineGroup
           LineNotice
           Company
+          BookingArrangement
           StopArea
           StopAreaGroup
           Entrance

@@ -14,6 +14,7 @@ RSpec.describe Control::PresenceCode do
           LineGroup
           LineNotice
           Company
+          BookingArrangement
           StopArea
           StopAreaGroup
           Entrance

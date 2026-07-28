@@ -16,6 +16,7 @@ RSpec.describe Control::CodeFormat do
           LineGroup
           LineNotice
           Company
+          BookingArrangement
           StopArea
           StopAreaGroup
           Entrance

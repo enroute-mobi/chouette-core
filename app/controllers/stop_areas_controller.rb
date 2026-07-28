@@ -35,7 +35,7 @@ class StopAreasController < Chouette::StopAreaReferentialController
 
         unless @chart
           @stop_areas = StopAreaDecorator.decorate(
-            collection,
+            collection.includes(:stop_area_provider),
             context: {
               workbench: workbench
             }
@@ -98,6 +98,10 @@ class StopAreasController < Chouette::StopAreaReferentialController
   end
 
   private
+
+  def candidate_stop_area_providers
+    super.where(disable_stop_area_manual_edit: false)
+  end
 
   def stop_area_params
     return @stop_area_params if @stop_area_params

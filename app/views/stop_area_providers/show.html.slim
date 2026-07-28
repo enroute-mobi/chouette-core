@@ -14,5 +14,5 @@
           = d.attribute :stop_areas, label: Chouette::StopArea.model_name.human_plural, as: :count
 
         = simple_block_for @stop_area_provider, title: t('stop_area_providers.form.sections.permission_restrictions') do |d|
-          = d.attribute :disable_stop_area_manual_creation, as: :boolean
+          = d.attribute :disable_stop_area_manual_edit, as: :boolean
           = d.attribute :allowed_stop_area_types, value: @stop_area_provider.allowed_stop_area_types.map { |area_type| Chouette::AreaType.find(area_type).label }.join(', ').presence || t('all.masculine')

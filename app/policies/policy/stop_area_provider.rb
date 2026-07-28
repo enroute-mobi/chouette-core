@@ -10,7 +10,7 @@ module Policy
 
     def _create?(resource_class)
       if resource_class == ::Chouette::StopArea
-        !resource.disable_stop_area_manual_creation
+        !resource.disable_stop_area_manual_edit?
       else
         [
           ::Chouette::StopArea,

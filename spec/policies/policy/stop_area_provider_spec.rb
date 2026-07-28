@@ -17,14 +17,14 @@ RSpec.describe Policy::StopAreaProvider, type: :policy do
     context 'Chouette::StopArea' do
       let(:resource_class) { Chouette::StopArea }
 
-      context 'when Stop Area Provider does not disable Stop Area manual creation' do
-        let(:resource) { instance_double(StopAreaProvider, disable_stop_area_manual_creation: false) }
+      context 'when Stop Area Provider does not disable Stop Area manual edit' do
+        let(:resource) { StopAreaProvider.new(disable_stop_area_manual_edit: false) }
 
         it { is_expected.to be_truthy }
       end
 
-      context 'when Stop Area Provider disables Stop Area manual creation' do
-        let(:resource) { instance_double(StopAreaProvider, disable_stop_area_manual_creation: true) }
+      context 'when Stop Area Provider disables Stop Area manual edit' do
+        let(:resource) { StopAreaProvider.new(disable_stop_area_manual_edit: true) }
 
         it { is_expected.to be_falsy }
       end

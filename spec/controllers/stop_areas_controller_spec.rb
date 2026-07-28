@@ -139,4 +139,29 @@ RSpec.describe StopAreasController, type: :controller do
       end
     end
   end
+
+  describe '#candidate_stop_area_providers' do
+    subject { controller.send(:candidate_stop_area_providers) }
+
+    let(:current_workbench) { context.workbench }
+
+    before { allow(controller).to receive(:current_workbench).and_return(current_workbench) }
+
+    let(:context) do
+      Chouette.create do
+        workbench do
+          stop_area_provider :sap1
+          stop_area_provider :sap2
+          stop_area_provider :disabled_sap, disable_stop_area_manual_edit: true
+        end
+      end
+    end
+    let(:stop_area) { nil }
+
+    it 'does not return disabled stop area providers' do
+      is_expected.to match_array(
+        [current_workbench.default_stop_area_provider] + %i[sap1 sap2].map { |i| context.stop_area_provider(i) }
+      )
+    end
+  end
 end

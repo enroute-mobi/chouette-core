@@ -639,6 +639,156 @@ RSpec.describe Export::NetexGeneric do
     end
   end
 
+  describe 'Networks export' do
+    describe Export::NetexGeneric::Networks::Decorator do
+      let(:network) { Chouette::Network.new }
+      let(:decorator) { Export::NetexGeneric::Networks::Decorator.new network }
+
+      describe '#netex_attributes' do
+        subject { decorator.netex_attributes }
+
+        context 'when code provider is used to compute netex id' do
+          let(:network) { create(:network) }
+          let(:decorator) { Export::NetexGeneric::Networks::Decorator.new network, code_provider: code_provider }
+          let(:export_scope) { double('Export::Scope', networks: Chouette::Network.where(id: network), lines: Chouette::Line.none, line_groups: LineGroup.none) }
+          let(:code_provider) { Export::CodeProvider.new export_scope }
+
+          it 'uses Network objectid as id' do
+            is_expected.to include(id: network.objectid)
+          end
+        end
+
+        it 'uses Network name' do
+          network.name = 'dummy'
+          is_expected.to include(name: network.name)
+        end
+      end
+
+      describe '#key_list' do
+        subject { decorator.netex_resource.key_list }
+
+        # context 'when network has a registration number' do
+        #   before { network.update registration_number: 'RN' }
+
+        #   it 'generate key_list' do
+        #     is_expected.to include(Netex::KeyValue.new(key: 'external', value: 'RN',
+        #                                                type_of_key: 'ALTERNATE_IDENTIFIER'))
+        #   end
+        # end
+
+        context 'when network has no registration number' do
+          before { network.update registration_number: nil }
+
+          it "doesn't generate key_list" do
+            is_expected.to be_empty
+          end
+        end
+      end
+
+      describe '#members' do
+        subject { decorator.members }
+        let(:context) do
+          Chouette.create do
+            network :network
+            line :line, network: :network
+          end
+        end
+        let(:network) { context.network(:network) }
+        let(:line) { context.line(:line) }
+        let(:code_provider) { Export::CodeProvider.new export_scope }
+        let(:export_scope) { double('Export::Scope', networks: Chouette::Network.where(id: network), lines: Chouette::Line.where(id: line)) }
+        let(:decorator) { Export::NetexGeneric::Networks::Decorator.new network, code_provider: code_provider }
+
+        it "should return line as members" do
+          is_expected.to match_array(
+            [
+              Netex::Reference.new(line.objectid, type: Netex::Line)
+            ]
+          )
+        end
+      end
+
+      describe '#groups_of_lines' do
+        subject { decorator.groups_of_lines }
+        let(:context) do
+          Chouette.create do
+            network :network
+            line :line
+            line_group name: 'Group Of Lines Sample', lines: %i[line], network: :network
+          end
+        end
+        let(:network) { context.network(:network) }
+        let(:line_group) { context.line_group }
+        let(:export_scope) { double('Export::Scope', line_groups: LineGroup.where(id: line_group)) }
+        let(:code_provider) { Export::CodeProvider.new export_scope }
+        let(:decorator) { Export::NetexGeneric::Networks::Decorator.new network, code_provider: code_provider }
+
+        it "should return line_group as group_of_lines" do
+          is_expected.to match_array(
+            [
+              Netex::Reference.new(line_group.uuid, type: Netex::GroupOfLines)
+            ]
+          )
+        end
+      end
+
+    end
+  end
+
+  describe 'LineGroups export' do
+    let(:target) { MockNetexTarget.new }
+    let(:export_scope) { Export::Scope::All.new context.referential }
+    let(:export) do
+      Export::NetexGeneric.new(
+        export_scope: export_scope,
+        target: target,
+        workgroup: context.workgroup,
+        setup: { scope_setup: { type: 'Export::Setup::Scope::Referential' } }
+      )
+    end
+
+    let(:part) do
+      Export::NetexGeneric::LineGroups.new export
+    end
+
+    let(:context) do
+      Chouette.create do
+        line :first
+        line :second
+        line_group :sample, name: 'Group Of Lines Sample', lines: %i[first second]
+        referential
+      end
+    end
+
+    let(:line_group) { context.line_group(:sample) }
+
+    describe 'the NeTEx target' do
+      subject(:resource) do
+        part.perform
+        target.resources.first
+      end
+
+      it { is_expected.to be_a(Netex::GroupOfLines) }
+
+      it 'uses LineGroup uuid as id' do
+        expect(resource.id).to eq(line_group.uuid)
+      end
+
+      it 'uses LineGroup name' do
+        expect(resource.name).to eq('Group Of Lines Sample')
+      end
+
+      it 'creates a GroupOfLines with members referencing its Lines' do
+        expect(resource.members).to match_array(
+          [
+            Netex::Reference.new(context.line(:first).objectid, type: Netex::Line),
+            Netex::Reference.new(context.line(:second).objectid, type: Netex::Line)
+          ]
+        )
+      end
+    end
+  end
+
   describe 'Routes export' do
     let(:target) { MockNetexTarget.new }
     let(:export_scope) { Export::Scope::All.new context.referential }

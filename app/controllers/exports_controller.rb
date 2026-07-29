@@ -65,7 +65,7 @@ class ExportsController < Chouette::WorkbenchController
   end
 
   def search
-    @search ||= Search.from_params(params)
+    @search ||= ::Search::Export.from_params(params, workbench: workbench)
   end
 
   def collection
@@ -94,17 +94,6 @@ class ExportsController < Chouette::WorkbenchController
         parent: parent
       }
     )
-  end
-
-  class Search < Search::Operation
-    def query_class
-      Query::Export
-    end
-
-    class Order < ::Search::Operation::Order
-      attribute :type
-      attribute :referential, joins: :referential, column: 'referentials.name'
-    end
   end
 
   def load_referentials

@@ -64,7 +64,7 @@ class WorkgroupExportsController < Chouette::WorkgroupController
   end
 
   def search
-    @search ||= Search.from_params(params, workgroup: workgroup)
+    @search ||= ::Search::WorkgroupExport.from_params(params, workgroup: workgroup)
   end
 
   def collection
@@ -78,11 +78,5 @@ class WorkgroupExportsController < Chouette::WorkgroupController
         parent: parent
       }
     )
-  end
-
-  class Search < Search::Operation
-    def query_class
-      Query::Export
-    end
   end
 end

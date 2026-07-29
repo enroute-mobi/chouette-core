@@ -116,7 +116,7 @@ RSpec.describe Query::Line do
       it { is_expected.to be_truthy }
 
       context 'with wrong value' do
-        let(:criteria_value) { 42 }
+        let(:criteria_value) { Chouette::Company.maximum(:id) + 1 }
 
         it { is_expected.to be_falsy }
       end
@@ -127,7 +127,7 @@ RSpec.describe Query::Line do
         it { is_expected.to be_truthy }
 
         context 'with wrong value' do
-          let(:criteria_value) { [42] }
+          let(:criteria_value) { [Chouette::Company.maximum(:id) + 1] }
 
           it { is_expected.to be_falsy }
         end

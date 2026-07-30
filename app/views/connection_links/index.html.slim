@@ -48,7 +48,7 @@
               ), \
               TableBuilderHelper::Column.new( \
                 name: t('connection_links.direction.name'), \
-                attribute: Proc.new { |c| localized_both_ways c }, \
+                attribute: Proc.new { |c| c.display_direction }, \
                 sortable: false \
               ), \
             ].compact,

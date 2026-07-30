@@ -6,14 +6,13 @@
   .container-fluid
     .row
       .col-md-6.col-sm-12
-        = definition_list t('metadatas'),
-          { @shape.human_attribute_name(:id) => @shape.uuid, \
-            @shape.human_attribute_name(:name) => @shape.name.presence || I18n.t('none'),
-            @shape.human_attribute_name(:length) => @shape.length,
-            @shape.human_attribute_name(:points) => @shape.geometry.points.count,
-            @shape.human_attribute_name(:created_at) => @shape.created_at ? l(@shape.created_at, format: :short_with_time) : '-',
-            @shape.human_attribute_name(:updated_at) => @shape.updated_at ? l(@shape.updated_at, format: :short_with_time) : '-',
-          }
+        = simple_block_for @shape, title: t('metadatas') do |d|
+          = d.attribute :uuid
+          = d.attribute :name, value: @shape.name.presence || I18n.t('none')
+          = d.attribute :length
+          = d.attribute :points, value: @shape.geometry.points.count
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :updated_at, as: :datetime
 
       .col-md-6.col-sm-12
         = render 'codes/block', model: @shape

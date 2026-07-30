@@ -6,16 +6,16 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - attributes = {}
-        - attributes[@referential.human_attribute_name(:status)] = referential_state(@referential) unless @referential.in_referential_suite?
-        - attributes[@referential.human_attribute_name(:validity_period)] = (@referential.validity_period.present? ? t('validity_range', debut: l(@referential.try(:validity_period).try(:begin)), end: l(@referential.try(:validity_period).try(:end))) : '-')
-        - attributes[@referential.human_attribute_name(:workbench)] = @referential.workbench&.name if @referential.workbench
-        - unless @referential.in_referential_suite?
-          - attributes[@referential.human_attribute_name(:merged_at)] = @referential.merged_at ? l(@referential.merged_at) : '-'
-          - attributes[@referential.human_attribute_name(:urgent)] = boolean_icon(@referential.contains_urgent_offer?)
-        - if @referential.created_from
-          - attributes[@referential.human_attribute_name(:created_from)] = link_to(@referential.created_from.name, [@workbench, @referential.created_from])
-        = definition_list t('metadatas'), attributes
+        = simple_block_for @referential, title: t('metadatas') do |d|
+          - unless @referential.in_referential_suite?
+            = d.attribute :status, value: referential_state(@referential)
+          = d.attribute :validity_period, value: @referential.validity_period.present? ? t('validity_range', debut: l(@referential.try(:validity_period).try(:begin)), end: l(@referential.try(:validity_period).try(:end))) : '-'
+          = d.attribute :workbench, as: :association if @referential.workbench
+          - unless @referential.in_referential_suite?
+            = d.attribute :merged_at, as: :date
+            = d.attribute :urgent, as: :boolean_icon, value_method: :contains_urgent_offer?
+          - if @referential.created_from
+            = d.attribute :created_from, as: :association, link: url_for([@workbench, @referential.created_from])
 
     - unless @referential.ready?
       - if operation = @referential.last_operation

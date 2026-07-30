@@ -7,20 +7,35 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("connection_links.form.sections.identification"), connection_link_identification_metadatas(@connection_link)
-        = definition_list t("connection_links.form.sections.path"), connection_link_path_metadatas(@connection_link)
+        = simple_block_for @connection_link, title: t('connection_links.form.sections.identification') do |d|
+          = d.attribute :objectid, value: @connection_link.get_objectid&.short_id
+          = d.attribute :direction, value_method: :display_direction, label: t('connection_links.direction.name')
+
+        = simple_block_for @connection_link, title: t('connection_links.form.sections.path') do |d|
+          = d.attribute :default_duration, as: :duration
+          = d.attribute :frequent_traveller_duration, as: :duration
+          = d.attribute :occasional_traveller_duration, as: :duration
+          = d.attribute :mobility_restricted_traveller_duration, as: :duration
+          = d.attribute :link_distance, as: :duration
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         h4.underline= t('lines.show.map')
         #connection_link_map.map.mb-lg
 
     .row
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("connection_links.form.sections.departure"), connection_link_departure_metadatas(@connection_link, @workbench)
-
-      .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("connection_links.form.sections.arrival"), connection_link_arrival_metadatas(@connection_link, @workbench)
+      - [%w[departure orange], %w[arrival blue]].each do |ext_name, color|
+        - ext = @connection_link.send(ext_name)
+        .col-lg-6.col-md-6.col-sm-12.col-xs-12
+          = simple_block_for ext, title: t("connection_links.form.sections.#{ext_name}") do |d|
+            = d.attribute :objectid, value: "#{image_pack_tag("static/map_pin_#{color}.png")}#{h(ext.get_objectid&.short_id)}".html_safe
+            = d.attribute :name, link: workbench_stop_area_referential_stop_area_path(current_workbench, ext)
+            - if ext.commercial?
+              = d.attribute :parent, as: :association, link: ->(parent) { workbench_stop_area_referential_stop_area_path(current_workbench, parent) }
+            = d.attribute :area_type, value: Chouette::AreaType.find(ext.area_type).try(:label)
 
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t("connection_links.form.sections.general"), connection_link_general_metadatas(@connection_link)  
+        = simple_block_for @connection_link, title: t('connection_links.form.sections.general') do |d|
+          = d.attribute :connection_link_type, value: t(@connection_link.link_type, scope: 'activerecord.attributes.connection_link')
+          = d.attribute :name
+          = d.attribute :comment

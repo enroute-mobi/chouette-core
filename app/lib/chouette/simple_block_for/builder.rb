@@ -5,6 +5,12 @@ require 'nest/helpers/simple_block_for/builder'
 module Chouette
   module SimpleBlockFor
     class Builder < Nest::Helpers::SimpleBlockFor::Builder
+      class BooleanIconFormat < Nest::Helpers::SimpleBlockFor::Builder::BooleanFormat
+        def displayed_value
+          view.boolean_icon(raw_value)
+        end
+      end
+
       class TimeOfDayFormat < Nest::Helpers::SimpleBlockFor::Builder::Format
         def displayed_value
           raw_value.to_hm

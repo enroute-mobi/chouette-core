@@ -72,7 +72,7 @@ en:
         mobility_restricted_suitability: "Mobility reduced passenger suitable"
         stairs_availability: "Escalator"
         lift_availability: "Lift"
-        objectid: "Neptune identifier"
+        objectid: "ID"
         object_version: "Version"
         created_at: Created at
         updated_at: Updated at

@@ -7,31 +7,49 @@
 
     .row
       .col-lg-6.col-md-6.col-sm-6.col-xs-6
-        - attributes = { t('id_codif') => @company.get_objectid.try(:short_id) }
-        - %i(name short_name code default_language time_zone fare_url).each do |field|
-          - attributes[Chouette::Company.human_attribute_name(field)] = @company.send(field)
-        - attributes[Chouette::Company.tmf(:objectid)] = @company.objectid
-        = definition_list t("companies.form.sections.identification"), attributes
+        = simple_block_for @company, title: t('companies.form.sections.identification') do |d|
+          = d.attribute :id, value: @company.get_objectid&.short_id
+          = d.attribute :name
+          = d.attribute :short_name
+          = d.attribute :code
+          = d.attribute :default_language
+          = d.attribute :time_zone
+          = d.attribute :fare_url, as: :url
+          = d.attribute :objectid
 
-        - attributes = %w(house_number address_line_1 address_line_2 street town postcode postcode_extension).map { |attr| [Chouette::Company.tmf(attr), @company.send(attr)]}.to_h
-        - attributes[Chouette::Company.tmf(:country_code)] = @company.country_code.present? ? label_for_country(@company.country_code) + ISO3166::Country[@company.country_code].translation(I18n.locale) : '-'
-        = definition_list t("companies.form.sections.address"), attributes
+        = simple_block_for @company, title: t('companies.form.sections.address') do |d|
+          = d.attribute :house_number
+          = d.attribute :address_line_1
+          = d.attribute :address_line_2
+          = d.attribute :street
+          = d.attribute :town
+          = d.attribute :postcode
+          = d.attribute :postcode_extension
+          = d.attribute :country, as: :country
 
         = render 'codes/block', model: @company
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - attributes = %w(name email phone fax url organizational_unit operating_department_name more).map { |attr| [Chouette::Company.tmf("default_contact_#{attr}"), @company.send("default_contact_#{attr}")]}.to_h
-        = definition_list Chouette::Company.tmf(:default_contact), attributes
+        = simple_block_for @company, title: Chouette::Company.human_attribute_name(:default_contact) do |d|
+          = d.attribute :default_contact_name
+          = d.attribute :default_contact_email
+          = d.attribute :default_contact_phone
+          = d.attribute :default_contact_fax
+          = d.attribute :default_contact_url, as: :url
+          = d.attribute :default_contact_organizational_unit
+          = d.attribute :default_contact_operating_department_name
+          = d.attribute :default_contact_more
 
-        - if @company.has_private_contact?
-          - attributes =  %w(name email phone url more).map { |attr| [Chouette::Company.tmf("private_contact_#{attr}"), @company.send("private_contact_#{attr}")]}.to_h
-          = definition_list Chouette::Company.tmf(:private_contact), attributes
+        - %i[private_contact customer_service_contact].each do |contact|
+          - if @company.send(:"has_#{contact}?")
+            = simple_block_for @company, title: Chouette::Company.human_attribute_name(contact) do |d|
+              = d.attribute :"#{contact}_name"
+              = d.attribute :"#{contact}_email"
+              = d.attribute :"#{contact}_phone"
+              = d.attribute :"#{contact}_url", as: :url
+              = d.attribute :"#{contact}_more"
 
-        - if @company.has_customer_service_contact?
-          - attributes =  %w(name email phone url more).map { |attr| [Chouette::Company.tmf("customer_service_contact_#{attr}"), @company.send("customer_service_contact_#{attr}")]}.to_h
-          = definition_list Chouette::Company.tmf(:customer_service_contact), attributes
-
-        = simple_block_for @company, title: Chouette::Company.tmf('is_referent') do |d|
+        = simple_block_for @company, title: Chouette::Company.human_attribute_name(:is_referent) do |d|
           - if @company.is_referent
             = d.attribute :particulars, as: :count, value: @company.particulars
             - if @company.particulars.present?
@@ -39,9 +57,9 @@
                 thead
                   tr
                     th scope="col"
-                      = Chouette::Company.tmf('id')
+                      = Chouette::Company.human_attribute_name(:id)
                     th scope="col"
-                      = Chouette::Company.tmf('name')
+                      = Chouette::Company.human_attribute_name(:name)
                 tbody
                   - @company.particulars.limit(5).each do |c|
                     tr

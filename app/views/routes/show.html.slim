@@ -6,12 +6,13 @@
   .container-fluid
     .row
       .col-md-6.col-sm-12.col-xs-12
-        = definition_list t('metadatas'),
-          { t('objectid') => @route.get_objectid.short_id,
-            t('activerecord.attributes.route.published_name') => (@route.published_name ? @route.published_name : '-'),
-            @route.human_attribute_name(:wayback) => (@route.wayback ? @route.wayback_text : '-' ),
-            @route.human_attribute_name(:opposite_route) => (@route.opposite_route ? @route.opposite_route.name : '-'),
-            @route.human_attribute_name(:checksum) => @route.checksum }
+        = simple_block_for @route, title: t('metadatas') do |d|
+          = d.attribute :objectid, value: @route.get_objectid&.short_id
+          = d.attribute :published_name
+          = d.attribute :wayback, as: :enumerize
+          = d.attribute :opposite_route, as: :association
+          = d.attribute :checksum
+
         = render 'codes/block', model: @route
 
       - if @route_sp.any?

@@ -41,7 +41,7 @@ en:
         title: "Title"
         content: "Text"
         import_xml: "XML import"
-        objectid: "Neptune identifier"
+        objectid: "ID"
         created_at: Created at
         updated_at: Updated at
         lines: "Associated Lines"

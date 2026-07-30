@@ -4,8 +4,8 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - attributes = {t('api_keys.workbench_id') => @workbench.id}
-        = definition_list t('metadatas'), attributes
+        = simple_block_for nil, title: t('metadatas') do |d|
+          = d.attribute :workbench_id, value: @workbench.id, label: t('api_keys.workbench_id')
 
     - if @api_keys.any?
       .row

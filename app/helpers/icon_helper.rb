@@ -10,6 +10,7 @@ module IconHelper
     Private.icon_join(icon, text, right_icon)
   end
 
+  # TODO: CHOUETTE-5625 move in Chouette::SimpleBlockFor::Builder::BooleanIconFormat
   def boolean_icon val
     icon = val ? 'check' : 'times'
     txt = fa_icon(icon) + (val ? 'true'.t : 'false'.t)

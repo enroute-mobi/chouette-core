@@ -941,8 +941,6 @@ module Import
           super
 
           errors.add :journey_pattern_without_id unless id.present?
-
-          errors.add :journey_pattern_less_than_2_stop_points unless journey_pattern_stop_points.many?
         end
 
         def chouette_model
@@ -1242,6 +1240,12 @@ module Import
 
             # if some scheduled stop point is missing in this journey pattern, we continue with the next journey pattern
             next nil unless ordered_points
+
+            # if a ServiceJourneyPattern has less than 2 stop points, then the merger will not accept it
+            unless ordered_points.many?
+              add_journey_pattern_error(netex_journey_pattern, :journey_pattern_less_than_2_stop_points)
+              next nil
+            end
 
             [netex_journey_pattern, ordered_points]
           end

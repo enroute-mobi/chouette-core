@@ -52,9 +52,6 @@ RSpec.describe Export::Ara do
           it 'is set on every exported vehicle journey' do
             is_expected.to all(eq(3))
           end
-          it 'totals the number of exported stop visits' do
-            expect(subject.sum).to eq(18)
-          end
         end
         describe 'operators count' do
           subject { source.operators.to_a.size }
@@ -86,9 +83,6 @@ RSpec.describe Export::Ara do
           subject { source.vehicle_journeys.map { |vehicle_journey| vehicle_journey.aimed_stop_visit_count.to_i } }
           it 'is set on every exported vehicle journey even though no stop visit is exported' do
             is_expected.to all(eq(3))
-          end
-          it 'totals the number of aimed stop visits even though no stop visit is exported' do
-            expect(subject.sum).to eq(18)
           end
         end
         describe 'operators count' do

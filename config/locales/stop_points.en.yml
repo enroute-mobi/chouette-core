@@ -45,6 +45,7 @@ en:
         deleted_at: "Activated"
         for_boarding: "Boarding"
         for_alighting: "Alighting"
+        flexible: "Flexible"
         area_type: "Area type"
         city_name: "City name"
         zip_code: "Zip code"

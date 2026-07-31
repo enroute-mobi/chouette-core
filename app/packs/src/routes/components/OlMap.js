@@ -97,7 +97,7 @@ export default function StopPointsMap({ index, onSelectMarker, onUpdateViaOlMap,
           {olMap.json.short_name}
         </p>
         <p>
-          <strong>{I18n.t('id_reflex')} : </strong>
+          <strong>{I18n.t('activerecord.attributes.route.objectid')} : </strong>
           {olMap.json.user_objectid}
         </p>
 

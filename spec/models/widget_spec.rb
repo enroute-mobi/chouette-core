@@ -96,6 +96,8 @@ RSpec.describe Widget::Count do
     )
   end
 
+  it { is_expected.to enumerize(:target_scope).in(%w[workbench]) }
+
   describe 'validations' do
     let(:candidate_search_ids) { [1, 42, 152] }
     let(:candidate_searches) do
@@ -279,6 +281,8 @@ RSpec.describe Widget::Chart do
       setup_data_cache: setup_data_cache
     )
   end
+
+  it { is_expected.to enumerize(:target_scope).in(%w[workbench]) }
 
   describe 'validations' do
     let(:candidate_search_ids) { [1, 42, 152] }

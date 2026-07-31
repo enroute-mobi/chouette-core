@@ -57,6 +57,7 @@ en:
   activemodel:
     attributes:
       widget/search:
+        target_scope: "Target"
         saved_search: "Saved search"
       widget/static_text:
         content: "Markdown Content"
@@ -66,3 +67,6 @@ en:
         chart: "Chart"
         count: "Count"
         static_text: "Static text"
+    widget/search:
+      target_scope:
+        workbench: "workbench"

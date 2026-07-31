@@ -21,6 +21,18 @@ document.addEventListener("DOMContentLoaded", () => {
       settings.allowEmptyOption = true
     }
 
+    // country selects prefix each entry with its flag. The alpha2 code cannot be
+    // derived from the option value (en_UK -> GB), so it comes from a lookup map.
+    if (el.classList.contains('country-select')) {
+      const countryCodes = JSON.parse(el.dataset.countryCodes || '{}')
+      const withFlag = (data, escape) => {
+        const alpha2 = countryCodes[data.value]
+        const flag = alpha2 ? `<span class="flag-icon flag-icon-${alpha2.toLowerCase()} mr-xs"></span>` : ''
+        return `<div>${flag}${escape(data.text)}</div>`
+      }
+      settings.render = { option: withFlag, item: withFlag }
+    }
+
     new TomSelect(el, settings)
   })
 })

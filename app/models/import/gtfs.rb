@@ -347,6 +347,7 @@ class Import::Gtfs < Import::Base
             criticity: :error,
             message_key: 'gtfs.location_groups.missing_member_ids',
             message_attributes: {
+              location_group_id: id,
               missing_member_ids: missing_member_ids.join(', ')
             }
           }

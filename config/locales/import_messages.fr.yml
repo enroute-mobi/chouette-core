@@ -83,6 +83,9 @@ fr:
       stops:
         imported: "%{count} arrêt(s) importé(s)"
         invalid_location_type: "L'arrêt %{registration_number} %{stop_area_name} de type %{stop_area_type} n'est pas compatible avec la valeur de location_type GTFS"
+      location_groups:
+        missing_member_ids: "Le groupe de lieux %{location_group_id} fait référence à des arrêts inconnus : %{missing_member_ids}"
+        area_type_is_not_flexible_stop_place: "L'arrêt %{registration_number} %{stop_area_name} de type %{area_type} existe déjà et n'est pas une Zone flexible"
       routes:
         imported: "%{count} itinéraire(s) importé(s)"
       trips:

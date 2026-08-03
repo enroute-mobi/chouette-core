@@ -371,6 +371,13 @@ module Export
         current_scope.routing_constraint_zones.where(route: routes)
       end
 
+      def fare_zones
+        current_scope.fare_zones.where(
+          id: ::Fare::StopAreaZone.where(::Fare::StopAreaZone.arel_table[:stop_area_id].in(stop_area_ids))
+                                  .select(:fare_zone_id).distinct
+        )
+      end
+
       def fare_products
         current_scope.fare_products.where(company: companies).or(current_scope.fare_products.where(company: nil))
       end

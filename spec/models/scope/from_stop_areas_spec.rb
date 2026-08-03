@@ -54,5 +54,26 @@ RSpec.describe Scope::FromStopAreas do
         is_expected.to contain_exactly(context.entrance(:entrance))
       end
     end
+
+    context 'with :fare_zones' do
+      let(:collection_name) { :fare_zones }
+      let(:current_collection) { Fare::Zone.all }
+
+      let(:context) do
+        Chouette.create do
+          stop_area :stop_area
+          stop_area :other_stop_area
+
+          fare_zone :fare_zone, stop_areas: %i[stop_area]
+          fare_zone :other_fare_zone, stop_areas: %i[other_stop_area]
+        end
+      end
+
+      before { allow_stop_areas }
+
+      it 'returns only fare zones associated to stop areas' do
+        is_expected.to contain_exactly(context.fare_zone(:fare_zone))
+      end
+    end
   end
 end

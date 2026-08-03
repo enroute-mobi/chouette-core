@@ -2,5 +2,5 @@
   = f.row
     = f.text
   = f.row
-    = f.input :profile, as: :autocomplete_select, collection: Permission::Profile.all_i18n, input_html: { multiple: true }
-    = f.input :state, as: :autocomplete_select, collection: User.all_states_i18n, input_html: { multiple: true }
+    = f.input :profile, as: :autocomplete_select, collection: Permission::Profile.all_i18n, input_html: { multiple: true }, width: 2
+    = f.input :state, as: :autocomplete_select, collection: User.all_states_i18n, input_html: { multiple: true }, width: 2

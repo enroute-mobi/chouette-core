@@ -71,3 +71,4 @@ fr:
       target_scope:
         workbench: "Espace de travail"
         last_merged_dataset: "Dernier jeu de données finalisé"
+        last_aggregated_dataset: "Dernière offre aggrégée"

@@ -96,7 +96,7 @@ RSpec.describe Widget::Count do
     )
   end
 
-  it { is_expected.to enumerize(:target_scope).in(%w[workbench last_merged_dataset]) }
+  it { is_expected.to enumerize(:target_scope).in(%w[workbench last_merged_dataset last_aggregated_dataset]) }
 
   describe 'validations' do
     let(:candidate_search_ids) { [1, 42, 152] }
@@ -172,6 +172,14 @@ RSpec.describe Widget::Count do
         is_expected.to contain_exactly(workbench_count_referential_search1)
       end
     end
+
+    context 'when #target_scope is "last_aggregated_dataset"' do
+      before { widget_setup.target_scope = 'last_aggregated_dataset' }
+
+      it 'returns only count searches on referential models of the widget workbench' do
+        is_expected.to contain_exactly(workbench_count_referential_search1)
+      end
+    end
   end
 
   describe '#setup_data_cache?' do
@@ -229,6 +237,29 @@ RSpec.describe Widget::Count do
           before do
             referential.update!(referential_suite: workbench.output)
             workbench.output.update!(current: referential)
+          end
+
+          it 'returns only lines of the referential' do
+            is_expected.to match_array(%i[line1 line2].map { |i| context.line(i) })
+          end
+        end
+      end
+
+      context 'when #target_scope is "last_aggregated_dataset"' do
+        before { widget_setup.target_scope = 'last_aggregated_dataset' }
+
+        context 'when there is no aggregated dataset' do
+          it 'is empty' do
+            is_expected.to be_empty
+          end
+        end
+
+        context 'when there is an aggregated dataset' do
+          let(:referential) { context.referential(:referential) }
+
+          before do
+            referential.update!(referential_suite: workbench.workgroup.output)
+            workbench.workgroup.output.update!(current: referential)
           end
 
           it 'returns only lines of the referential' do
@@ -327,7 +358,7 @@ RSpec.describe Widget::Chart do
     )
   end
 
-  it { is_expected.to enumerize(:target_scope).in(%w[workbench last_merged_dataset]) }
+  it { is_expected.to enumerize(:target_scope).in(%w[workbench last_merged_dataset last_aggregated_dataset]) }
 
   describe 'validations' do
     let(:candidate_search_ids) { [1, 42, 152] }
@@ -403,6 +434,14 @@ RSpec.describe Widget::Chart do
         is_expected.to contain_exactly(workbench_chart_referential_search1)
       end
     end
+
+    context 'when #target_scope is "last_aggregated_dataset"' do
+      before { widget_setup.target_scope = 'last_aggregated_dataset' }
+
+      it 'returns only count searches on referential models of the widget workbench' do
+        is_expected.to contain_exactly(workbench_chart_referential_search1)
+      end
+    end
   end
 
   describe '#setup_data_cache?' do
@@ -460,6 +499,29 @@ RSpec.describe Widget::Chart do
           before do
             referential.update!(referential_suite: workbench.output)
             workbench.output.update!(current: referential)
+          end
+
+          it 'returns only lines of the referential' do
+            is_expected.to match_array(%i[line1 line2].map { |i| context.line(i) })
+          end
+        end
+      end
+
+      context 'when #target_scope is "last_aggregated_dataset"' do
+        before { widget_setup.target_scope = 'last_aggregated_dataset' }
+
+        context 'when there is no aggregated dataset' do
+          it 'is empty' do
+            is_expected.to be_empty
+          end
+        end
+
+        context 'when there is an aggregated dataset' do
+          let(:referential) { context.referential(:referential) }
+
+          before do
+            referential.update!(referential_suite: workbench.workgroup.output)
+            workbench.workgroup.output.update!(current: referential)
           end
 
           it 'returns only lines of the referential' do

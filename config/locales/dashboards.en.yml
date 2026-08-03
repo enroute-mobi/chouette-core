@@ -70,3 +70,4 @@ en:
     widget/search:
       target_scope:
         workbench: "workbench"
+        last_merged_dataset: "Last merged dataset"

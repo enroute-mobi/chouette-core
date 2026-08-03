@@ -47,13 +47,17 @@ class Widget < ActiveRecord::Base
 
     attribute :target_scope, :string
 
-    enumerize :target_scope, in: %w[workbench]
+    enumerize :target_scope, in: %w[workbench last_merged_dataset]
 
     validates :saved_search_id, inclusion: { in: ->(r) { r.candidate_searches.pluck(:id) } },
                                 if: :saved_search_id.to_proc
 
     def candidate_searches
-      workbench.saved_searches.where.not(search_type: "Search::ServiceCount")
+      if target_scope == 'last_merged_dataset'
+        workbench.saved_searches.where(search_type: ::Search::Save::REFERENTIAL_SEARCH_TYPES)
+      else
+        workbench.saved_searches.where.not(search_type: ::Search::Save::REFERENTIAL_SEARCH_TYPES)
+      end
     end
 
     def search
@@ -61,7 +65,17 @@ class Widget < ActiveRecord::Base
     end
 
     def scope
-      workbench.send(saved_search.resource_name)
+      if target_scope == 'last_merged_dataset'
+        source = workbench.output&.current
+      else
+        source = workbench
+      end
+
+      if source
+        source.send(saved_search.resource_name)
+      else
+        saved_search.searched_class.none
+      end
     end
   end
 

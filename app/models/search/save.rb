@@ -4,6 +4,10 @@ module Search
   class Save < ApplicationModel
     self.table_name = 'saved_searches'
 
+    REFERENTIAL_SEARCH_TYPES = %w[
+      Search::ServiceCount
+    ].freeze
+
     belongs_to :parent, polymorphic: true # CHOUETTE-3247 optional: false
     validates :name, presence: true, uniqueness: { scope: %i[parent_type parent_id search_type] }
     validates :search_type, presence: true
@@ -11,6 +15,8 @@ module Search
     scope :by_text, ->(text) { text.blank? ? all : where('lower(name) LIKE :t', t: "%#{text.downcase}%") }
     scope :graphical, -> { where(%(#{quoted_table_name}."search_attributes" ->> 'chart_type' IS NOT NULL)) }
     scope :non_graphical, -> { where(%(#{quoted_table_name}."search_attributes" ->> 'chart_type' IS NULL)) }
+    scope :referential, -> { where(search_type: REFERENTIAL_SEARCH_TYPES) }
+    scope :non_referential, -> { where.not(search_type: REFERENTIAL_SEARCH_TYPES) }
 
     class << self
       # rubocop:disable Naming/MemoizedInstanceVariableName
@@ -43,6 +49,10 @@ module Search
 
     def search_class
       search_type.constantize
+    end
+
+    def searched_class
+      search_class.new.searched_class
     end
 
     def resource_name

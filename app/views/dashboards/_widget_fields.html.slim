@@ -26,10 +26,10 @@
         div
           = f.simple_fields_for(:setup, search) do |setup_form|
             = setup_form.input :target_scope, allow_blank: false, input_html: { 'x-model': 'target_scope' }
-            - %w[count chart].product(%w[workbench]).each do |widget_type, target_scope|
+            - %w[count chart].product(%w[workbench last_merged_dataset]).each do |widget_type, target_scope|
               template[x-if="widget_type === '#{widget_type}' && target_scope === '#{target_scope}'"]
                 div[x-init="addAjaxSelectToForm($el)"]
-                  = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, 'graphical' => (widget_type == 'chart').to_s, format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
+                  = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, 'graphical' => (widget_type == 'chart').to_s, 'referential_scope' => (target_scope == 'last_merged_dataset').to_s, format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
 
     - if f.object.widget_type == 'static_text' || local_assigns[:dynamic]
       - static_text_setup = f.object.widget_type == 'static_text' ? f.object.setup : Widget::StaticText.new

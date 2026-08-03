@@ -70,3 +70,4 @@ fr:
     widget/search:
       target_scope:
         workbench: "Espace de travail"
+        last_merged_dataset: "Dernier jeu de données finalisé"

@@ -9,7 +9,7 @@
         = simple_block_for @publication, title: t('metadatas') do |d|
           = d.attribute :status, value: operation_user_status(@publication.user_status)
           = d.attribute :publication_setup, as: :association, link: url_for([@workgroup, @publication_setup])
-          = d.attribute :parent, value: "#{@publication.parent.model_name.human} #{@publication.parent.name}", link: url_for([default_workbench, @publication.parent.new])
+          = d.attribute :parent, value: @publication.parent ? "#{@publication.parent.model_name.human} #{@publication.parent.name}" : nil, link: ->(_) { url_for([default_workbench, @publication.parent.new]) }
 
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = operation_processing_helper(@publication)

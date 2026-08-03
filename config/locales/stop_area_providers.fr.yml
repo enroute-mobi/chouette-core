@@ -24,6 +24,7 @@ fr:
         other: "Fournisseurs d'arrêts"
     attributes:
       stop_area_provider:
+        objectid: "ID"
         name: Nom
         short_name: Nom court
         allowed_stop_area_types: Types d'arrêts autorisés

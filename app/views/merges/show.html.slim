@@ -5,14 +5,21 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t('metadatas'), merge_metadatas(@merge)
+        = simple_block_for @merge, title: t('metadatas') do |d|
+          = d.attribute :referentials, value: @merge.referentials.map { |r| link_to(decorate_referential_name(r), workbench_referential_path(current_workbench, r)) }.join(', ').html_safe
+          = d.attribute :status, value: operation_status(@merge.status, verbose: true, i18n_prefix: 'merges.statuses')
+          = d.attribute :new, as: :association, link: workbench_referential_path(current_workbench, @merge.new)
+          = d.attribute :contains_urgent_offer, as: :boolean_icon, value_method: :contains_urgent_offer?
+
         - if @merge.last_aggregate
           = simple_block_for @merge, title: t('.last_aggregate') do |b|
             = b.attribute(:last_aggregated_at, as: :datetime, label: t('.last_aggregated_at'), value: @merge.last_aggregate.ended_at)
             = b.attribute(:last_aggregated_referential, as: :association, label: t('.last_aggregated_referential'), value: @merge.last_aggregate.new, link: url_for([@workbench, @merge.last_aggregate.new]))
           end
+
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = operation_processing_helper(@merge)
+
     .row
       - if @merge.referentials.any?
         .col-lg-12

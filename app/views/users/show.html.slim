@@ -6,16 +6,16 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        - metadatas = { User.human_attribute_name(:name) => @user.name }
-        - metadatas.update( User.human_attribute_name(:email) => @user.email )
-        - metadatas.update( User.human_attribute_name(:state) => @user.state_i18n )
-        - metadatas.update( User.human_attribute_name(:profile) => @user.profile_i18n )
-        - metadatas.update( User.human_attribute_name(:enable_internal_password_authentication) => t(@user.enable_internal_password_authentication ? 'true' : 'false' ) )
-        - if @user.state == :invited
-          - metadatas.update( User.human_attribute_name(:invitation_sent_at) => @user.invitation_sent_at ? l(@user.invitation_sent_at, format: :short_with_time) : '-' )
-        - else
-          - metadatas.update( User.human_attribute_name(:last_sign_in_at) => @user.last_sign_in_at ? l(@user.last_sign_in_at, format: :short_with_time) : '-' )
-          - metadatas.update( User.human_attribute_name(:locked_at) => @user.locked_at ? l(@user.locked_at, format: :short_with_time) : '-' )
-        - metadatas.update( User.human_attribute_name(:created_at) => l(@user.created_at, format: :short_with_time))
-        - metadatas.update( User.human_attribute_name(:updated_at) => l(@user.updated_at, format: :short_with_time))
-        = definition_list t('metadatas'), metadatas
+        = simple_block_for @user, title: t('metadatas') do |d|
+          = d.attribute :name
+          = d.attribute :email
+          = d.attribute :state, value: @user.state_i18n
+          = d.attribute :profile, value: @user.profile_i18n
+          = d.attribute :enable_internal_password_authentication, as: :boolean
+          - if @user.state == :invited
+            = d.attribute :invitation_sent_at, as: :datetime
+          - else
+            = d.attribute :last_sign_in_at, as: :datetime
+          = d.attribute :locked_at, as: :datetime
+          = d.attribute :created_at, as: :datetime
+          = d.attribute :updated_at, as: :datetime

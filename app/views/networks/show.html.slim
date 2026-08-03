@@ -5,10 +5,10 @@
   .container-fluid
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
-        = definition_list t('metadatas'),
-          { @network.human_attribute_name(:id) => @network.get_objectid.try(:short_id), \
-            @network.human_attribute_name(:name) => @network.name, \
-            @network.human_attribute_name(:registration_number) => @network.registration_number, \
-            @network.human_attribute_name(:comment) => (@network.comment.presence || '-'), \
-           }
+        = simple_block_for @network, title: t('metadatas') do |d|
+          = d.attribute :objectid, value: @network.get_objectid&.short_id
+          = d.attribute :name
+          = d.attribute :registration_number
+          = d.attribute :comment
+
         = render 'codes/block', model: @network

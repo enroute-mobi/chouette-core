@@ -24,6 +24,7 @@ en:
         other: "Stop Area Providers"
     attributes:
       stop_area_provider:
+        objectid: "ID"
         name: Name
         short_name: Short name
         allowed_stop_area_types: Allowed Stop Area types

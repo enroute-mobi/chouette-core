@@ -42,7 +42,7 @@ en:
         source_type_name: "Source type"
         source_name: "Source name"
         source_identifier: "Source identifier"
-        objectid: "Neptune identifier"
+        objectid: "ID"
         object_version: "Version"
         created_at: Created at
         updated_at: Updated at

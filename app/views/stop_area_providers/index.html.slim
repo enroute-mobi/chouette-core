@@ -11,7 +11,7 @@
           = table_builder_2 @stop_area_providers,
             [ \
               TableBuilderHelper::Column.new( \
-                name: t('id_reflex'), \
+                key: :objectid, \
                 attribute: Proc.new { |n| n.get_objectid.try(:short_id) }, \
                 sortable: false \
               ), \

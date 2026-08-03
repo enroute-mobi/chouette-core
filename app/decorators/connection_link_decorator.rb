@@ -13,6 +13,10 @@ class ConnectionLinkDecorator < Af83::Decorator
     instance_decorator.crud
   end
 
+  define_instance_method :display_direction do
+    I18n.t("connection_links.direction.#{both_ways? ? 'both' : 'one'}")
+  end
+
   def policy_parent
     context[:workbench].default_stop_area_provider
   end

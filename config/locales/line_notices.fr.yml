@@ -42,7 +42,7 @@ fr:
         title: "Titre"
         content: "Texte"
         import_xml: "Import XML"
-        objectid: "Identifiant Neptune"
+        objectid: "ID"
         created_at: "Créé le"
         updated_at: "Edité le"
         lines: "Lignes associées"

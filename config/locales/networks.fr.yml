@@ -42,7 +42,7 @@ fr:
         source_type_name: "Type de système origine"
         source_name: "Nom du système origine"
         source_identifier: "Identifiant du système origine"
-        objectid: "Identifiant Neptune"
+        objectid: "ID"
         object_version: "Version"
         created_at: "Créé le"
         updated_at: "Edité le"

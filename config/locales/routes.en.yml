@@ -93,7 +93,7 @@ en:
         opposite_route: "Inverse Route"
         opposite_route_id: "Inverse Route"
         codes: "Codes"
-        objectid: "Neptune identifier"
+        objectid: "ID"
         object_version: "Version"
         created_at: Created at
         updated_at: Updated at

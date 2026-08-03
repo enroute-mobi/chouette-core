@@ -66,8 +66,6 @@ en:
   bounding_dates: '%{debut} > %{end}'
   metadatas: 'Informations'
 
-  id_codif: 'ID'
-  id_reflex: 'ID'
   objectid: 'ID'
   brandname: Chouette
   error: "Error"

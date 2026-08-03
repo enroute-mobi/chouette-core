@@ -7,7 +7,7 @@
     .row
       .col-lg-6.col-md-6.col-sm-12.col-xs-12
         = simple_block_for @stop_area_provider, title: t('metadatas') do |d|
-          = d.attribute :short_id, label: t('id_reflex'), value: @stop_area_provider.get_objectid.short_id
+          = d.attribute :objectid, value: @stop_area_provider.get_objectid.short_id
           = d.attribute :name
           = d.attribute :short_name
           = d.attribute :workbench, as: :association

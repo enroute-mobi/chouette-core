@@ -13,7 +13,7 @@
           = table_builder_2 @lines,
             [ \
               TableBuilderHelper::Column.new( \
-                name: t('id_codif'), \
+                key: :objectid, \
                 attribute: Proc.new { |n| n.get_objectid.short_id }, \
                 sortable: false \
               ), \

@@ -337,10 +337,6 @@ module Search
           Time.zone
         end
 
-        def time_zone_name
-          time_zone == false ? 'Etc/UTC' : time_zone.tzinfo.name # see groupdate/magic
-        end
-
         def groupdate_adapter(models, **options) # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
           # copied from Groupdate::Magic::Relation.generate_relation
 
@@ -653,21 +649,26 @@ module Search
                     end
       end
 
+      def total_aggregate
+        @total_aggregate ||= TotalAggregateRequestBuilder.new(self).execute
+      end
+
       def raw_data
         RawDataRequestBuilder.new(self).execute
       end
 
-      def data
+      def data # rubocop:disable Metrics/MethodLength
         return @data if @data
 
         data = raw_data
-        data = compute_percent(data)
 
         @data ||= if subgroup_by_attribute
                     data = extract_series(data)
+                    data = compute_percent_for_each_xaxis_tick(data)
                     data = transform_series(data)
                     format_as_series(data)
                   else
+                    data = compute_percent(data)
                     transform_data(data)
                   end
       end
@@ -718,14 +719,31 @@ module Search
         series_data.all? { |_, v| v.nil? || v.zero? }
       end
 
+      def compute_percent_for_each_xaxis_tick(data) # rubocop:disable Metrics/MethodLength
+        return data unless display_percent
+
+        data.transform_values do |series_data|
+          series_data.map do |xaxis_id, value|
+            tick_total_aggregate = total_aggregate[xaxis_id]
+
+            new_value = if tick_total_aggregate.nil? || tick_total_aggregate.zero?
+                          0
+                        else
+                          value.nil? ? 0 : value * 100.0 / tick_total_aggregate
+                        end
+
+            [xaxis_id, new_value]
+          end.to_h
+        end
+      end
+
       def compute_percent(result)
         return result unless display_percent
 
-        sum = result.values.compact.sum
-        if sum.zero?
+        if total_aggregate.zero?
           result.transform_values { 0 }
         else
-          result.transform_values { |v| v.nil? ? 0 : v * 100.0 / sum }
+          result.transform_values { |v| v.nil? ? 0 : v * 100.0 / total_aggregate }
         end
       end
 
@@ -978,7 +996,7 @@ module Search
         delegate :top_count, :first, :period, :sort_by, to: :chart
         delegate :compute_xaxis_keys?, :label?, :label, to: :attribute
 
-        protected :label?, :label # rubocop:disable Style/AccessModifierDeclarations # TODO: rubocop bug
+        protected :label?, :label
         private :sort_by
 
         def attribute
@@ -1085,6 +1103,8 @@ module Search
         attr_reader :chart
 
         delegate :models,
+                 :sort_by,
+                 :subgroup_by_attribute,
                  :xaxis_dimension,
                  :series_dimension,
                  :aggregate_operation,
@@ -1127,8 +1147,24 @@ module Search
           @request = dimension.where(@request)
         end
 
+        def group(dimension)
+          @request = dimension.group(@request)
+        end
+
         def group_series(dimension, order_arg)
           @request = dimension.group_series(@request, order_arg)
+        end
+
+        def group_order_limit(order_arg, top_count)
+          @request = xaxis_dimension.attribute.group_order_limit(@request, order_arg, top_count, xaxis_dimension.period)
+        end
+
+        def xaxis_order_arg
+          if sort_by == 'label'
+            xaxis_dimension.order_arg
+          else
+            sort_by_value_order_arg(xaxis_dimension)
+          end
         end
 
         def sort_by_value_order_arg(dimension)
@@ -1224,11 +1260,23 @@ module Search
         end
       end
 
-      class RawDataRequestBuilder < RequestBuilder
-        delegate :sort_by,
-                 :subgroup_by_attribute,
-                 to: :chart
+      class TotalAggregateRequestBuilder < RequestBuilder
+        def build!
+          if subgroup_by_attribute # rubocop:disable Style/GuardClause
+            joins(xaxis_dimension)
+            select(xaxis_dimension)
+            where(xaxis_dimension) if xaxis_dimension.compute_xaxis_keys?
+            group_order_limit(xaxis_order_arg, xaxis_dimension.top_count)
+          end
+        end
 
+        def execute
+          super
+          aggregate
+        end
+      end
+
+      class RawDataRequestBuilder < RequestBuilder
         def build! # rubocop:disable Metrics/MethodLength,Metrics/AbcSize
           if subgroup_by_attribute
             joins(series_dimension)
@@ -1241,7 +1289,7 @@ module Search
             where(xaxis_dimension) if xaxis_dimension.compute_xaxis_keys? # already added by #group_order_limit
           end
           group(series_dimension) if subgroup_by_attribute
-          group_order_limit
+          group_order_limit(order_arg, top_count)
         end
 
         def execute
@@ -1251,26 +1299,10 @@ module Search
 
         private
 
-        def group(dimension)
-          @request = dimension.group(@request)
-        end
-
-        def group_order_limit
-          @request = xaxis_dimension.attribute.group_order_limit(@request, order_arg, top_count, xaxis_dimension.period)
-        end
-
         def order_arg
           order_arg = xaxis_order_arg
           order_arg = order_arg.merge(series_dimension.order_arg) if subgroup_by_attribute
           order_arg
-        end
-
-        def xaxis_order_arg
-          if sort_by == 'label'
-            xaxis_dimension.order_arg
-          else
-            sort_by_value_order_arg(xaxis_dimension)
-          end
         end
 
         def top_count

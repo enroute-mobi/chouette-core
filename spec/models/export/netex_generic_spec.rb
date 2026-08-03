@@ -1345,7 +1345,12 @@ RSpec.describe Export::NetexGeneric do
 
     describe Export::NetexGeneric::StopAreas::Decorator do
       let(:stop_area) { Chouette::StopArea.new }
-      let(:decorator) { described_class.new stop_area }
+      let(:export_scope_stop_areas) { Chouette::StopArea.none }
+      let(:export_scope) { double('Export::Scope', stop_areas: export_scope_stop_areas, fare_zones: Fare::Zone.none) }
+      let(:code_provider) { Export::CodeProvider.new export_scope }
+      let(:decorator) { described_class.new stop_area, code_provider: code_provider }
+
+      before { allow(decorator).to receive(:fare_zone_ids_array).and_return([nil]) }
 
       describe '#netex_quay?' do
         subject { decorator.netex_quay? }
@@ -1380,9 +1385,7 @@ RSpec.describe Export::NetexGeneric do
 
         context 'when code provider is used to compute netex id' do
           let(:stop_area) { create(:stop_area) }
-          let(:decorator) { described_class.new stop_area, code_provider: code_provider }
-          let(:code_provider) { Export::CodeProvider.new export_scope }
-          let(:export_scope) { double('Export::Scope', stop_areas: Chouette::StopArea.where(id: stop_area)) }
+          let(:export_scope_stop_areas) { Chouette::StopArea.where(id: stop_area) }
 
           it 'uses StopArea objectid as id' do
             is_expected.to include(id: a_string_eq_to(stop_area.objectid))
@@ -1409,6 +1412,7 @@ RSpec.describe Export::NetexGeneric do
 
       describe '#netex_resource' do
         subject { decorator.netex_resource }
+
         context 'when netex_quay? is true' do
           before { allow(decorator).to receive(:parent_objectid).and_return('dummy') }
           it { is_expected.to have_tag(:parent_id) }
@@ -1424,13 +1428,11 @@ RSpec.describe Export::NetexGeneric do
       end
 
       context 'when StopArea has a parent' do
-        let(:quay) { context.stop_area :quay }
+        let(:stop_area) { context.stop_area :quay }
         let(:parent_stop_place) { context.stop_area :parent_stop_place }
-        let(:quay_decorator) { described_class.new quay, code_provider: code_provider }
-        let(:code_provider) { Export::CodeProvider.new export_scope }
-        let(:export_scope) { double('Export::Scope', stop_areas: Chouette::StopArea.all) }
+        let(:export_scope_stop_areas) { Chouette::StopArea.all }
 
-        subject { quay_decorator.netex_resource.tag(:parent_id) }
+        subject { decorator.netex_resource.tag(:parent_id) }
 
         it 'has a parent_id tag' do
           is_expected.to eq(parent_stop_place.objectid)

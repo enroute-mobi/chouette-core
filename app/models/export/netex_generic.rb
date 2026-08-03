@@ -560,7 +560,7 @@ class Export::NetexGeneric < Export::Base
 
     def fare_zone_ids
       <<~SQL
-       array_agg(fare_zones.id) AS fare_zone_ids
+       array_agg(fare_zones.id) AS fare_zone_ids_array
      SQL
     end
 
@@ -593,10 +593,10 @@ class Export::NetexGeneric < Export::Base
       end
 
       def tariff_zones
-        fare_zone_ids.map do |fare_zone_id|
+        fare_zone_ids_array.filter_map do |fare_zone_id|
           fare_zone_code = code_provider.fare_zones.code(fare_zone_id)
           Netex::Reference.new(fare_zone_code, type: Netex::FareZone) if fare_zone_code
-        end.compact
+        end
       end
 
       def netex_transport_mode

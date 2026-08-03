@@ -86,7 +86,8 @@ RSpec.describe Chouette::Sync::Entrance do
         address_line_1: 'Address Line 1',
         zip_code: '44300',
         city_name: 'Nantes',
-        country: 'France'
+        country: 'France',
+        stop_area_provider_id: stop_area_provider.id
       }
     end
 

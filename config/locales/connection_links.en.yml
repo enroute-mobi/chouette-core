@@ -77,3 +77,8 @@ en:
         created_at: Created at
         updated_at: Updated at
         creator_id: "Created by"
+  simple_form:
+    placeholders:
+      connection_link:
+        departure_id: "First stop"
+        arrival_id: "Second stop"

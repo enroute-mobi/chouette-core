@@ -123,6 +123,10 @@ en:
         urgent: 'Contains urgent data'
         workbench: Workbench
   simple_form:
+    placeholders:
+      referential:
+        metadatas:
+          lines: "Selection of Lines"
     labels:
       referential:
         metadatas:

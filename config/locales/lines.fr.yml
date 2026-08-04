@@ -229,3 +229,10 @@ fr:
         routes: Itinéraires
   referential_lines:
     <<: *fr_lines
+  simple_form:
+    labels:
+      line:
+        secondary_company_ids: "Transporteurs secondaires"
+    placeholders:
+      line:
+        referent_id: "Ligne Référente"

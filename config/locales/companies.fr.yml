@@ -104,6 +104,9 @@ fr:
             is_referent:
               the_particulars_collection_should_be_empty: "Un transporteur non-référent ne peut avoir des transporteurs particuliers"
   simple_form:
+    placeholders:
+      company:
+        referent_id: "Transporteur Référent"
     hints:
       company:
         default_language: "Privilégier un code à deux lettres (fr, en, ...)"

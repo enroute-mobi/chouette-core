@@ -1,8 +1,8 @@
 = simple_form_for [@workbench, :stop_area_referential, @stop_area_routing_constraint], html: {class: 'form-horizontal', id: 'stop_area_provider_form'}, wrapper: :horizontal_form do |f|
   .row
     .col-lg-12
-      = f.input :from_id, as: :ajax_select, collection: [f.object.from_light].compact, label_method: :formatted_selection_details, placeholder: StopAreaRoutingConstraint.human_attribute_name('from'), input_html: { 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench) }
-      = f.input :to_id, as: :ajax_select, collection: [f.object.to_light].compact, label_method: :formatted_selection_details, placeholder: StopAreaRoutingConstraint.human_attribute_name('to'), input_html: { 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench) }
+      = f.input :from_id, as: :ajax_select, collection: [f.object.from_light].compact, label_method: :formatted_selection_details, input_html: { 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench) }
+      = f.input :to_id, as: :ajax_select, collection: [f.object.to_light].compact, label_method: :formatted_selection_details, input_html: { 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench) }
       = f.input :both_way, as: :switchable_checkbox
 
   .separator

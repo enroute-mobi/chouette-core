@@ -247,6 +247,10 @@ fr:
           referent: Référent
           particular: Particulier
   simple_form:
+    placeholders:
+      stop_area:
+        parent_id: "Parent"
+        referent_id: "Arrêt référent"
     hints:
       stop_area:
         coordinates: "latitude,longitude dans le référentiel WGS84, le séparateur de décimales est 'point'"

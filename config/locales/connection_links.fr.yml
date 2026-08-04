@@ -77,3 +77,8 @@ fr:
         created_at: "Créé le"
         updated_at: "Edité le"
         creator_id: "Créé par"
+  simple_form:
+    placeholders:
+      connection_link:
+        departure_id: "Premier arrêt"
+        arrival_id: "Deuxième arrêt"

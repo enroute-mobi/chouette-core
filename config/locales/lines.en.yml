@@ -234,3 +234,10 @@ en:
               active_from_less_than_active_until: "The 'until' date must end after the 'from' date."
   referential_lines:
     <<: *en_lines
+  simple_form:
+    labels:
+      line:
+        secondary_company_ids: "Additional companies"
+    placeholders:
+      line:
+        referent_id: "Referent Line"

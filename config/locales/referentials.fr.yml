@@ -123,6 +123,10 @@ fr:
         urgent: Contient de l'offre urgente
         workbench: Espace de Travail
   simple_form:
+    placeholders:
+      referential:
+        metadatas:
+          lines: "Sélection de lignes"
     labels:
       referential:
         metadatas:

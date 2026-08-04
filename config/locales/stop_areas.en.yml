@@ -245,6 +245,10 @@ en:
           referent: Referent
           particular: Particular
   simple_form:
+    placeholders:
+      stop_area:
+        parent_id: "Parent"
+        referent_id: "Referent Stop Area"
     hints:
       stop_area:
         coordinates: "latitude,longitude in WGS84 referential, dot for decimal separator"

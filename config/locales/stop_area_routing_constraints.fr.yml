@@ -51,3 +51,8 @@ fr:
               must_be_a_different_stop: Les 2 arrêts doivent être distincts
             from:
               must_be_in_same_referential: Les 2 arrêts doivent appartenir au même référentiel
+  simple_form:
+    placeholders:
+      stop_area_routing_constraint:
+        from_id: "Arrêt de départ"
+        to_id: "Arrêt de destination"

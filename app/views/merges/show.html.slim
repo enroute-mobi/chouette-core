@@ -8,7 +8,7 @@
         = simple_block_for @merge, title: t('metadatas') do |d|
           = d.attribute :referentials, value: @merge.referentials.map { |r| link_to(decorate_referential_name(r), workbench_referential_path(current_workbench, r)) }.join(', ').html_safe
           = d.attribute :status, value: operation_status(@merge.status, verbose: true, i18n_prefix: 'merges.statuses')
-          = d.attribute :new, as: :association, link: workbench_referential_path(current_workbench, @merge.new)
+          = d.attribute :new, as: :association, link: ->(_) { workbench_referential_path(current_workbench, @merge.new) }
           = d.attribute :contains_urgent_offer, as: :boolean_icon, value_method: :contains_urgent_offer?
 
         - if @merge.last_aggregate

@@ -26,7 +26,7 @@
       = f.input :town
       = f.input :postcode
       = f.input :postcode_extension
-      = f.input :country_code, as: :country_select, priority: ['FR', 'GB', 'DE', 'ES']
+      = f.input :country_code, priority: ['FR', 'GB', 'DE', 'ES']
 
   .separator.section_separator
 
@@ -34,7 +34,7 @@
     .col-lg-12
       h2.mb-lg= t("companies.form.sections.general")
       = f.input :default_language
-      = f.input :time_zone, as: :full_time_zone, include_blank: false
+      = f.input :time_zone, include_blank: false
       = f.input :fare_url
 
   .separator.section_separator

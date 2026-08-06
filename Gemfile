@@ -130,7 +130,7 @@ gem 'netex', en_route: 'netex'
 gem 'rgeo-shapefile'
 gem 'ara', '>= 3.0.0', en_route: 'ara-ruby'
 gem 'neptune', en_route: 'neptune'
-gem 'secretary', en_route: 'secretary-ruby', branch: 'SECRETARY-206-validation-creation-request-fails-attempt-2'
+gem 'secretary', en_route: 'secretary-ruby'
 
 # Monitoring
 gem 'datadog', require: false

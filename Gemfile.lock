@@ -81,7 +81,7 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/secretary-ruby.git
-  revision: 8142db40aced5d7f5c84b09f59808b5c40be30aa
+  revision: d1ce027bf5f1a545153d31c9acd9c632c97c774c
   specs:
     secretary (0.1.0)
       activesupport
@@ -528,7 +528,7 @@ GEM
       thor (>= 0.14, < 2.0)
     jquery-ui-rails (8.0.0)
       railties (>= 3.2.16)
-    json (2.21.1)
+    json (2.21.2)
     jwt (3.2.0)
       base64
     kramdown (2.5.2)

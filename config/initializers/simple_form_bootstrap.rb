@@ -286,17 +286,6 @@ SimpleForm.setup do |config|
     b.use :hint,  wrap_with: { tag: 'p', class: 'help-block small' }
   end
 
-  # Renders the input alone, without any wrapping tag nor label. Useful in table
-  # cells or inline toolbars, where a wrapper would break the surrounding layout.
-  # Note: `wrapper: false` cannot be used for this, it silently falls back to
-  # the builder wrapper (see SimpleForm::FormBuilder#find_wrapper).
-  config.wrappers :input_only, tag: false, error_class: 'has-error' do |b|
-    b.use :html5
-    b.use :placeholder
-    b.optional :readonly
-    b.use :input
-  end
-
   config.wrappers :filters_form_tailwind, tag: 'div', class: 'flex items-center py-2 px-3 border-white', error_class: 'has-error' do |b|
     b.use :html5
     b.use :placeholder

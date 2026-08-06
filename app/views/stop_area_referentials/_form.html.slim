@@ -1,4 +1,4 @@
-- javascript_additional_packs 'stop_area_referentials/form'
+- javascript_additional_packs 'stop_area_referentials/form', 'inputs/autocomplete_select'
 -# server rendered locale rows take indices 0..n-1, rows added client side continue from n
 - locales_count = @stop_area_referential.locales.size
 = simple_form_for @stop_area_referential, url: workbench_stop_area_referential_path(@workbench), html: {class: 'form-horizontal', id: 'stop_area_referential_form', 'x-data': "localesForm({ firstIndex: #{locales_count} })"}, wrapper: :horizontal_form do |f|
@@ -66,7 +66,7 @@
       - locale_options = locales_data.map { |name, code, _alpha2| [name, code] }
       - country_codes = locales_data.to_h { |_name, code, alpha2| [code, alpha2] }
       .col-md-12.flex.items-center
-        = f.input :add_locale, as: :autocomplete_select, wrapper: :input_only, label: false, collection: locale_options, label_method: :first, value_method: :last, include_blank: true, placeholder: 'actions.select'.t, input_html: { id: 'add_locale', class: 'w-1/5 country-select', 'x-ref': 'addLocale', data: { country_codes: country_codes.to_json } }
+        = select_tag :add_locale, options_for_select(locale_options), include_blank: true, placeholder: 'actions.select'.t, class: 'w-1/5 autocomplete_select country-select', 'x-ref': 'addLocale', data: { country_codes: country_codes.to_json }
         = link_to '#', class: 'btn btn-primary add-locale', 'x-on:click.prevent': 'addLocale()' do
           = fa_icon :plus, {text: 'actions.add'.t}
 

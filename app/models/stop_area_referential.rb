@@ -19,8 +19,6 @@ class StopAreaReferential < ApplicationModel
   # has_many :fare_providers, dependent: :destroy, class_name: 'Fare::Provider'
   has_many :fare_zones, through: :workbenches
 
-  attr_accessor :add_locale
-
   def add_member(organisation, options = {})
     attributes = options.merge organisation: organisation
     stop_area_referential_memberships.build attributes unless organisations.include?(organisation)

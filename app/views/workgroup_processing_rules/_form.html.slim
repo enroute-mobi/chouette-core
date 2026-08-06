@@ -9,16 +9,15 @@
 
       = f.input :operation_step, include_blank: false, input_html: { 'x-on:change': 'operation_step = $event.target.value; $nextTick(() => processable_type = $event.target.form.elements["processing_rule_processable_type"].value)' }
 
-      template x-if="operation_step == 'scheduling'"
-        div x-init="$nextTick(() => document.dispatchEvent(new CustomEvent('flatpickr:refresh')))"
-          = f.input :scheduling_time, as: :time_picker
-          = f.input :scheduling_days, as: :day_type
+      div x-show="operation_step == 'scheduling'"
+        = f.input :scheduling_time, as: :time_picker
+        = f.input :scheduling_days, as: :day_type
 
       .separator.section_separator
 
       h2.mb-lg= t('processing_rule/workgroups.form.sections.target')
 
-      template x-if="operation_step == 'scheduling'"
+      div x-show="operation_step == 'scheduling'"
         = f.input :scheduling_target, as: :select, include_blank: false, input_html: { 'x-model': 'scheduling_target' }
 
       / Target/Excluded Workbenches: always shown for event-based rules, and for scheduled

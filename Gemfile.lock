@@ -81,7 +81,8 @@ GIT
 
 GIT
   remote: https://bitbucket.org/enroute-mobi/secretary-ruby.git
-  revision: 8142db40aced5d7f5c84b09f59808b5c40be30aa
+  revision: 9c71c2c830994d6214783b11b112cb9814aa9d15
+  branch: SECRETARY-206-validation-creation-request-fails-attempt-2
   specs:
     secretary (0.1.0)
       activesupport

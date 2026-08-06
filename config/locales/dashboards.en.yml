@@ -71,3 +71,4 @@ en:
       target_scope:
         workbench: "workbench"
         last_merged_dataset: "Last merged dataset"
+        last_aggregated_dataset: "Last aggregated offer"

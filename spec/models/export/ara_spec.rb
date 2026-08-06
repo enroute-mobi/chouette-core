@@ -47,6 +47,12 @@ RSpec.describe Export::Ara do
           subject { source.vehicle_journeys.to_a.size }
           it { is_expected.to eq(6) }
         end
+        describe 'aimed_stop_visit_count' do
+          subject { source.vehicle_journeys.map { |vehicle_journey| vehicle_journey.aimed_stop_visit_count.to_i } }
+          it 'is set on every exported vehicle journey' do
+            is_expected.to all(eq(3))
+          end
+        end
         describe 'operators count' do
           subject { source.operators.to_a.size }
           it { is_expected.to eq(0) }
@@ -72,6 +78,12 @@ RSpec.describe Export::Ara do
         describe 'vehicle_journeys count' do
           subject { source.vehicle_journeys.to_a.size }
           it { is_expected.to eq(6) }
+        end
+        describe 'aimed_stop_visit_count' do
+          subject { source.vehicle_journeys.map { |vehicle_journey| vehicle_journey.aimed_stop_visit_count.to_i } }
+          it 'is set on every exported vehicle journey even though no stop visit is exported' do
+            is_expected.to all(eq(3))
+          end
         end
         describe 'operators count' do
           subject { source.operators.to_a.size }
@@ -572,11 +584,55 @@ RSpec.describe Export::Ara do
           before { allow(decorator).to receive(:stop_area_uuids).and_return(['uuid']) }
           it { is_expected.to include(stop_area_ids: ['uuid']) }
         end
+
+        context "when short_name is 'sample'" do
+          before { stop_area_group.short_name = 'sample' }
+          it { is_expected.to include(short_name: 'sample') }
+        end
       end
     end
   end
 
   describe 'Lines export' do
+    describe Export::Ara::Lines::Decorator do
+      subject(:decorator) { described_class.new(line) }
+
+      let(:context) do
+        Chouette.create do
+          line :line
+        end
+      end
+      let(:line) { context.line(:line) }
+
+      describe '#referent_uuid' do
+        subject { decorator.referent_uuid }
+
+        context "when Line referent isn't defined" do
+          it { is_expected.to be_nil }
+        end
+
+        context "when Line referent objectid is 'test:Line:uuid:LOC'" do
+          let(:context) do
+            Chouette.create do
+              line :referent, is_referent: true, objectid: 'test:Line:uuid:LOC'
+              line :line, referent: :referent
+            end
+          end
+
+          it { is_expected.to eq('uuid') }
+        end
+      end
+
+      describe '#ara_attributes' do
+        subject { decorator.ara_attributes }
+
+        context "when #referent_uuid is 'uuid'" do
+          before { allow(decorator).to receive(:referent_uuid).and_return('uuid') }
+          it { is_expected.to include(referent_id: 'uuid') }
+        end
+      end
+    end
+
     context 'when two Lines are exported' do
       let(:context) do
         Chouette.create do
@@ -730,6 +786,11 @@ RSpec.describe Export::Ara do
           before { allow(decorator).to receive(:line_uuids).and_return(['uuid']) }
           it { is_expected.to include(line_ids: ['uuid']) }
         end
+
+        context "when short_name is 'sample'" do
+          before { line_group.short_name = 'sample' }
+          it { is_expected.to include(short_name: 'sample') }
+        end
       end
     end
   end
@@ -846,6 +907,28 @@ RSpec.describe Export::Ara do
         it 'contains a Vehicle journey having a VehicleMode attribute' do
           expect(subject.first.raw_attributes).to eq({ 'VehicleMode': 'bus' })
         end
+
+        it 'contains a Vehicle journey having its Line id as line_id' do
+          expect(subject.first).to have_attributes(line_id: vehicle_journey.line.get_objectid.local_id)
+        end
+
+        it 'contains a Vehicle journey with its Stop Visit count as aimed_stop_visit_count' do
+          expect(subject.first).to have_attributes(
+            aimed_stop_visit_count: vehicle_journey.vehicle_journey_at_stops.count
+          )
+        end
+      end
+    end
+
+    context 'when a Vehicle Journey has no Stop Visit' do
+      let(:context) do
+        Chouette.create { vehicle_journey(:first, with_stops: false) }
+      end
+
+      describe 'the Ara File target' do
+        it 'is not exported' do
+          is_expected.to be_empty
+        end
       end
     end
 
@@ -958,6 +1041,61 @@ RSpec.describe Export::Ara do
 
         context 'without Vehicle Journey' do
           it { is_expected.to be_nil }
+        end
+      end
+
+      describe '#vehicle_journey_id' do
+        subject { decorator.vehicle_journey_id }
+
+        context 'without Vehicle Journey' do
+          it { is_expected.to be_nil }
+        end
+
+        context "when Vehicle Journey objectid is 'test:VehicleJourney:uuid:LOC'" do
+          before do
+            vehicle_journey_at_stop.vehicle_journey =
+              Chouette::VehicleJourney.new(objectid: 'test:VehicleJourney:uuid:LOC')
+          end
+          it { is_expected.to eq('uuid') }
+        end
+      end
+
+      describe '#stop_area_id' do
+        subject { decorator.stop_area_id }
+
+        context 'without Stop Point' do
+          it { is_expected.to be_nil }
+        end
+
+        context "when Stop Area objectid is 'test:StopArea:uuid:LOC'" do
+          before do
+            vehicle_journey_at_stop.stop_point =
+              Chouette::StopPoint.new(stop_area: Chouette::StopArea.new(objectid: 'test:StopArea:uuid:LOC'))
+          end
+          it { is_expected.to eq('uuid') }
+        end
+      end
+
+      describe '#passage_order' do
+        subject { decorator.passage_order }
+
+        context 'without Stop Point' do
+          it { is_expected.to eq('') }
+        end
+
+        context 'when Stop Point has no position' do
+          before { vehicle_journey_at_stop.stop_point = Chouette::StopPoint.new }
+          it { is_expected.to eq('') }
+        end
+
+        context 'when Stop Point position is 0' do
+          before { vehicle_journey_at_stop.stop_point = Chouette::StopPoint.new(position: 0) }
+          it { is_expected.to eq('1') }
+        end
+
+        context 'when Stop Point position is 4' do
+          before { vehicle_journey_at_stop.stop_point = Chouette::StopPoint.new(position: 4) }
+          it { is_expected.to eq('5') }
         end
       end
 

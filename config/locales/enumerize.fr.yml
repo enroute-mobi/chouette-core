@@ -25,6 +25,7 @@ fr:
         source_retrieval: Récupération de données
         import: Import
         publication: Publication
+        scheduled_processing: Traitement planifié
       operation_statuses:
         all: Tous
         successful: Succès

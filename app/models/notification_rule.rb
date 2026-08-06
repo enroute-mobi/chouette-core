@@ -3,7 +3,8 @@
 class NotificationRule < ApplicationModel
   extend Enumerize
 
-  enumerize :notification_type, in: %w[import merge aggregate source_retrieval publication], default: :import
+  enumerize :notification_type, in: %w[import merge aggregate source_retrieval publication scheduled_processing],
+                                default: :import
   enumerize :target_type, in: %w[workbench user external_email], default: :workbench, predicates: true
   enumerize :rule_type, in: %w[notify block], default: :notify
   enumerize :operation_statuses, in: %w[successful warning failed], multiple: true
@@ -21,8 +22,13 @@ class NotificationRule < ApplicationModel
 
   class << self
     def for_operation(operation)
+      # Operations which never send notifications have no notification_type
+      # (see Operation#notification_type and ControlMacro::Scheduled)
+      notification_type = operation.try(:notification_type)
+      return none unless notification_type
+
       operation_status = operation.try(:user_status) || operation.status
-      operation_scope = for_statuses([operation_status]).where(notification_type: operation.class.model_name.singular)
+      operation_scope = for_statuses([operation_status]).where(notification_type: notification_type)
 
       if (line_ids = operation.try(:line_ids)).present?
         operation_scope = operation_scope.for_lines line_ids

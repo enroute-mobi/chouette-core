@@ -7,6 +7,7 @@ module ProcessingRule
 
     extend Enumerize
     include TagsSupport
+    include SchedulingSupport
 
     # Macro::List or Control::List to be started
     belongs_to :processable, polymorphic: true, optional: true
@@ -14,6 +15,8 @@ module ProcessingRule
 
     has_tags :required_tags
     has_tags :excluded_tags
+
+    schedule_by :scheduling_time, :scheduling_days
 
     validates :operation_step, :processable_type, :processable_id, presence: true
     validates :control_list_id, presence: true, if: :use_control_list?
@@ -32,6 +35,19 @@ module ProcessingRule
       operation_step == :after_import
     end
 
+    def scheduling?
+      operation_step == :scheduling
+    end
+
+    # Operation steps allowing several rules for the same processable_type, told apart by their
+    # processable_id: after_import (differ by tags/list) and scheduling (differ by list). The same
+    # processable may then be used by both an after_import and a scheduling rule (the uniqueness
+    # applies to rules sharing the same operation_step), and a scheduling rule can hold several
+    # schedulings.
+    def unique_per_processable?
+      after_import? || scheduling?
+    end
+
     def control_list_id
       processable_id if use_control_list?
     end
@@ -42,6 +58,25 @@ module ProcessingRule
 
     def perform(**options)
       processable.create_processing(self, **options).perform
+    end
+
+    # Workbench/Workgroup specific. Workbench where scheduled Control/Macro runs are executed.
+    def scheduling_workbench
+      raise NotImplementedError
+    end
+
+    # Workbench/Workgroup specific. Output current Referential used by scheduled runs (target: current).
+    def output_current_referential
+      raise NotImplementedError
+    end
+
+    # [operation_workbench, referential] arguments for each #perform invoked by a scheduled run
+    # with the given target (see ProcessingRule::Scheduling::ScheduledJob#perform).
+    # A single invocation by default ; ProcessingRule::Workgroup fans out with target 'merged'.
+    def scheduled_perform_args
+      return [] if scheduling_target == 'current' && output_current_referential.nil?
+
+      [[scheduling_workbench, output_current_referential]]
     end
 
     def candidate_operation_steps
@@ -91,6 +126,15 @@ module ProcessingRule
       end
     end
 
+    protected
+
+    alias scheduling_enabled? scheduling?
+
+    def saved_change_to_scheduling_enabled?
+      saved_change_to_operation_step? &&
+        (operation_step_before_last_save == 'scheduling' || operation_step == 'scheduling')
+    end
+
     private
 
     def no_tag_overlap
@@ -107,6 +151,28 @@ module ProcessingRule
         errors.add(association, :contain_invalid_tags)
       end
     end
+
+    class ScheduledJob < SchedulingSupport::ScheduledJob
+      def encode_with(coder)
+        coder['processing_rule_id'] = scheduling.id
+      end
+
+      def init_with(coder)
+        @scheduling = ::ProcessingRule::Base.find(coder['processing_rule_id'])
+      end
+
+      def perform
+        scheduling.scheduled_perform_args.each do |operation_workbench, referential|
+          scheduling.perform(operation_workbench: operation_workbench, referential: referential)
+        end
+      end
+
+      protected
+
+      def perform_error_capture_message
+        "Can't start #{processing_rule.class.name}##{processing_rule.id}::ScheduledJob"
+      end
+    end
   end
 
   # Workbench ProcessingRule managed as Workbench#processing_rules
@@ -114,12 +180,18 @@ module ProcessingRule
     belongs_to :workbench # CHOUETTE-3247 required: true
 
     enumerize :processable_type, in: %w[Macro::List Control::List]
-    enumerize :operation_step, in: %w[after_import before_merge after_merge],
+    enumerize :operation_step, in: %w[after_import before_merge after_merge scheduling],
                                scope: :shallow,
                                i18n_scope: 'enumerize.processing_rule/base.operation_step'
+    # Referential used to perform the Control/Macro:
+    #   none    -> no Referential (e.g. controls/macros running on Stop Areas)
+    #   current -> the Workbench output current Referential (merged)
+    enumerize :scheduling_target, in: %w[none current], default: :none
 
-    validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }, unless: :after_import?
-    validates :operation_step, uniqueness: { scope: %i[processable_type processable_id workbench] }, if: :after_import?
+    validates :operation_step, uniqueness: { scope: %i[processable_type workbench] }, unless: :unique_per_processable?
+    validates :operation_step,
+              uniqueness: { scope: %i[processable_type processable_id workbench] },
+              if: :unique_per_processable?
 
     def use_macro_list?
       processable_type == Macro::List.name
@@ -144,10 +216,24 @@ module ProcessingRule
       workbench&.control_lists_shared_with_workgroup || Control::List.none
     end
 
+    def candidate_operation_steps
+      candidates = super
+      candidates.delete('scheduling') if processable_type == 'Macro::List' && scheduling_target == 'current'
+      candidates
+    end
+
     def candidate_tags
       return Tag.none unless workbench
 
       workbench.tags
+    end
+
+    def scheduling_workbench
+      workbench
+    end
+
+    def output_current_referential
+      workbench.output.current
     end
   end
 
@@ -158,12 +244,20 @@ module ProcessingRule
     has_array_of :excluded_workbenches, class_name: 'Workbench'
 
     enumerize :processable_type, in: %w[Control::List Flamingo::ValidationSetup]
-    enumerize :operation_step, in: %w[before_import after_import before_merge after_merge after_aggregate],
+    enumerize :operation_step, in: %w[before_import after_import before_merge after_merge after_aggregate scheduling],
                                scope: :shallow,
                                i18n_scope: 'enumerize.processing_rule/base.operation_step'
+    # Referential used to perform the Control/Macro:
+    #   none    -> no Referential (e.g. controls/macros running on Stop Areas)
+    #   current -> the Workgroup output current Referential (aggregated)
+    #   merged  -> Workgroup only: fans out over the targeted Workbenches, running on
+    #              each Workbench own merged output current Referential
+    enumerize :scheduling_target, in: %w[none current merged], default: :none
 
-    validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }, unless: :after_import?
-    validates :operation_step, uniqueness: { scope: %i[processable_type processable_id workgroup] }, if: :after_import?
+    validates :operation_step, uniqueness: { scope: %i[processable_type workgroup] }, unless: :unique_per_processable?
+    validates :operation_step,
+              uniqueness: { scope: %i[processable_type processable_id workgroup] },
+              if: :unique_per_processable?
 
     validate :exclusive_workbenches
 
@@ -181,6 +275,36 @@ module ProcessingRule
 
     def candidate_tags
       workgroup.tags
+    end
+
+    def scheduling_workbench
+      workgroup.owner_workbench
+    end
+
+    def output_current_referential
+      workgroup.output.current
+    end
+
+    # #scheduling_target 'merged': run the Control List on each targeted Workbench own merged output if it exists,
+    # producing one Run per Workbench (visible on both the Workbench and Workgroup runs pages).
+    def scheduled_perform_args
+      if scheduling_target == 'merged'
+        scheduled_merged_operation_workbenches.filter_map do |workbench|
+          next nil unless workbench.output.current
+
+          [workbench, workbench.output.current]
+        end
+      else
+        super
+      end
+    end
+
+    # Workbenches a scheduled 'merged' run fans out to: targeted (or all) minus excluded.
+    def scheduled_merged_operation_workbenches
+      scope = workgroup.workbenches
+      scope = scope.where(id: target_workbench_ids) if target_workbench_ids.present?
+      scope = scope.where.not(id: excluded_workbench_ids) if excluded_workbench_ids.present?
+      scope
     end
 
     def self.accept_workbench(workbench)

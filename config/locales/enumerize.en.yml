@@ -25,6 +25,7 @@ en:
         source_retrieval: Source Retrieval
         import: Import
         publication: Publication
+        scheduled_processing: Scheduled processing
       operation_statuses:
         all: All
         successful: Success

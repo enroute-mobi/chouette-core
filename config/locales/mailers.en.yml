@@ -39,6 +39,20 @@ en:
           You launched the merge <strong>"%{merge_name}"</strong>.<br/>
           It is now over.<br/>
           The operation status is <strong>%{status}</strong>
+    control_list_run_mailer:
+      button: See controls
+      finished:
+        subject: Controls are done
+        body: |
+          The scheduled controls <strong>"%{name}"</strong> are over.<br/>
+          The operation status is <strong>%{status}</strong>
+    macro_list_run_mailer:
+      button: See macros
+      finished:
+        subject: Macros are done
+        body: |
+          The scheduled macros <strong>"%{name}"</strong> are over.<br/>
+          The operation status is <strong>%{status}</strong>
     subscription_mailer:
       created:
         subject: A new user signed up

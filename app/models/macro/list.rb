@@ -37,7 +37,7 @@ module Macro
 
       class_methods do
         def candidate_operation_steps
-          %w[after_import before_merge]
+          %w[after_import before_merge scheduling]
         end
       end
 
@@ -49,6 +49,8 @@ module Macro
     end
 
     class Run < Operation
+      include ::ControlMacro::Scheduled
+
       # The Workbench where macros are executed
       self.table_name = 'macro_list_runs'
 

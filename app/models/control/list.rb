@@ -36,7 +36,7 @@ module Control
 
       class_methods do
         def candidate_operation_steps
-          %w[after_import before_merge after_merge after_aggregate]
+          %w[after_import before_merge after_merge after_aggregate scheduling]
         end
       end
 
@@ -48,6 +48,8 @@ module Control
     end
 
     class Run < Operation
+      include ::ControlMacro::Scheduled
+
       # The Workbench where controls are executed
       self.table_name = 'control_list_runs'
 

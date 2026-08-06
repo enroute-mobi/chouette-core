@@ -1209,7 +1209,12 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_28_094718) do
     t.datetime "created_at", precision: nil, null: false
     t.datetime "updated_at", precision: nil, null: false
     t.bigint "excluded_workbench_ids", default: [], array: true
+    t.time "scheduling_time", default: "2000-01-01 00:00:00", null: false
+    t.bit "scheduling_days", limit: 7, default: "1111111", null: false
+    t.string "scheduling_target", default: "none", null: false
+    t.bigint "scheduled_job_id"
     t.index ["processable_type", "processable_id"], name: "index_processing_rules_on_processable_type_and_processable_id"
+    t.index ["scheduled_job_id"], name: "index_processing_rules_on_scheduled_job_id"
     t.index ["workbench_id"], name: "index_processing_rules_on_workbench_id"
     t.index ["workgroup_id"], name: "index_processing_rules_on_workgroup_id"
   end
@@ -1950,6 +1955,7 @@ ActiveRecord::Schema[7.2].define(version: 2026_07_28_094718) do
   add_foreign_key "macro_runs", "macro_context_runs"
   add_foreign_key "macros", "macro_contexts"
   add_foreign_key "point_of_interest_categories", "point_of_interest_categories", column: "parent_id"
+  add_foreign_key "processing_rules", "delayed_jobs", column: "scheduled_job_id"
   add_foreign_key "publications", "referentials"
   add_foreign_key "referentials", "referential_suites"
   add_foreign_key "routes", "routes", column: "opposite_route_id", name: "route_opposite_route_fkey"

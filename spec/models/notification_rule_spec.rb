@@ -14,7 +14,7 @@ RSpec.describe NotificationRule, type: :model do
 
   it do
     is_expected.to enumerize(:notification_type)
-      .in(:import, :merge, :aggregate, :source_retrieval, :publication)
+      .in(:import, :merge, :aggregate, :source_retrieval, :publication, :scheduled_processing)
       .with_default(:import)
   end
   it { is_expected.to enumerize(:target_type).in(:user, :workbench, :external_email).with_default(:workbench) }
@@ -43,6 +43,42 @@ RSpec.describe NotificationRule, type: :model do
       it { is_expected.to allow_value('user@text.ex').for(:external_email) }
       it { is_expected.not_to allow_value('').for(:external_email) }
       it { is_expected.not_to allow_value('not-an-email').for(:external_email) }
+    end
+  end
+
+  describe '.for_operation' do
+    subject { workbench.notification_rules.for_operation(operation) }
+
+    let(:context) { Chouette.create { workbench } }
+    let(:workbench) { context.workbench }
+
+    let!(:scheduled_processing_rule) do
+      workbench.notification_rules.create!(
+        notification_type: 'scheduled_processing', target_type: 'workbench', priority: 10, operation_statuses: []
+      )
+    end
+    let!(:import_rule) do
+      workbench.notification_rules.create!(
+        notification_type: 'import', target_type: 'workbench', priority: 10, operation_statuses: []
+      )
+    end
+
+    context 'when the operation notification_type is scheduled_processing' do
+      let(:operation) do
+        Control::List::Run.new.tap do |run|
+          allow(run).to receive(:notification_type).and_return('scheduled_processing')
+        end
+      end
+
+      it 'selects the rules matching the operation notification_type' do
+        is_expected.to contain_exactly(scheduled_processing_rule)
+      end
+    end
+
+    context 'when the operation has no notification_type (an operation-triggered run)' do
+      let(:operation) { Control::List::Run.new }
+
+      it { is_expected.to be_empty }
     end
   end
 end

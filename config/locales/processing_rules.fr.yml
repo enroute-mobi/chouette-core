@@ -4,6 +4,7 @@ fr:
       title: Règles de traitement
     show:
       title: "%{name}"
+      scheduling: Planification
     new:
       title: "Créer une Règle de traitement"
     edit:
@@ -12,6 +13,7 @@ fr:
       sections:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
+        target: Cible
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -19,13 +21,13 @@ fr:
       edit: "Editer cette Règle de traitement"
       destroy: "Supprimer cette Règle de traitement"
       destroy_confirm: "Etes vous sûr de supprimer cette Règle de traitement ?"
-    name: "%{operation_step} %{processable_type} %{processable_name}"
 
   processing_rule/workgroups:
     index:
       title: Règles de traitement du Groupe de Travail
     show:
       title: "%{name}"
+      scheduling: Planification
     new:
       title: "Créer une Règle de traitement"
     edit:
@@ -34,6 +36,7 @@ fr:
       sections:
         trigger_conditions: Conditions de déclenchement
         processing_selection: Sélection du traitement
+        target: Cible
     search_no_results: "Aucune Règle de traitement ne correspond à votre recherche"
     actions:
       show: "Afficher cette Règle de traitement"
@@ -60,6 +63,10 @@ fr:
         processable_type: Type de traitement
         processable_id: Traitement
         operation_step: Déclenché par
+        scheduling_time: Heure
+        scheduling_days: Jours
+        scheduling_target: Cible
+        next_schedule: Prochaine exécution
       processing_rule/workbench:
         required_tag_ids: Tags requis
         required_tags: Tags requis
@@ -91,6 +98,16 @@ fr:
         before_merge: Finalisation - Avant
         after_merge: Finalisation - Après
         after_aggregate: Agrégation - Après
+        scheduling: Planification
+    processing_rule/workbench:
+      scheduling_target:
+        none: Espace de travail
+        current: Offre courante finalisée
+    processing_rule/workgroup:
+      scheduling_target:
+        none: Espace de travail
+        current: Offre courante agrégée
+        merged: Offres courantes finalisées
 
   simple_form:
     hints:

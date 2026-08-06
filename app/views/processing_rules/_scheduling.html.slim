@@ -1,0 +1,6 @@
+.col-lg-6.col-md-6.col-sm-12.col-xs-12
+  = simple_block_for @processing_rule, title: t("#{translation_scope}.show.scheduling") do |d|
+    = d.attribute :scheduling_time, as: :time_of_day
+    = d.attribute :scheduling_days, as: :days
+    = d.attribute :scheduling_target, as: :enumerize
+    = d.attribute :next_schedule, as: :datetime

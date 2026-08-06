@@ -13,6 +13,12 @@ module NotifiableSupport
     end
   end
 
+  # NotificationRule notification_type matching this legacy operation
+  # (see Operation#notification_type and NotificationRule.for_operation)
+  def notification_type
+    self.class.model_name.singular
+  end
+
   def notification_recipients # rubocop:disable Metrics/CyclomaticComplexity
     case notification_target.to_s
     when 'user'

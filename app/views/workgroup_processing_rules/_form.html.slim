@@ -1,25 +1,34 @@
-- processable_type_default = @processing_rule.processable_type.presence || @processing_rule.class.processable_type.values.first
+- processable_type_default = @processing_rule.processable_type.presence || 'Flamingo::ValidationSetup'
+- operation_step_default = @processing_rule.operation_step.presence || 'before_import'
+- processable_klasses = @processing_rule.class.processable_type.values.map(&:constantize)
 
 = simple_form_for [@workgroup, @processing_rule], as: 'processing_rule', html: { class: 'form-horizontal', id: 'processing_rule_form' }, wrapper: :horizontal_form  do |f|
   .row
-    .col-lg-12 x-data="#{{ processable_type: processable_type_default, operation_step: @processing_rule.operation_step, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids }.to_json}"
+    .col-lg-12 x-data="#{{ processable_type: processable_type_default, operation_step: operation_step_default, target_workbenches: @processing_rule.target_workbench_ids, excluded_workbenches: @processing_rule.excluded_workbench_ids, scheduling_target: @processing_rule.scheduling_target }.to_json}"
       h2.mb-lg= t('processing_rule/workgroups.form.sections.trigger_conditions')
 
-      template[x-if="processable_type == 'Control::List'"]
-        div
-          = f.input :operation_step, include_blank: false, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(Control::List.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
+      = f.input :operation_step, include_blank: false, input_html: { 'x-on:change': 'operation_step = $event.target.value; $nextTick(() => processable_type = $event.target.form.elements["processing_rule_processable_type"].value)' }
 
-      template[x-if="processable_type == 'Flamingo::ValidationSetup'"]
-        div
-          = f.input :operation_step, include_blank: false, collection: ProcessingRule::Workgroup.operation_step.options.select { |_,v| v.in?(Flamingo::ValidationSetup.candidate_operation_steps) }, input_html: { 'x-on:change': 'operation_step = $event.target.value' }
+      div x-show="operation_step == 'scheduling'"
+        = f.input :scheduling_time, as: :time_picker
+        = f.input :scheduling_days, as: :day_type
 
-      div x-show="excluded_workbenches.length == 0"
+      .separator.section_separator
+
+      h2.mb-lg= t('processing_rule/workgroups.form.sections.target')
+
+      div x-show="operation_step == 'scheduling'"
+        = f.input :scheduling_target, as: :select, include_blank: false, input_html: { 'x-model': 'scheduling_target' }
+
+      / Target/Excluded Workbenches: always shown for event-based rules, and for scheduled
+      / 'merged' rules (which fan out the Control List over each targeted Workbench).
+      div x-show="excluded_workbenches.length == 0 && (operation_step != 'scheduling' || scheduling_target == 'merged')"
         = f.input :target_workbenches,
           as: :tom_select,
           collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
           input_html: { multiple: true, "x-bind:disabled" => "operation_step == 'after_merge'", "x-on:change" => "target_workbenches = $event.target.value" },
           selected: @processing_rule.target_workbench_ids
-      div x-show="target_workbenches.length == 0"
+      div x-show="target_workbenches.length == 0 && (operation_step != 'scheduling' || scheduling_target == 'merged')"
         = f.input :excluded_workbenches,
           as: :tom_select,
           collection: @processing_rule.candidate_target_workbenches.map { |w| { id: w.id, text: w.name } },
@@ -30,7 +39,9 @@
 
       h2.mb-lg= t('processing_rule/workgroups.form.sections.processing_selection')
 
-      = f.input :processable_type, as: :select, collection: @processing_rule.class.processable_type.values.map { |v| [v.constantize.model_name.human, v] }, selected: processable_type_default, include_blank: false, input_html: { 'x-on:change': 'processable_type = $event.target.value' }
+      - @processing_rule.class.operation_step.values.each do |operation_step|
+        template x-if="operation_step == #{operation_step.to_json}"
+          = f.input :processable_type, as: :select, collection: processable_klasses.select { |k| k.candidate_operation_steps.include?(operation_step) }.map { |k| [k.model_name.human, k.to_s] }, include_blank: false, input_html: { 'x-on:change': 'processable_type = $event.target.value' }
 
       template[x-if="processable_type == 'Control::List'"]
         div
@@ -39,7 +50,6 @@
       template[x-if="processable_type == 'Flamingo::ValidationSetup'"]
         div
           = f.input :processable_id, as: :select, collection: @processing_rule.candidate_flamingo_validation_setups, label: Flamingo::ValidationSetup.model_name.human
-
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'processing_rule_form'

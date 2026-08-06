@@ -63,6 +63,20 @@ module Chouette
         end
       end
 
+      class DaysFormat < Nest::Helpers::SimpleBlockFor::Builder::Format
+        def displayed_value
+          content_tag(:div) do
+            Cuckoo::DaysOfWeek.days.map do |day|
+              content_tag(
+                :span,
+                I18n.t("calendars.days.#{day}"),
+                class: "label label-default #{raw_value.send("#{day}?") ? '' : 'disabled'}"
+              )
+            end.join.html_safe
+          end
+        end
+      end
+
       def render_definition_list(content)
         view.content_tag(:div, class: 'definition-list') do
           view.concat(view.content_tag(:div, options[:title], class: 'dl-head')) if options[:title]

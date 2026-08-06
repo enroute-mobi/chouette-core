@@ -14,15 +14,14 @@ class ProcessingRulesController < Chouette::WorkbenchController
 
   protected
 
-  alias processing_rule resource
-
   def collection
-    @processing_rules ||= decorate(workbench.processing_rules.paginate(page: params[:page], per_page: 30)) # rubocop:disable Naming/MemoizedInstanceVariableName(RuboCop)
+    @processing_rules ||= decorate(workbench.processing_rules.includes(:processable).paginate(page: params[:page], per_page: 30)) # rubocop:disable Layout/LineLength,Naming/MemoizedInstanceVariableName(RuboCop)
   end
 
   def resource
     @processing_rule ||= decorate(workbench.processing_rules.find(params[:id])) # rubocop:disable Naming/MemoizedInstanceVariableName(RuboCop)
   end
+  alias processing_rule resource
 
   def build_resource
     @processing_rule ||= decorate(workbench.processing_rules.build(*resource_params)) # rubocop:disable Naming/MemoizedInstanceVariableName(RuboCop)
@@ -45,6 +44,9 @@ class ProcessingRulesController < Chouette::WorkbenchController
       :control_list_id,
       :macro_list_id,
       :operation_step,
+      :scheduling_time,
+      :scheduling_days,
+      :scheduling_target,
       required_tag_ids: [],
       excluded_tag_ids: []
     )

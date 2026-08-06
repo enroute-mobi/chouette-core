@@ -4,6 +4,7 @@ en:
       title: Processing Rules
     show:
       title: "%{name}"
+      scheduling: Scheduling
     new:
       title: "Create a Processing Rule"
     edit:
@@ -12,6 +13,7 @@ en:
       sections:
         trigger_conditions: Trigger Conditions
         processing_selection: Processing Selection
+        target: Target
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -19,13 +21,13 @@ en:
       edit: "Edit this Processing Rule"
       destroy: "Delete this Processing Rule"
       destroy_confirm: "Are you sure you want to delete this Processing Rule ?"
-    name: "%{operation_step} %{processable_type} %{processable_name}"
 
   processing_rule/workgroups:
     index:
       title: Workgroup Processing Rules
     show:
       title: "%{name}"
+      scheduling: Scheduling
     new:
       title: "Create a Processing Rule"
     edit:
@@ -34,6 +36,7 @@ en:
       sections:
         trigger_conditions: Trigger Conditions
         processing_selection: Processing Selection
+        target: Target
     search_no_results: "No processing rule matches your search"
     actions:
       show: "Show this Processing Rule"
@@ -60,6 +63,10 @@ en:
         processable_type: Processing Type
         processable_id: Processing
         operation_step: Triggered by
+        scheduling_time: Time
+        scheduling_days: Days
+        scheduling_target: Target
+        next_schedule: Next run
       processing_rule/workbench:
         required_tag_ids: Required tags
         required_tags: Required tags
@@ -91,6 +98,16 @@ en:
         before_merge: Merge - Before
         after_merge: Merge - After
         after_aggregate: Aggregate - After
+        scheduling: Scheduling
+    processing_rule/workbench:
+      scheduled_target:
+        none: Workbench
+        current: Latest Merged Dataset
+    processing_rule/workgroup:
+      scheduled_target:
+        none: Workbench
+        current: Latest Aggregated Dataset
+        merged: Latest Merged Datasets
 
   simple_form:
     hints:

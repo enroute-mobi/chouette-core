@@ -133,6 +133,12 @@ class Operation < ApplicationModel
     nil
   end
 
+  # NotificationRule notification_type matching this Operation (see NotificationRule.for_operation).
+  # Operations which never send notifications return nil (see ControlMacro::Scheduled).
+  def notification_type
+    self.class.model_name.singular
+  end
+
   def internal_description
     "#{self.class.name}(id=#{id})"
   end

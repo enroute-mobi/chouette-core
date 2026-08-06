@@ -53,6 +53,10 @@ fr:
         updated_at: Modifié le
 
   simple_form:
+    include_blanks:
+      workgroup:
+        workbenches:
+          locked_referential_to_aggregate_id: "Offre courante"
     hints:
       workgroup:
         maximum_data_age: (en jours) Nombre de jours maximum d'un Calendrier passé

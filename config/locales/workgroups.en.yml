@@ -53,6 +53,10 @@ en:
         updated_at: Updated at
 
   simple_form:
+    include_blanks:
+      workgroup:
+        workbenches:
+          locked_referential_to_aggregate_id: "Current offer"
     hints:
       workgroup:
         maximum_data_age: (in days) Maximum days of a past TimeTable

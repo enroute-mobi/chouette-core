@@ -11,8 +11,8 @@
   .row
     .col-lg-12 x-data="{ isReferentActivated: #{@company.is_referent} }"
       h2.mb-lg= t("stop_areas.form.sections.referent")
-      = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @company.is_referent, 'x-on:click': 'isReferentActivated = !isReferentActivated' }
-      = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', 'x-bind:disabled': "isReferentActivated", data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: true, select2_ajax: true, url: (autocomplete_workbench_line_referential_companies_path(@workbench, referent_only: true, exclude: @company.id)), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:name)}}}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
+      = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @company.is_referent, 'x-model': 'isReferentActivated' }
+      = f.input :referent_id, as: :ajax_select, collection: [f.object.referent].compact, input_html: { style: 'width: 100%', 'x-effect' => 'if ($el.tomselect) { isReferentActivated ? $el.tomselect.disable() : $el.tomselect.enable() }', 'data-url': (autocomplete_workbench_line_referential_companies_path(@workbench, referent_only: true, exclude: @company.id))}, wrapper_html: { id: 'referent_input', class: 'inline-form' }
 
   .separator.section_separator
 
@@ -26,7 +26,7 @@
       = f.input :town
       = f.input :postcode
       = f.input :postcode_extension
-      = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
+      = f.input :country_code, priority: ['FR', 'GB', 'DE', 'ES']
 
   .separator.section_separator
 
@@ -34,7 +34,7 @@
     .col-lg-12
       h2.mb-lg= t("companies.form.sections.general")
       = f.input :default_language
-      = f.input :time_zone, as: :full_time_zone, include_blank: false
+      = f.input :time_zone, include_blank: false
       = f.input :fare_url
 
   .separator.section_separator

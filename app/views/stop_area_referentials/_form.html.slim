@@ -1,4 +1,7 @@
-= simple_form_for @stop_area_referential, url: workbench_stop_area_referential_path(@workbench), html: {class: 'form-horizontal', id: 'stop_area_referential_form'}, wrapper: :horizontal_form do |f|
+- javascript_additional_packs 'stop_area_referentials/form', 'inputs/autocomplete_select'
+-# server rendered locale rows take indices 0..n-1, rows added client side continue from n
+- locales_count = @stop_area_referential.locales.size
+= simple_form_for @stop_area_referential, url: workbench_stop_area_referential_path(@workbench), html: {class: 'form-horizontal', id: 'stop_area_referential_form', 'x-data': "localesForm({ firstIndex: #{locales_count} })"}, wrapper: :horizontal_form do |f|
   legend= StopAreaReferential.tmf(:stops_selection_displayed_fields)
   .row.locales
     .col-lg-12
@@ -25,9 +28,9 @@
       .col-md-3= StopAreaReferential.tmf(:locale_code)
       .col-md-2= StopAreaReferential.tmf(:locale_default)
       .col-md-3= 'actions.delete'.t
-    .locales
+    #locales_list.locales
       - f.object.sorted_locales.each_with_index do |locale, i|
-        .row
+        .row x-data="{ deleted: false }" x-bind:class="{ deleted: deleted }"
           .col-md-1= label_for_country @stop_area_referential.translate_code_to_official(locale['code'])
           .col-md-3= @stop_area_referential.locale_name(locale)
           .col-md-3
@@ -35,18 +38,36 @@
             = hidden_field "locales[#{i}]", :code, value: locale['code']
           .col-md-2= check_box "locales[#{i}]", :default, checked: locale['default']
           .col-md-3
-            = hidden_field "locales[#{i}]", :delete, value: 0
-            = link_to '#', class: 'delete-locale', title: 'actions.delete'.t do
+            = hidden_field "locales[#{i}]", :delete, value: 0, 'x-bind:value': 'deleted ? 1 : 0'
+            = link_to '#', class: 'delete-locale', title: 'actions.delete'.t, 'x-on:click.prevent': 'deleted = true' do
+              = fa_icon :trash
+
+      template[x-for="locale in addedLocales" :key="locale.index"]
+        .row x-data="{ deleted: false }" x-bind:class="{ deleted: deleted }"
+          .col-md-1
+            span x-bind:class="flagClass(locale.alpha2)" x-bind:title="locale.name"
+          .col-md-3 x-text="locale.name"
+          .col-md-3
+            span x-text="locale.code"
+            input type="hidden" x-bind:name="`locales[${locale.index}][code]`" x-bind:value="locale.code"
+          .col-md-2
+            input type="hidden" x-bind:name="`locales[${locale.index}][default]`" value="0"
+            input type="checkbox" value="1" x-bind:name="`locales[${locale.index}][default]`"
+          .col-md-3
+            input type="hidden" x-bind:name="`locales[${locale.index}][delete]`" x-bind:value="deleted ? 1 : 0"
+            a.delete-locale href="#" title="#{'actions.delete'.t}" x-on:click.prevent="deleted = true"
               = fa_icon :trash
 
     .row.add-locales
       - used_countries = @stop_area_referential.locales.map { |l| StopAreaReferential.translate_code_to_official(l['code']).split('_').last }
       - countries = ISO3166::Country.all.select { |c| ! used_countries.include?(c.alpha2) }
       - countries = countries.sort_by { |c| c.translation(I18n.locale)}
-      - options = countries.map { |c| "<option id='#{c.alpha2}' code='#{StopAreaReferential.translate_code_to_internal("#{c.languages.first}_#{c.alpha2}")}'>#{c.translation(I18n.locale)}</option>" }.join('')
-      .col-md-12
-        = select_tag :add_locale, raw(options.html_safe), 'data-select2ed': 'true', class: 'country-select select2-resize'
-        = link_to '#', class: 'btn btn-primary add-locale' do
+      - locales_data = countries.map { |c| [c.translation(I18n.locale), StopAreaReferential.translate_code_to_internal("#{c.languages.first}_#{c.alpha2}"), c.alpha2] }
+      - locale_options = locales_data.map { |name, code, _alpha2| [name, code] }
+      - country_codes = locales_data.to_h { |_name, code, alpha2| [code, alpha2] }
+      .col-md-12.flex.items-center
+        = select_tag :add_locale, options_for_select(locale_options), include_blank: true, placeholder: 'actions.select'.t, class: 'w-1/5 autocomplete_select country-select', 'x-ref': 'addLocale', data: { country_codes: country_codes.to_json }
+        = link_to '#', class: 'btn btn-primary add-locale', 'x-on:click.prevent': 'addLocale()' do
           = fa_icon :plus, {text: 'actions.add'.t}
 
   - unless has_feature?("route_stop_areas_all_types")
@@ -62,36 +83,3 @@
 
   = cancel_button
   = f.button :submit, t('actions.submit'), class: 'formSubmitr', form: 'stop_area_referential_form'
-
-coffee:
-  $('.add-locale').click (e)->
-    option = $('#add_locale').find('option:selected')
-    return unless option.length > 0
-
-    i = $('.locales > .row').length
-    row  = $("<div class='row'></div>")
-    flag = $("<div class='col-md-1'><span title='#{option.html()}' class='flag-icon flag-icon-#{option.attr('id').toLowerCase()}'></span></div>")
-    flag.appendTo row
-    name = $("<div class='col-md-3'>#{option.html()}</div>")
-    name.appendTo row
-    code = $("<div class='col-md-3'><input name='locales[#{i}][code]' type='hidden' value='#{option.attr('code')}'>#{option.attr('code')}</div>")
-    code.appendTo row
-    default_locale = $("<div class='col-md-2'><input name='locales[#{i}][default]' type='hidden' value='0'><input type='checkbox' value='1' name='locales[#{i}][default]' id='locales_#{i}_default'></div>")
-    default_locale.appendTo row
-    delete_locale = $("<div class='col-md-3'><input name='locales[#{i}][delete]' type='hidden' value='0'><a class='delete-locale' title='Supprimer' href='#'><i class='fa fa-trash'></i></a></div>")
-    delete_locale.appendTo row
-    row.appendTo $('.locales')
-    option.remove()
-    initDeleteButtons()
-    e.preventDefault()
-    false
-
-  initDeleteButtons = ->
-    $('a.delete-locale').click (e) ->
-      hidden = $(e.currentTarget).parent().find('input[type=hidden]')
-      hidden.val 1
-      $(e.currentTarget).parents('.row').addClass('deleted')
-      e.preventDefault()
-      false
-
-  initDeleteButtons()

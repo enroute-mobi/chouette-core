@@ -104,6 +104,9 @@ en:
             is_referent:
               the_particulars_collection_should_be_empty: "A non-referent company can't have particular companies"
   simple_form:
+    placeholders:
+      company:
+        referent_id: "Referent Company"
     hints:
       company:
         default_language: "Use a two letters code (en, fr ...)"

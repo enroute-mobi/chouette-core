@@ -17,8 +17,8 @@
           - if countries.present?
             - options = countries.map { |c| "<option id='#{c}' country_name='#{@stop_area_referential.locale_name(code: c)}'>#{@stop_area_referential.locale_name(code: c)}</option>" }.join('')
             .col-sm-4.col-xs-5
-            .col-sm-8.col-xs-7
-              = select_tag :add_locale, raw(options), 'data-select2ed': 'true', class: 'select2-resize'
+            .col-sm-8.col-xs-7.flex.items-center
+              = select_tag :add_locale, raw(options), class: 'form-control'
               = link_to '#', class: 'btn btn-primary add-locale' do
                 = fa_icon :plus, {text: 'actions.add'.t}
       = f.input :public_code
@@ -46,7 +46,7 @@
             - area_type_input_options = { as: :select, input_html: { id: kind, disabled: !@stop_area.new_record?, 'x-on:change': 'area_type = $event.target.value' }, collection: area_type_options(kind), include_blank: false }
             - area_type_input_options[:input_html]['x-bind:disabled'] = "kind !== '#{kind}'" if @stop_area.new_record?
             = f.input :area_type, **area_type_input_options
-      = f.input :parent_id, as: :select, collection: [f.object.parent_id], input_html: { 'x-bind:disabled': "kind === 'non_commercial' || area_type === 'flexible_stop_place'", data: { select2ed_placeholder: Chouette::StopArea.tmf('parent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench), initvalue: { id: f.object.parent_id, text: f.object.parent.try(:formatted_selection_details) } } }
+      = f.input :parent_id, as: :ajax_select, collection: [f.object.parent].compact, label_method: :formatted_selection_details, input_html: { 'x-effect' => 'if ($el.tomselect) { (kind === "non_commercial" || area_type === "flexible_stop_place") ? $el.tomselect.disable() : $el.tomselect.enable() }', 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench) }
 
       .flexible_stop_place x-show="area_type === 'flexible_stop_place'"
         .separator.section_separator
@@ -57,8 +57,8 @@
   .row
     .col-lg-12 x-data="{ isReferentActivated: #{@stop_area.is_referent} }"
       h2.mb-lg= t("stop_areas.form.sections.referent")
-      = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @stop_area.is_referent, 'x-on:click': 'isReferentActivated = !isReferentActivated' }
-      = f.input :referent_id, as: :select, collection: [f.object.referent_id], input_html: { style: 'width: 100%', 'x-bind:disabled': "isReferentActivated", data: { select2ed_placeholder: Chouette::StopArea.tmf('referent'), select2ed_allow_clear: 'true', select2_ajax: 'true', url: autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench, referent_only: true, exclude: @stop_area.id), initvalue: {id: f.object.referent_id, text: f.object.referent.try(:formatted_selection_details)}}}, wrapper_html: { id: 'referent_input', class: 'inline-form', 'x-bind:class': "{ 'disabled': isReferentActivated }" }
+      = f.input :is_referent, as: :switchable_checkbox, input_html: { checked: @stop_area.is_referent, 'x-model': 'isReferentActivated' }
+      = f.input :referent_id, as: :ajax_select, collection: [f.object.referent].compact, label_method: :formatted_selection_details, input_html: { style: 'width: 100%', 'x-effect' => 'if ($el.tomselect) { isReferentActivated ? $el.tomselect.disable() : $el.tomselect.enable() }', 'data-url': autocomplete_workbench_stop_area_referential_stop_areas_path(@workbench, referent_only: true, exclude: @stop_area.id)}, wrapper_html: { id: 'referent_input', class: 'inline-form' }
 
   .separator.section_separator
 
@@ -81,8 +81,8 @@
       = f.input :zip_code
       = f.input :city_name
       = f.input :postal_region
-      = f.input :country_code, as: :country, priority: ['FR', 'GB', 'DE', 'ES'], include_blank: true, input_html: { data: { select2ed: true } }
-      = f.input :time_zone, as: :full_time_zone, include_blank: false
+      = f.input :country_code, priority: ['FR', 'GB', 'DE', 'ES']
+      = f.input :time_zone, include_blank: false
 
   .separator.section_separator
 

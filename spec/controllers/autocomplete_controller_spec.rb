@@ -466,6 +466,13 @@ RSpec.describe AutocompleteController, type: :controller do
           search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'status' }
         )
       end
+      let!(:workbench1_chart_referential_search1) do
+        workbench1.saved_searches.create!(
+          name: 'ServiceCount 1 by transport mode',
+          search_type: 'Search::ServiceCount',
+          search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'date' }
+        )
+      end
       let!(:workbench2_count_search1) do
         workbench2.saved_searches.create!(
           name: 'StopArea 2 by name',
@@ -477,7 +484,11 @@ RSpec.describe AutocompleteController, type: :controller do
       it 'returns the workbench list when the search parameter is empty' do
         get :searches, params: { workbench_id: workbench1.id }, format: 'json'
         expect(assigns(:searches)).to contain_exactly(
-          workbench1_count_search1, workbench1_count_search2, workbench1_chart_search1, workbench1_chart_search2
+          workbench1_count_search1,
+          workbench1_count_search2,
+          workbench1_chart_search1,
+          workbench1_chart_search2,
+          workbench1_chart_referential_search1
         )
         expect(response).to be_successful
       end
@@ -496,7 +507,23 @@ RSpec.describe AutocompleteController, type: :controller do
 
       it 'returns only graphical searches when graphical is "true"' do
         get :searches, params: { workbench_id: workbench1.id, graphical: 'true' }, format: 'json'
-        expect(assigns(:searches)).to contain_exactly(workbench1_chart_search1, workbench1_chart_search2)
+        expect(assigns(:searches)).to contain_exactly(
+          workbench1_chart_search1, workbench1_chart_search2, workbench1_chart_referential_search1
+        )
+        expect(response).to be_successful
+      end
+
+      it 'returns workbench list when referential_scope is "false"' do
+        get :searches, params: { workbench_id: workbench1.id, referential_scope: 'false' }, format: 'json'
+        expect(assigns(:searches)).to contain_exactly(
+          workbench1_count_search1, workbench1_count_search2, workbench1_chart_search1, workbench1_chart_search2
+        )
+        expect(response).to be_successful
+      end
+
+      it 'returns workbench list on referential models when referential_scope is "true"' do
+        get :searches, params: { workbench_id: workbench1.id, referential_scope: 'true' }, format: 'json'
+        expect(assigns(:searches)).to contain_exactly(workbench1_chart_referential_search1)
         expect(response).to be_successful
       end
     end

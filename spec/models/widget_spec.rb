@@ -96,6 +96,8 @@ RSpec.describe Widget::Count do
     )
   end
 
+  it { is_expected.to enumerize(:target_scope).in(%w[workbench last_merged_dataset]) }
+
   describe 'validations' do
     let(:candidate_search_ids) { [1, 42, 152] }
     let(:candidate_searches) do
@@ -133,6 +135,13 @@ RSpec.describe Widget::Count do
         search_attributes: { 'text' => 'by name' }
       )
     end
+    let!(:workbench_count_referential_search1) do
+      workbench.saved_searches.create!(
+        name: 'ServiceCount 1 by transport mode',
+        search_type: 'Search::ServiceCount',
+        search_attributes: { 'transport_modes' => %w[bus] }
+      )
+    end
     let!(:workbench_chart_search) do
       workbench.saved_searches.create!(
         name: 'StopArea chart',
@@ -148,8 +157,20 @@ RSpec.describe Widget::Count do
       )
     end
 
-    it 'returns only count searches of the widget workbench' do
-      is_expected.to contain_exactly(workbench_count_search1, workbench_count_search2)
+    context 'when #target_scope is "workbench"' do
+      before { widget_setup.target_scope = 'workbench' }
+
+      it 'returns only count searches on non-referential models of the widget workbench' do
+        is_expected.to contain_exactly(workbench_count_search1, workbench_count_search2)
+      end
+    end
+
+    context 'when #target_scope is "last_merged_dataset"' do
+      before { widget_setup.target_scope = 'last_merged_dataset' }
+
+      it 'returns only count searches on referential models of the widget workbench' do
+        is_expected.to contain_exactly(workbench_count_referential_search1)
+      end
     end
   end
 
@@ -162,32 +183,58 @@ RSpec.describe Widget::Count do
   describe '#scope' do
     subject { widget_setup.scope }
 
-    context 'on stop areas' do
+    context 'on lines' do
       let(:context) do
         Chouette.create do
           workgroup do
             workbench :workbench do
-              stop_area :stop_area1
-              stop_area :stop_area2
+              line :line1
+              line :line2
+              line :out_of_referential_line
+
+              referential :referential, lines: %i[line1 line2]
             end
           end
           workgroup do
             workbench :other_workbench do
-              stop_area
+              line
             end
           end
         end
       end
       let(:saved_search) do
         workbench.saved_searches.create!(
-          name: 'StopArea',
-          search_type: 'Search::StopArea',
+          name: 'Line',
+          search_type: 'Search::Line',
           search_attributes: { 'text' => 'found' }
         )
       end
 
-      it 'returns only stop areas of the workbench' do
-        is_expected.to match_array(%i[stop_area1 stop_area2].map { |i| context.stop_area(i) })
+      it 'returns only lines of the workbench' do
+        is_expected.to match_array(%i[line1 line2 out_of_referential_line].map { |i| context.line(i) })
+      end
+
+      context 'when #target_scope is "last_merged_dataset"' do
+        before { widget_setup.target_scope = 'last_merged_dataset' }
+
+        context 'when there is no merged dataset' do
+          it 'is empty' do
+            is_expected.to be_empty
+          end
+        end
+
+        context 'when there is a merged dataset' do
+          let(:referential) { context.referential(:referential) }
+
+          before do
+            referential.update!(referential_suite: workbench.output)
+            workbench.output.update!(current: referential)
+          end
+
+          it 'returns only lines of the referential' do
+            is_expected.to match_array(%i[line1 line2].map { |i| context.line(i) })
+          end
+        end
       end
     end
   end
@@ -280,6 +327,8 @@ RSpec.describe Widget::Chart do
     )
   end
 
+  it { is_expected.to enumerize(:target_scope).in(%w[workbench last_merged_dataset]) }
+
   describe 'validations' do
     let(:candidate_search_ids) { [1, 42, 152] }
     let(:candidate_searches) do
@@ -317,6 +366,13 @@ RSpec.describe Widget::Chart do
         search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'status' }
       )
     end
+    let!(:workbench_chart_referential_search1) do
+      workbench.saved_searches.create!(
+        name: 'ServiceCount chart 1',
+        search_type: 'Search::ServiceCount',
+        search_attributes: { 'chart_type' => 'column', 'group_by_attribute' => 'date' }
+      )
+    end
     let!(:workbench_count_search) do
       workbench.saved_searches.create!(
         name: 'StopArea by name',
@@ -332,8 +388,20 @@ RSpec.describe Widget::Chart do
       )
     end
 
-    it 'returns only chart searches of the widget workbench' do
-      is_expected.to contain_exactly(workbench_chart_search1, workbench_chart_search2)
+    context 'when #target_scope is "workbench"' do
+      before { widget_setup.target_scope = 'workbench' }
+
+      it 'returns only count searches on non-referential models of the widget workbench' do
+        is_expected.to contain_exactly(workbench_chart_search1, workbench_chart_search2)
+      end
+    end
+
+    context 'when #target_scope is "last_merged_dataset"' do
+      before { widget_setup.target_scope = 'last_merged_dataset' }
+
+      it 'returns only count searches on referential models of the widget workbench' do
+        is_expected.to contain_exactly(workbench_chart_referential_search1)
+      end
     end
   end
 
@@ -346,32 +414,58 @@ RSpec.describe Widget::Chart do
   describe '#scope' do
     subject { widget_setup.scope }
 
-    context 'on stop areas' do
+    context 'on lines' do
       let(:context) do
         Chouette.create do
           workgroup do
             workbench :workbench do
-              stop_area :stop_area1
-              stop_area :stop_area2
+              line :line1
+              line :line2
+              line :out_of_referential_line
+
+              referential :referential, lines: %i[line1 line2]
             end
           end
           workgroup do
             workbench :other_workbench do
-              stop_area
+              line
             end
           end
         end
       end
       let(:saved_search) do
         workbench.saved_searches.create!(
-          name: 'StopArea',
-          search_type: 'Search::StopArea',
+          name: 'Line',
+          search_type: 'Search::Line',
           search_attributes: { 'text' => 'found' }
         )
       end
 
-      it 'returns only stop areas of the workbench' do
-        is_expected.to match_array(%i[stop_area1 stop_area2].map { |i| context.stop_area(i) })
+      it 'returns only lines of the workbench' do
+        is_expected.to match_array(%i[line1 line2 out_of_referential_line].map { |i| context.line(i) })
+      end
+
+      context 'when #target_scope is "last_merged_dataset"' do
+        before { widget_setup.target_scope = 'last_merged_dataset' }
+
+        context 'when there is no merged dataset' do
+          it 'is empty' do
+            is_expected.to be_empty
+          end
+        end
+
+        context 'when there is a merged dataset' do
+          let(:referential) { context.referential(:referential) }
+
+          before do
+            referential.update!(referential_suite: workbench.output)
+            workbench.output.update!(current: referential)
+          end
+
+          it 'returns only lines of the referential' do
+            is_expected.to match_array(%i[line1 line2].map { |i| context.line(i) })
+          end
+        end
       end
     end
   end

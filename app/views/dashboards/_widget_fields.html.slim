@@ -1,4 +1,4 @@
-.nested-fields.widgets.mb-4.border.rounded-r-lg[x-data="{ widget_type: #{f.object.widget_type.to_json} }" :class="#{widget_colors_alpine_class}"]
+.nested-fields.widgets.mb-4.border.rounded-r-lg[x-data="#{{ widget_type: f.object.widget_type, target_scope: f.object.setup.try(:target_scope) || Widget::Search.target_scope.values.first }.to_json}" :class="#{widget_colors_alpine_class}"]
   .px-4.py-3.border-b
     .flex.justify-between.items-center
       .flex.items-center.space-x-2
@@ -20,19 +20,16 @@
       = f.input :name, wrapper_html: { class: 'mb-4' }
       = f.input :widget_type, include_blank: false, disabled: f.object.persisted?, wrapper_html: { class: 'mb-4' }, input_html: { 'x-model': 'widget_type' }
 
-    - if f.object.widget_type == 'count' || local_assigns[:dynamic]
-      - count = f.object.widget_type == 'count' ? f.object.setup : Widget::Count.new
-      template[x-if="widget_type === 'count'"]
-        = f.simple_fields_for(:setup, count) do |setup_form|
-          div[x-init="addAjaxSelectToForm($el)"]
-            = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, 'graphical' => 'false', format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
-
-    - if f.object.widget_type == 'chart' || local_assigns[:dynamic]
-      - chart_setup = f.object.widget_type == 'chart' ? f.object.setup : Widget::Chart.new
-      template[x-if="widget_type === 'chart'"]
-        = f.simple_fields_for(:setup, chart_setup) do |setup_form|
-          div[x-init="addAjaxSelectToForm($el)"]
-            = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, 'graphical' => 'true', format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
+    - if f.object.widget_type == 'count' || f.object.widget_type == 'chart' || local_assigns[:dynamic]
+      - search = f.object.widget_type == 'count' ||  f.object.widget_type == 'chart' ? f.object.setup : Widget::Count.new
+      template[x-if="widget_type === 'count' || widget_type === 'chart'"]
+        div
+          = f.simple_fields_for(:setup, search) do |setup_form|
+            = setup_form.input :target_scope, allow_blank: false, input_html: { 'x-model': 'target_scope' }
+            - %w[count chart].product(%w[workbench last_merged_dataset]).each do |widget_type, target_scope|
+              template[x-if="widget_type === '#{widget_type}' && target_scope === '#{target_scope}'"]
+                div[x-init="addAjaxSelectToForm($el)"]
+                  = setup_form.association :saved_search, as: :ajax_select, collection: [setup_form.object.saved_search].compact, label_method: :name, input_html: { 'data-url': searches_workbench_autocomplete_index_path(current_workbench, 'graphical' => (widget_type == 'chart').to_s, 'referential_scope' => (target_scope == 'last_merged_dataset').to_s, format: :json), class: 'w-full' }, wrapper_html: { class: 'mb-4' }
 
     - if f.object.widget_type == 'static_text' || local_assigns[:dynamic]
       - static_text_setup = f.object.widget_type == 'static_text' ? f.object.setup : Widget::StaticText.new

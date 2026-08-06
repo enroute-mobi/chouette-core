@@ -80,6 +80,7 @@ class AutocompleteController < Chouette::UserController
 
   def searches
     searches = (workbench || current_workgroup).saved_searches.order(:name).by_text(text).limit(50)
+
     if params.key?('graphical')
       searches = if params['graphical'] == 'true'
                    searches.graphical
@@ -87,6 +88,15 @@ class AutocompleteController < Chouette::UserController
                    searches.non_graphical
                  end
     end
+
+    if params.key?('referential_scope')
+      searches = if params['referential_scope'] == 'true'
+                   searches.referential
+                 else
+                   searches.non_referential
+                 end
+    end
+
     @searches = searches
   end
 

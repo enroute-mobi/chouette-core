@@ -33,7 +33,7 @@
         h2.my-16
           = t('processing_rule/workbenches.form.sections.target')
 
-        = f.input :scheduling_target, as: :select, include_blank: false, input_html: { 'x-model': 'scheduling_target', 'x-on:change': "if ($event.scheduling_target.value == 'current') processable_type = 'Control::List'" }
+        = f.input :scheduling_target, as: :select, include_blank: false, input_html: { 'x-model': 'scheduling_target', 'x-on:change': "if ($event.target.value == 'current') processable_type = 'Control::List'" }
 
         .separator.section_separator
 

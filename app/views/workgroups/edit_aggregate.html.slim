@@ -38,7 +38,7 @@
               - workbenches.each_with_index do |w,i|
                 .cell
                   = f.simple_fields_for :workbenches, w, child_index: i do |wf|
-                    = wf.input :locked_referential_to_aggregate_id, as: :autocomplete_select, wrapper: :input_only, collection: w.output.referentials_created_before_current, label: false, include_blank: :translate, input_html: { class: 'w-full' }
+                    = wf.input :locked_referential_to_aggregate_id, as: :autocomplete_select, wrapper: false, collection: w.output.referentials_created_before_current, label: false, include_blank: :translate, input_html: { class: 'w-full' }
             .col.medium
               - workbenches.each_with_index do |w,i|
                .cell.organisation-name
